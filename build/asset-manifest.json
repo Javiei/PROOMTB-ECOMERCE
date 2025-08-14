@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/static/css/main.04ba6c18.css",
+    "main.js": "/static/js/main.02b9020f.js",
+    "static/media/Screenshot 2025-07-24 132548.webp": "/static/media/Screenshot 2025-07-24 132548.ecd173c5fa00b3302eef.webp",
+    "static/media/Diseño sin título (11).png": "/static/media/Diseño sin título (11).a3ab6f8f2b22f09a949e.png",
+    "static/media/PROOMTB (1).png": "/static/media/PROOMTB (1).d165fe0e5ab971fbd6ed.png",
+    "static/media/Diseño sin título (17) (1).png": "/static/media/Diseño sin título (17) (1).fb740b536a7194b20c74.png",
+    "static/media/Diseño sin título (10).png": "/static/media/Diseño sin título (10).77b53d3b43d94e3a9bf8.png",
+    "static/media/MONTECCI_LOGOS-02.webp": "/static/media/MONTECCI_LOGOS-02.29b39c5a55c48fc79495.webp",
+    "static/media/scott.webp": "/static/media/scott.641587fccb8431871404.webp",
+    "static/media/khs-logo.webp": "/static/media/khs-logo.90e71a5cb79ef22018f0.webp",
+    "static/media/orbea-logo.svg": "/static/media/orbea-logo.c06eeaaf61ad538bdc51257b864753c0.svg",
+    "index.html": "/index.html",
+    "main.04ba6c18.css.map": "/static/css/main.04ba6c18.css.map",
+    "main.02b9020f.js.map": "/static/js/main.02b9020f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.04ba6c18.css",
+    "static/js/main.02b9020f.js"
+  ]
+}
