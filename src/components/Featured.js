@@ -13,7 +13,7 @@ const Featured = () => {
           loop
           playsInline
         >
-          <source src="/0722.MP4" type="video/mp4" />
+          <source src="/0722.mp4" type="video/mp4" />
         </video>
       </div>
 
