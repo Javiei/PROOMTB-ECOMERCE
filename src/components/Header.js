@@ -246,7 +246,7 @@ const Header = () => {
               {/* WhatsApp Contact */}
               <div className="flex items-center space-x-2">
                 <a 
-                  href="https://wa.me/18097163555"
+                  href="https://wa.me/18297163555"
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center group"
