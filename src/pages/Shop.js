@@ -1,96 +1,131 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
 import { ALL_CATEGORIES } from '../constants/categories';
+
+const ITEMS_PER_PAGE = 12;
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const [hasMore, setHasMore] = useState(false);
+
   // Filtros
   const [category, setCategory] = useState('all');
   const [priceRange, setPriceRange] = useState(100000);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Obtener productos
+  // Cargar productos
   useEffect(() => {
-    async function fetchProducts() {
+    const fetchProducts = async () => {
       setLoading(true);
-      console.log('Iniciando carga de productos...');
-      
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (!error) {
-        console.log('Productos cargados:', data);
-        // Verificar las URLs de las imágenes
-        if (data && data.length > 0) {
-          console.log('Primer producto:', {
-            id: data[0].id,
-            name: data[0].name,
-            images: data[0].images,
-            imagesType: Array.isArray(data[0].images) ? 'array' : typeof data[0].images
-          });
-        }
-        
-        setProducts(data);
-        setFilteredProducts(data);
-      } else {
-        console.error('Error al cargar productos:', error);
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const list = data || [];
+        setProducts(list);
+        setFilteredProducts(list);
+      } catch (err) {
+        console.error('Error al cargar productos:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    }
+    };
     fetchProducts();
   }, []);
+
+  const updateDisplayedProducts = (list, count) => {
+    const productsToShow = list.slice(0, count);
+    setDisplayedProducts(productsToShow);
+    setHasMore(count < list.length);
+  };
+
+  const loadMore = () => {
+    const newVisible = visibleCount + ITEMS_PER_PAGE;
+    setVisibleCount(newVisible);
+    updateDisplayedProducts(filteredProducts, newVisible);
+  };
+
+  // Reiniciar contador visible cuando cambien filtros
+  useEffect(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+  }, [category, searchTerm, priceRange]);
 
   // Aplicar filtros
   useEffect(() => {
     let result = [...products];
-    
-    // Filtrar por categoría
+
     if (category !== 'all') {
-      result = result.filter(product => product.category === category);
+      result = result.filter((p) => p.category === category);
     }
-    
-    // Filtrar por rango de precio
-    result = result.filter(product => product.price <= priceRange);
-    
-    // Filtrar por término de búsqueda
+
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      result = result.filter(product => 
-        product.name.toLowerCase().includes(term) ||
-        (product.description && product.description.toLowerCase().includes(term))
+      result = result.filter(
+        (p) =>
+          (p.name || '').toLowerCase().includes(term) ||
+          (p.description || '').toLowerCase().includes(term)
       );
     }
-    
+
+    result = result.filter((p) => Number(p.price || 0) <= Number(priceRange || 0));
+
     setFilteredProducts(result);
-  }, [category, priceRange, searchTerm, products]);
+    updateDisplayedProducts(result, Math.min(visibleCount, result.length));
+  }, [products, category, searchTerm, priceRange, visibleCount]);
 
-  // Usar categorías del archivo de constantes
+  // Categorías
   const categories = ALL_CATEGORIES;
-  
-  // Formatear precio
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS'
-    }).format(price);
-  };
 
-  // Obtener el precio máximo para el rango
-  const maxPrice = Math.max(...products.map(p => p.price), 100000);
-  const minPrice = Math.min(...products.filter(p => p.price > 0).map(p => p.price), 0);
-  
-  // Efecto para inicializar el precio máximo una vez que se cargan los productos
+  // Precio en DOP (RD)
+  const formatPrice = (price) =>
+    new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(
+      Number(price || 0)
+    );
+
+  // Rango de precios dinámico
+  const maxPrice = Math.max(...products.map((p) => Number(p.price || 0)), 100000);
+  const minCandidates = products
+    .map((p) => Number(p.price || 0))
+    .filter((n) => Number.isFinite(n) && n > 0);
+  const minPrice = minCandidates.length ? Math.min(...minCandidates) : 0;
+
+  // Inicializar priceRange al máximo al cargar
   useEffect(() => {
     if (products.length > 0 && priceRange === 100000) {
       setPriceRange(maxPrice);
     }
   }, [products, maxPrice, priceRange]);
+
+  // Helper para URL de imagen
+  const getImageUrl = (product) => {
+    let imageUrl = '';
+
+    if (Array.isArray(product.images) && product.images.length > 0) {
+      imageUrl = product.images[0];
+      if (imageUrl && typeof imageUrl === 'object' && imageUrl.url) {
+        imageUrl = imageUrl.url;
+      }
+    } else if (product.image) {
+      imageUrl = product.image;
+    } else if (product.image_url) {
+      imageUrl = product.image_url;
+    }
+
+    if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
+      imageUrl = `${window.location.origin}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+    }
+
+    return imageUrl;
+  };
 
   return (
     <section className="py-12 bg-gray-50 min-h-screen">
@@ -103,14 +138,20 @@ const Shop = () => {
           </p>
         </div>
 
-        {/* Barra de búsqueda */}
+        {/* Búsqueda */}
         <div className="bg-white rounded-xl shadow-md p-4 mb-8">
           <div className="max-w-2xl mx-auto">
-            <label htmlFor="search" className="sr-only">Buscar productos</label>
+            <label htmlFor="search" className="sr-only">
+              Buscar productos
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <input
@@ -128,17 +169,27 @@ const Shop = () => {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Contenido principal */}
           <div className="flex-1">
-            {/* Resumen de resultados */}
+            {/* Resumen */}
             <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
               <p className="text-gray-600">
-                {filteredProducts.length === 0 ? 'No se encontraron' : filteredProducts.length} 
-                {filteredProducts.length === 1 ? ' producto' : ' productos'}
-                {category !== 'all' && ` en ${categories.flatMap(c => c.group ? c.options : c).find(c => c.value === category)?.label || category}`}
+                {displayedProducts.length > 0 ? (
+                  <>
+                    Mostrando <span className="font-semibold">{displayedProducts.length}</span> de{' '}
+                    <span className="font-semibold">{filteredProducts.length}</span> productos
+                  </>
+                ) : (
+                  <>No se encontraron productos</>
+                )}
+                {category !== 'all' &&
+                  ` en ${
+                    categories
+                      .flatMap((c) => (c.group ? c.options : c))
+                      .find((c) => c.value === category)?.label || category
+                  }`}
                 {searchTerm && ` para "${searchTerm}"`}
               </p>
             </div>
 
-            {/* Grid de productos */}
             {loading ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
@@ -146,145 +197,103 @@ const Shop = () => {
               </div>
             ) : (
               <>
-                <div className="mb-6">
-                  <p className="text-gray-600">
-                    Mostrando <span className="font-semibold">{filteredProducts.length}</span> productos
-                    {category !== 'all' && ` en ${category}`}
-                    {searchTerm && ` para "${searchTerm}"`}
-                  </p>
-                </div>
-
                 {/* Grid de productos */}
                 {filteredProducts.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredProducts.map((product) => (
-                      <Link 
-                        to={`/producto/${product.id}`} 
-                        key={product.id}
-                        className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
-                      >
-                        <div className="relative pb-[100%] bg-gray-100">
-                          {(() => {
-                            // Intentar obtener la URL de la imagen de diferentes maneras
-                            let imageUrl = '';
-                            
-                            // 1. Verificar si hay un array de imágenes
-                            if (Array.isArray(product.images) && product.images.length > 0) {
-                              imageUrl = product.images[0];
-                              // Si es un objeto con propiedad url
-                              if (typeof imageUrl === 'object' && imageUrl.url) {
-                                imageUrl = imageUrl.url;
-                              }
-                            } 
-                            // 2. Verificar si hay una propiedad image
-                            else if (product.image) {
-                              imageUrl = product.image;
-                            } 
-                            // 3. Verificar si hay una propiedad image_url
-                            else if (product.image_url) {
-                              imageUrl = product.image_url;
-                            }
-                            
-                            // Si encontramos una URL de imagen
-                            if (imageUrl) {
-                              // Asegurarnos de que la URL sea absoluta
-                              if (!imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
-                                imageUrl = `${window.location.origin}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
-                              }
-                              
-                              return (
+                    {displayedProducts.length === 0 ? (
+                      <div className="col-span-full text-center py-12">
+                        <p className="text-gray-600">
+                          No se encontraron productos que coincidan con tu búsqueda.
+                        </p>
+                      </div>
+                    ) : (
+                      displayedProducts.map((product) => {
+                        const imageUrl = getImageUrl(product);
+                        return (
+                          <Link
+                            to={`/producto/${product.id}`}
+                            key={product.id}
+                            className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+                          >
+                            <div className="relative pb-[100%] bg-gray-100">
+                              {imageUrl ? (
                                 <>
-                                  <img 
-                                    src={imageUrl} 
+                                  <img
+                                    src={imageUrl}
                                     alt={product.name || 'Producto'}
                                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                     onError={(e) => {
-                                      console.error('Error cargando la imagen:', imageUrl);
-                                      e.target.onerror = null;
-                                      e.target.src = 'https://via.placeholder.com/300x300?text=Imagen+no+disponible';
+                                      e.currentTarget.onerror = null;
+                                      e.currentTarget.src =
+                                        'https://via.placeholder.com/300x300?text=Imagen+no+disponible';
                                     }}
                                   />
-                                  {/* Mostrar contador de imágenes si hay más de una */}
                                   {Array.isArray(product.images) && product.images.length > 1 && (
                                     <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
                                       +{product.images.length - 1}
                                     </div>
                                   )}
                                 </>
-                              );
-                            }
-                            
-                            // Si no hay imagen, mostrar placeholder
-                            return (
-                              <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
-                                <svg 
-                                  className="w-12 h-12 text-gray-400" 
-                                  fill="none" 
-                                  stroke="currentColor" 
-                                  viewBox="0 0 24 24" 
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path 
-                                    strokeLinecap="round" 
-                                    strokeLinejoin="round" 
-                                    strokeWidth={1} 
-                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
-                                  />
-                                </svg>
-                                <span className="sr-only">Sin imagen</span>
+                              ) : (
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                                  <svg
+                                    className="w-12 h-12 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={1}
+                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                  <span className="sr-only">Sin imagen</span>
+                                </div>
+                              )}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                                <span className="text-white font-medium">Ver detalles</span>
                               </div>
-                            );
-                          })()}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                            <span className="text-white font-medium">Ver detalles</span>
-                          </div>
-                        </div>
-                        <div className="p-4">
-                          <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 h-12">
-                            {product.name}
-                          </h3>
-                          <div className="flex items-center mb-2">
-                            {[...Array(5)].map((_, i) => (
-                              <svg
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < (product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'
-                                }`}
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                              </svg>
-                            ))}
-                            <span className="text-xs text-gray-500 ml-1">({product.rating || 0})</span>
-                          </div>
-                          <p className="text-lg font-bold text-gray-900">
-                            {formatPrice(product.price)}
-                          </p>
-                          {product.old_price && (
-                            <p className="text-sm text-gray-500 line-through">
-                              {formatPrice(product.old_price)}
-                            </p>
-                          )}
-                        </div>
-                      </Link>
-                    ))}
+                            </div>
+
+                            <div className="p-4">
+                              <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 h-12">
+                                {product.name}
+                              </h3>
+                              <div className="flex items-center mb-2">
+                                {[...Array(5)].map((_, i) => (
+                                  <svg
+                                    key={i}
+                                    className={`w-4 h-4 ${
+                                      i < (product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'
+                                    }`}
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                ))}
+                                <span className="text-xs text-gray-500 ml-1">({product.rating || 0})</span>
+                              </div>
+                              <p className="text-lg font-bold text-gray-900">
+                                {formatPrice(product.price)}
+                              </p>
+                              {product.old_price && (
+                                <p className="text-sm text-gray-500 line-through">
+                                  {formatPrice(product.old_price)}
+                                </p>
+                              )}
+                            </div>
+                          </Link>
+                        );
+                      })
+                    )}
                   </div>
                 ) : (
-                  <div className="text-center py-16 bg-white rounded-xl shadow">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1}
-                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                  // Estado vacío (sin resultados)
+                  <div className="col-span-full text-center py-12">
                     <h3 className="mt-4 text-lg font-medium text-gray-900">No se encontraron productos</h3>
                     <p className="mt-1 text-gray-500">
                       Intenta con otros filtros o términos de búsqueda.
@@ -303,16 +312,29 @@ const Shop = () => {
                     </div>
                   </div>
                 )}
+
+                {/* Botón Cargar más */}
+                {hasMore && displayedProducts.length < filteredProducts.length && (
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={loadMore}
+                      className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium disabled:opacity-50"
+                      disabled={loading}
+                    >
+                      Cargar más
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>
 
-          {/* Panel de filtros lateral */}
+          {/* Panel lateral de filtros */}
           <div className="w-full md:w-64 flex-shrink-0">
             <div className="bg-white rounded-xl shadow-md p-6 sticky top-4">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Filtros</h3>
-              
-              {/* Filtro de categorías */}
+
+              {/* Categorías */}
               <div className="mb-6">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">Categorías</h4>
                 <div className="space-y-2">
@@ -320,9 +342,11 @@ const Shop = () => {
                     if (item.group) {
                       return (
                         <div key={item.group} className="mb-2">
-                          <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">{item.group}</h5>
+                          <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                            {item.group}
+                          </h5>
                           <div className="space-y-1 pl-2">
-                            {item.options.map(option => (
+                            {item.options.map((option) => (
                               <label key={option.value} className="flex items-center">
                                 <input
                                   type="radio"
@@ -356,7 +380,7 @@ const Shop = () => {
                 </div>
               </div>
 
-              {/* Filtro de precios */}
+              {/* Rango de precios */}
               <div className="border-t border-gray-200 pt-4">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">Rango de precios</h4>
                 <div className="px-1">
@@ -373,13 +397,11 @@ const Shop = () => {
                     onChange={(e) => setPriceRange(Number(e.target.value))}
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
-                  <div className="mt-2 text-sm text-gray-600">
-                    Máximo: {formatPrice(priceRange)}
-                  </div>
+                  <div className="mt-2 text-sm text-gray-600">Máximo: {formatPrice(priceRange)}</div>
                 </div>
               </div>
-              
-              {/* Botón para limpiar filtros */}
+
+              {/* Limpiar filtros */}
               <button
                 onClick={() => {
                   setCategory('all');
