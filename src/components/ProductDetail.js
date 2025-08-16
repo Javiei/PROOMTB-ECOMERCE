@@ -4,451 +4,421 @@ import Footer from './Footer';
 import { supabase } from '../supabaseClient';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import AuthModal from './auth/AuthModal';
 
-// Función auxiliar para procesar las URLs de imágenes
-const processImageUrl = (product) => {
-  let imageUrl = '';
-  
-  // 1. Verificar si hay un array de imágenes
-  if (Array.isArray(product.images) && product.images.length > 0) {
-    imageUrl = product.images[0];
-    // Si es un objeto con propiedad url
-    if (typeof imageUrl === 'object' && imageUrl.url) {
-      imageUrl = imageUrl.url;
-    }
-  } 
-  // 2. Verificar si hay una propiedad image
-  else if (product.image) {
-    imageUrl = product.image;
-  } 
-  // 3. Verificar si hay una propiedad image_url
-  else if (product.image_url) {
-    imageUrl = product.image_url;
-  }
-  
-  // Asegurarse de que la URL sea absoluta
-  if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
-    imageUrl = `${window.location.origin}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
-  }
-  
-  return imageUrl;
-};
-
-// Función para obtener todas las imágenes de un producto
-const getAllProductImages = (product) => {
-  if (!product) {
-    console.log('No product provided to getAllProductImages');
-    return [];
-  }
-
-  console.log('Getting all images for product:', product.id || 'unknown');
-  const images = [];
-  
-  try {
-    // 1. Verificar si hay un array de imágenes
-    if (product.images) {
-      console.log('Product has images property:', product.images);
-      if (Array.isArray(product.images)) {
-        product.images.forEach(img => {
-          if (!img) return;
-          
-          if (typeof img === 'string') {
-            console.log('Adding image from images array (string):', img);
-            images.push(img);
-          } else if (img && typeof img === 'object' && img.url) {
-            console.log('Adding image from images array (object):', img.url);
-            images.push(img.url);
-          } else {
-            console.log('Found image in array but with unexpected format:', img);
-            // Try to stringify the image object in case it has a different structure
-            const imgStr = JSON.stringify(img);
-            if (imgStr && imgStr !== '{}') {
-              console.log('Attempting to use stringified image object');
-              images.push(imgStr);
-            }
-          }
-        });
-      } else if (typeof product.images === 'string') {
-        console.log('Adding single image from images string:', product.images);
-        images.push(product.images);
-      }
-    }
-    
-    // 2. Verificar si hay una propiedad image
-    if (product.image) {
-      console.log('Adding image from image property:', product.image);
-      const img = product.image;
-      if (typeof img === 'string' && !images.includes(img)) {
-        images.push(img);
-      } else if (img && typeof img === 'object' && img.url && !images.includes(img.url)) {
-        images.push(img.url);
-      }
-    }
-    
-    // 3. Verificar si hay una propiedad image_url
-    if (product.image_url) {
-      console.log('Adding image from image_url property:', product.image_url);
-      const imgUrl = product.image_url;
-      if (typeof imgUrl === 'string' && !images.includes(imgUrl)) {
-        images.push(imgUrl);
-      } else if (imgUrl && typeof imgUrl === 'object' && imgUrl.url && !images.includes(imgUrl.url)) {
-        images.push(imgUrl.url);
-      }
-    }
-  
-    console.log('Collected images before processing:', images);
-    
-    // Asegurarse de que las URLs sean absolutas
-    const processedImages = images.map(img => {
-      if (!img) return null;
-      
-      // Si es un objeto con propiedad url, usamos esa
-      if (typeof img === 'object' && img.url) {
-        img = img.url;
-      }
-      
-      const imgStr = String(img);
-      
-      // Si ya es una URL completa, la dejamos como está
-      if (imgStr.startsWith('http') || imgStr.startsWith('data:')) {
-        return imgStr;
-      }
-      
-      // Si es una ruta relativa, la convertimos a absoluta
-      return `${window.location.origin}${imgStr.startsWith('/') ? '' : '/'}${imgStr}`;
-    }).filter(Boolean); // Eliminar valores nulos o indefinidos
-    
-    console.log('Processed images:', processedImages);
-    return processedImages;
-  } catch (error) {
-    console.error('Error processing images:', error);
-    return [];
-  }
-};
-
-export default function ProductDetail() {
+const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [relatedLoading, setRelatedLoading] = useState(true);
-  const [modalImage, setModalImage] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const { addToCart, cart } = useCart();
-  const [isAdding, setIsAdding] = useState(false);
-  const [addSuccess, setAddSuccess] = useState(false);
+  const { addToCart } = useCart();
   const { user } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
-  const handleAddToCart = async () => {
-    if (!product) return;
-    
-    try {
-      setIsAdding(true);
-      console.log('Adding to cart:', { product, quantity });
-      
-      // Add to cart
-      addToCart(product, quantity);
-      
-      // Show success feedback
-      setAddSuccess(true);
-      console.log('Product added to cart. Current cart:', [...cart, { ...product, quantity }]);
-      
-      // Hide success message after 3 seconds
-      setTimeout(() => {
-        setAddSuccess(false);
-      }, 3000);
-      
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      alert('Hubo un error al agregar el producto al carrito');
-    } finally {
-      setIsAdding(false);
-    }
-  };
-
-  const handleBuyNow = () => {
-    if (!user) {
-      setShowLoginModal(true);
-      return;
-    }
-    
-    if (product) {
-      addToCart(product, quantity);
-      navigate('/checkout');
-    }
-  };
-  
-  const handleAddToCartClick = () => {
-    if (!user) {
-      setShowLoginModal(true);
-      return;
-    }
-    handleAddToCart();
-  };
-
-  // Obtener producto actual
   useEffect(() => {
-    async function fetchProduct() {
-      setLoading(true);
-      console.log('Fetching product with ID:', id);
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('id', id)
-        .single();
-        
-      if (!error && data) {
-        console.log('Raw product data from Supabase:', JSON.stringify(data, null, 2));
-        
-        // Procesar las imágenes del producto
-        const processedImages = getAllProductImages(data);
-        console.log('Processed images array:', processedImages);
-        
-        const productWithProcessedImages = {
-          ...data,
-          processedImages: processedImages
-        };
-        
-        console.log('Final product object with images:', {
-          ...productWithProcessedImages,
-          // Don't log the entire images array if it's large
-          images: Array.isArray(productWithProcessedImages.images) 
-            ? `[Array of ${productWithProcessedImages.images.length} images]` 
-            : productWithProcessedImages.images,
-          processedImages: `[Array of ${processedImages.length} processed images]`
-        });
-        
-        setProduct(productWithProcessedImages);
-        // Una vez que tenemos el producto, buscamos productos relacionados
-        fetchRelatedProducts(data.category, data.id);
-      } else {
+    const fetchProduct = async () => {
+      try {
+        // Obtener el producto
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+
+        // Procesar las imágenes si existen
+        if (data) {
+          // Convertir la cadena JSON de imágenes a un array si es necesario
+          if (data.images && typeof data.images === 'string') {
+            try {
+              data.processedImages = JSON.parse(data.images);
+            } catch (e) {
+              console.error('Error parsing images JSON:', e);
+              data.processedImages = [data.image || ''];
+            }
+          } else if (Array.isArray(data.images)) {
+            data.processedImages = data.images;
+          } else {
+            // Si no hay imágenes, usar la imagen principal
+            data.processedImages = [data.image || ''];
+          }
+
+          // Asegurarse de que colors y sizes sean arrays
+          if (data.colors && typeof data.colors === 'string') {
+            try {
+              data.colors = JSON.parse(data.colors);
+            } catch (e) {
+              console.error('Error parsing colors JSON:', e);
+              data.colors = [];
+            }
+          }
+
+          if (data.sizes && typeof data.sizes === 'string') {
+            try {
+              data.sizes = JSON.parse(data.sizes);
+            } catch (e) {
+              console.error('Error parsing sizes JSON:', e);
+              data.sizes = [];
+            }
+          }
+
+          // Establecer el color y talla por defecto si están disponibles
+          if (Array.isArray(data.colors) && data.colors.length > 0) {
+            setSelectedColor(data.colors[0]);
+          }
+
+          if (Array.isArray(data.sizes) && data.sizes.length > 0) {
+            setSelectedSize(data.sizes[0]);
+          }
+
+          setProduct(data);
+
+          // Obtener productos relacionados de la misma categoría
+          if (data.category) {
+            const { data: relatedData, error: relatedError } = await supabase
+              .from('products')
+              .select('*')
+              .eq('category', data.category)
+              .neq('id', id)
+              .limit(4);
+
+            if (!relatedError && relatedData) {
+              // Procesar imágenes de productos relacionados
+              const processedRelated = relatedData.map(item => {
+                let processedItem = { ...item };
+                
+                // Procesar imágenes
+                if (item.images && typeof item.images === 'string') {
+                  try {
+                    processedItem.processedImages = JSON.parse(item.images);
+                  } catch (e) {
+                    processedItem.processedImages = [item.image || ''];
+                  }
+                } else if (Array.isArray(item.images)) {
+                  processedItem.processedImages = item.images;
+                } else {
+                  processedItem.processedImages = [item.image || ''];
+                }
+                
+                return processedItem;
+              });
+              
+              setRelatedProducts(processedRelated);
+            }
+          }
+        }
+      } catch (error) {
         console.error('Error fetching product:', error);
+      } finally {
         setLoading(false);
       }
-    }
+    };
 
-    async function fetchRelatedProducts(category, excludeId) {
-      setRelatedLoading(true);
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('category', category)
-        .neq('id', excludeId)
-        .limit(3);
-      
-      if (!error && data) {
-        // Procesar las imágenes de los productos relacionados
-        const processedRelatedProducts = data.map(prod => ({
-          ...prod,
-          processedImages: getAllProductImages(prod)
-        }));
-        setRelatedProducts(processedRelatedProducts);
-      } else if (error) {
-        console.error('Error fetching related products:', error);
-      }
-      setLoading(false);
-      setRelatedLoading(false);
-    }
-
-    if (id) {
-      fetchProduct();
-      window.scrollTo(0, 0);
-    }
+    fetchProduct();
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
   }, [id]);
 
-  return (
-    <div className="min-h-screen w-full bg-gray-900">
-      {/* Modal de imagen grande */}
-      {modalImage && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center" onClick={() => setModalImage(null)}>
-          <div className="relative max-w-3xl w-full flex flex-col items-center">
-            <button className="absolute top-2 right-2 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full px-3 py-1 hover:bg-opacity-80" onClick={e => { e.stopPropagation(); setModalImage(null); }}>&times;</button>
-            <img src={modalImage} alt="Vista ampliada" className="max-h-[80vh] w-auto rounded-xl shadow-2xl border-4 border-purple-500" />
-          </div>
-        </div>
-      )}
+  const handleAddToCart = () => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
 
-      <div className="flex flex-col items-center justify-center py-12 px-4">
-        <div className="max-w-[1500px] w-full grid grid-cols-1 md:grid-cols-2 gap-12 bg-gray-900 rounded-xl shadow-lg p-8">
-          {/* Galería + Info */}
-          {loading ? (
-            <div className="text-white">Cargando...</div>
-          ) : !product ? (
-            <div className="text-red-400">Producto no encontrado</div>
-          ) : (
-            <>
-              {/* Sección de imagen (izquierda) */}
-              <div className="flex items-center justify-center">
-                <div className="w-full max-w-md">
-                  {product.processedImages && product.processedImages.length > 0 ? (
-                    <div 
-                      className="bg-white rounded-lg flex items-center justify-center aspect-square border-4 border-purple-500 cursor-pointer overflow-hidden p-6"
-                      onClick={() => setModalImage(product.processedImages[0])}
-                    >
-                      <img 
-                        src={product.processedImages[0]} 
-                        alt={product.name}
-                        className="object-contain h-full w-full"
-                        onError={(e) => { 
-                          e.target.onerror = null; 
-                          e.target.src = 'https://via.placeholder.com/500x500?text=Imagen+no+disponible'; 
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="bg-gray-100 rounded-lg flex items-center justify-center aspect-square border-4 border-gray-200">
-                      <span className="text-gray-600">Sin imagen disponible</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Sección de información (derecha) */}
-              <div className="flex flex-col justify-center">
-                <div className="bg-gray-800 p-8 rounded-lg h-full">
-                  <h1 className="text-3xl font-bold text-white mb-4">{product.name}</h1>
-                  <div className="flex items-center mb-6">
-                    <span className="text-2xl font-bold text-purple-400 mr-4">${product.price?.toFixed(2)}</span>
-                    <span className="bg-yellow-400 text-gray-900 px-2 py-1 rounded text-xs font-bold">{product.rating} ★</span>
-                  </div>
-                  <div className="space-y-4 mb-6">
-                    <div className="flex items-center">
-                      <label htmlFor="quantity" className="mr-2 text-gray-300">Cantidad:</label>
-                      <input 
-                        type="number" 
-                        id="quantity"
-                        min={1} 
-                        value={quantity}
-                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-20 px-2 py-1 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-purple-500" 
-                        disabled={isAdding}
-                      />
-                    </div>
-                    <div className="flex space-x-2">
-                      <button 
-                        onClick={handleBuyNow}
-                        disabled={isAdding}
-                        className={`flex-1 ${isAdding ? 'bg-green-700' : 'bg-green-600 hover:bg-green-700'} text-white px-4 py-2 rounded font-bold transition-colors`}
-                        title={!user ? 'Inicia sesión para comprar' : ''}
-                      >
-                        {isAdding ? 'PROCESANDO...' : 'COMPRAR AHORA'}
-                      </button>
-                      <button 
-                        onClick={handleAddToCartClick}
-                        disabled={isAdding}
-                        className={`flex-1 ${isAdding ? 'bg-purple-700' : 'bg-purple-600 hover:bg-purple-700'} text-white px-4 py-2 rounded font-bold transition-colors`}
-                        title={!user ? 'Inicia sesión para agregar al carrito' : ''}
-                      >
-                        {isAdding ? 'AGREGANDO...' : 'AÑADIR AL CARRITO'}
-                      </button>
-                    </div>
-                    {addSuccess && (
-                      <div className="mt-2 p-2 bg-green-100 text-green-800 text-sm rounded">
-                        ✅ {product.name} ha sido agregado al carrito
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-2 text-purple-400">Descripción</h3>
-                    <p className="text-gray-300 text-sm">{product.description}</p>
-                  </div>
-                  <button 
-                    onClick={() => navigate(-1)} 
-                    className="mt-8 text-purple-400 hover:text-purple-300 hover:underline transition-colors"
-                  >
-                    ← Volver a la tienda
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+    if (product) {
+      const itemToAdd = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        processedImages: product.processedImages,
+        quantity: quantity,
+        selectedColor: selectedColor,
+        selectedSize: selectedSize
+      };
+
+      addToCart(itemToAdd);
+      alert('Producto añadido al carrito');
+    }
+  };
+
+  const handleColorChange = (color) => {
+    setSelectedColor(color);
+  };
+
+  const handleSizeChange = (size) => {
+    setSelectedSize(size);
+  };
+
+  const handleQuantityChange = (e) => {
+    setQuantity(parseInt(e.target.value));
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
       </div>
-      {/* Sección de productos relacionados */}
-      {/* Productos Relacionados */}
-      {!relatedLoading && relatedProducts.length > 0 && (
-        <section className="max-w-5xl w-full mt-16 mb-10">
-          <h3 className="text-2xl font-bold text-white mb-8 tracking-widest">PRODUCTOS RELACIONADOS</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {relatedProducts.map(prod => (
-              <Link 
-                to={`/product/${prod.id}`} 
-                key={prod.id} 
-                className="bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col items-center border border-gray-700 hover:border-purple-500 transition-colors"
-              >
-                {prod.images && prod.images.length > 0 ? (
-                  <img 
-                    src={prod.processedImages && prod.processedImages[0] ? prod.processedImages[0] : 'https://via.placeholder.com/150x150?text=Sin+imagen'} 
-                    alt={prod.name}
-                    className="h-32 w-32 object-contain mb-4"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/150x150?text=Error+imagen';
-                    }}
-                  />
-                ) : (
-                  <div className="h-32 w-32 bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                    <span className="text-gray-400 text-sm">Sin imagen</span>
-                  </div>
-                )}
-                <h4 className="text-lg font-bold text-white mb-2 text-center">{prod.name}</h4>
-                <div className="text-xl font-bold text-purple-400 mb-4">
-                  ${parseFloat(prod.price).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                </div>
-                <span className="mt-2 px-3 py-1 bg-gray-700 text-gray-300 text-xs rounded-full">
-                  {prod.category}
-                </span>
-                <button 
-                  className="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded font-semibold transition-colors"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  Ver Producto
-                </button>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex flex-col justify-center items-center">
+        <h1 className="text-2xl font-bold mb-4">Producto no encontrado</h1>
+        <button 
+          onClick={() => navigate('/tienda')} 
+          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+        >
+          Volver a la tienda
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white">
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Breadcrumbs */}
+        <nav className="flex mb-8" aria-label="Breadcrumb">
+          <ol className="flex items-center space-x-2">
+            <li>
+              <Link to="/" className="text-gray-500 hover:text-gray-700">
+                Inicio
               </Link>
-            ))}
+            </li>
+            <li className="flex items-center">
+              <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+              <Link to="/tienda" className="ml-2 text-gray-500 hover:text-gray-700">
+                Tienda
+              </Link>
+            </li>
+            <li className="flex items-center">
+              <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+              <span className="ml-2 text-gray-900 font-medium">{product.name}</span>
+            </li>
+          </ol>
+        </nav>
+
+        <div className="lg:grid lg:grid-cols-2 lg:gap-x-8">
+          {/* Product images */}
+          <div className="flex flex-col">
+            <div className="mb-4 aspect-w-4 aspect-h-3 rounded-lg overflow-hidden bg-gray-100">
+              <img
+                src={product.processedImages[selectedImage] || product.image || 'https://via.placeholder.com/600'}
+                alt={product.name}
+                className="w-full h-full object-center object-contain"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://via.placeholder.com/600';
+                }}
+              />
+            </div>
+            
+            {/* Thumbnail images */}
+            {product.processedImages && product.processedImages.length > 1 && (
+              <div className="grid grid-cols-4 gap-2 mt-2">
+                {product.processedImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`aspect-w-1 aspect-h-1 rounded-md overflow-hidden ${selectedImage === idx ? 'ring-2 ring-purple-500' : 'ring-1 ring-gray-200'}`}
+                  >
+                    <img
+                      src={img || 'https://via.placeholder.com/150'}
+                      alt={`${product.name} - Vista ${idx + 1}`}
+                      className="w-full h-full object-center object-contain"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/150';
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        </section>
-      )}
-      {/* Login Modal */}
-      {showLoginModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 relative">
-            <button 
-              onClick={() => setShowLoginModal(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-            >
-              ✕
-            </button>
-            <h3 className="text-xl font-bold mb-4">Inicia sesión para continuar</h3>
-            <p className="mb-6">Necesitas iniciar sesión para realizar compras o agregar productos al carrito.</p>
-            <div className="space-y-4">
-              <button
-                onClick={() => {
-                  setShowLoginModal(false);
-                  navigate('/login', { state: { from: `/product/${id}` } });
-                }}
-                className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition-colors"
-              >
-                Iniciar sesión
-              </button>
-              <button
-                onClick={() => {
-                  setShowLoginModal(false);
-                  navigate('/signup', { state: { from: `/product/${id}` } });
-                }}
-                className="w-full bg-white text-purple-600 border border-purple-600 py-2 px-4 rounded hover:bg-purple-50 transition-colors"
-              >
-                Crear cuenta
-              </button>
+
+          {/* Product details */}
+          <div className="mt-10 px-4 sm:px-0 sm:mt-0">
+            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">{product.name}</h1>
+            
+            <div className="mt-3">
+              <h2 className="sr-only">Información del producto</h2>
+              <p className="text-3xl text-gray-900">${product.price?.toFixed(2)}</p>
+            </div>
+
+            {/* Reviews placeholder */}
+            <div className="mt-3">
+              <div className="flex items-center">
+                <div className="flex items-center">
+                  {[0, 1, 2, 3, 4].map((rating) => (
+                    <svg
+                      key={rating}
+                      className={`h-5 w-5 flex-shrink-0 ${rating < (product.rating || 5) ? 'text-yellow-400' : 'text-gray-300'}`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <p className="ml-2 text-sm text-gray-500">{product.reviews || 0} reseñas</p>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="sr-only">Descripción</h3>
+              <div className="text-base text-gray-700 space-y-6">
+                <p>{product.description}</p>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              {/* Color selector */}
+              {Array.isArray(product.colors) && product.colors.length > 0 && (
+                <div>
+                  <h3 className="text-sm text-gray-600">Color</h3>
+                  <div className="mt-2">
+                    <div className="flex items-center space-x-3">
+                      {product.colors.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => handleColorChange(color)}
+                          className={`relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ${selectedColor === color ? 'ring ring-offset-1 ring-purple-500' : ''}`}
+                        >
+                          <span
+                            className={`h-8 w-8 rounded-full border border-black border-opacity-10 capitalize flex items-center justify-center`}
+                            style={{ backgroundColor: color.toLowerCase() === 'white' ? '#f9fafb' : '' }}
+                          >
+                            {color.toLowerCase() === 'white' || color.toLowerCase() === 'black' ? (
+                              <span className={`text-xs ${color.toLowerCase() === 'black' ? 'text-white' : 'text-black'}`}>
+                                {color}
+                              </span>
+                            ) : null}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Size selector */}
+              {Array.isArray(product.sizes) && product.sizes.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-sm text-gray-600">Talla</h3>
+                  <div className="mt-2">
+                    <div className="grid grid-cols-4 gap-2">
+                      {product.sizes.map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => handleSizeChange(size)}
+                          className={`group relative flex items-center justify-center rounded-md border py-2 px-4 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none ${selectedSize === size ? 'border-purple-500 text-purple-600' : 'border-gray-300 text-gray-900'}`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity selector */}
+              <div className="mt-6">
+                <h3 className="text-sm text-gray-600">Cantidad</h3>
+                <div className="mt-2">
+                  <select
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    className="max-w-full rounded-md border border-gray-300 py-1.5 text-base leading-5 font-medium text-gray-700 text-left shadow-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="mt-8 flex">
+                <button
+                  onClick={handleAddToCart}
+                  className="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-purple-600 py-3 px-8 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
+                >
+                  Añadir al carrito
+                </button>
+              </div>
+
+              <div className="mt-6">
+                <div className="flex items-center">
+                  <svg className="h-5 w-5 flex-shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <p className="ml-2 text-sm text-gray-500">Envío en 2-3 días hábiles</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      )}
 
-      {/* Footer */}
+        {/* Related products */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-16">
+            <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">Productos relacionados</h2>
+            <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4">
+              {relatedProducts.map((relatedProduct) => (
+                <div key={relatedProduct.id} className="group relative">
+                  <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75">
+                    <img
+                      src={relatedProduct.processedImages?.[0] || relatedProduct.image || 'https://via.placeholder.com/300'}
+                      alt={relatedProduct.name}
+                      className="h-full w-full object-cover object-center"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/300';
+                      }}
+                    />
+                  </div>
+                  <div className="mt-4 flex justify-between">
+                    <div>
+                      <h3 className="text-sm text-gray-700">
+                        <Link to={`/producto/${relatedProduct.id}`}>
+                          <span aria-hidden="true" className="absolute inset-0" />
+                          {relatedProduct.name}
+                        </Link>
+                      </h3>
+                      <p className="mt-1 text-sm text-gray-500">{relatedProduct.category}</p>
+                    </div>
+                    <p className="text-sm font-medium text-gray-900">${relatedProduct.price?.toFixed(2)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
       <Footer />
+      
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialTab="login"
+      />
     </div>
   );
-}
+};
+
+export default ProductDetail;
