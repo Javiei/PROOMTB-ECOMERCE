@@ -42,9 +42,9 @@ const BestSellers = () => {
               if (products.length < 2) {
                 return products.map((product) => (
                   <Link to={`/producto/${product.id}`} key={product.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group block cursor-pointer">
-                    <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-64 flex items-center justify-center">
+                    <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-80 flex items-center justify-center">
                       {product.image_url ? (
-                        <img src={product.image_url} alt={product.name} className="h-40 object-contain" />
+                        <img src={product.image_url} alt={product.name} className="h-64 object-contain" />
                       ) : (
                         <div className="text-6xl group-hover:scale-110 transition-transform">🚲</div>
                       )}
@@ -66,10 +66,10 @@ const BestSellers = () => {
               // Primer producto
               cards.push(
                 <Link to={`/producto/${products[0].id}`} key={products[0].id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group block cursor-pointer">
-                  <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-64 flex items-center justify-center">
+                  <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-80 flex items-center justify-center">
                     {products[0].image_url ? (
-                      <img src={products[0].image_url} alt={products[0].name} className="h-40 object-contain" />
-                    ) : (
+                        <img src={products[0].image_url} alt={products[0].name} className="h-64 object-contain" />
+                      ) : (
                       <div className="text-6xl group-hover:scale-110 transition-transform">🚲</div>
                     )}
                   </div>
@@ -117,9 +117,9 @@ const BestSellers = () => {
               if (products[1]) {
                 cards.push(
                   <Link to={`/producto/${products[1].id}`} key={products[1].id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group block cursor-pointer">
-                    <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-64 flex items-center justify-center">
+                    <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-80 flex items-center justify-center">
                       {products[1].image_url ? (
-                        <img src={products[1].image_url} alt={products[1].name} className="h-40 object-contain" />
+                        <img src={products[1].image_url} alt={products[1].name} className="h-64 object-contain" />
                       ) : (
                         <div className="text-6xl group-hover:scale-110 transition-transform">🚲</div>
                       )}
@@ -140,9 +140,9 @@ const BestSellers = () => {
               for (let i = 2; i < products.length; i++) {
                 cards.push(
                   <Link to={`/producto/${products[i].id}`} key={products[i].id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group block cursor-pointer">
-                    <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-64 flex items-center justify-center">
+                    <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-80 flex items-center justify-center">
                       {products[i].image_url ? (
-                        <img src={products[i].image_url} alt={products[i].name} className="h-40 object-contain" />
+                        <img src={products[i].image_url} alt={products[i].name} className="h-64 object-contain" />
                       ) : (
                         <div className="text-6xl group-hover:scale-110 transition-transform">🚲</div>
                       )}
