@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import proomtbImage from '../assets/PROOMTB (1).png';
+import orcaMyo from '../assets/orca-myo.png';
 import { navigateToShop } from '../utils/navigation';
 
 const Hero = () => {
@@ -10,30 +11,34 @@ const Hero = () => {
   const slides = [
     {
       id: 1,
-      title: "Nuevas Bicicletas de Montaña",
+      title: "Bicicletas de Montaña PRO",
       subtitle: "Conquista cualquier terreno",
-      description: "Descubre nuestra nueva colección de bicicletas de montaña diseñadas para los aventureros más exigentes.",
-      buttonText: "Explorar Colección",
-      backgroundImage: proomtbImage,
-      image: "🚵‍♂️"
+      description: "Diseñadas para los aventureros más exigentes. Tecnología de punta y máximo rendimiento en cada ruta.",
+      buttonText: "Explorar Bicicletas",
+      background: "bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900",
+      image: "🚵‍♂️",
+      overlay: "bg-gradient-to-r from-blue-900/90 to-blue-800/80"
     },
     {
       id: 2,
-      title: "Bicicletas Urbanas Premium",
-      subtitle: "Movilidad inteligente",
-      description: "Perfectas para la ciudad. Estilo, comodidad y eficiencia en cada pedalada.",
-      buttonText: "Ver Modelos",
-      background: "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600",
-      image: "🚲"
+      title: "Bicicletas Urbanas",
+      subtitle: "Estilo y comodidad",
+      description: "Diseñadas para la ciudad, combinan elegancia y funcionalidad en cada detalle.",
+      buttonText: "Ver Urbanas",
+      background: "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900",
+      image: orcaMyo,
+      overlay: "bg-gradient-to-r from-gray-900/80 to-gray-800/70",
+      hasImage: true
     },
     {
       id: 3,
-      title: "Equipamiento Profesional",
-      subtitle: "Máximo rendimiento",
-      description: "Accesorios y equipos de la más alta calidad para ciclistas profesionales.",
-      buttonText: "Descubrir Más",
-      background: "bg-gradient-to-r from-orange-500 via-red-500 to-pink-600",
-      image: "🏆"
+      title: "Equipamiento Premium",
+      subtitle: "Alto rendimiento",
+      description: "Todo el equipamiento que necesitas para llevar tu experiencia al siguiente nivel.",
+      buttonText: "Ver Equipamiento",
+      background: "bg-gradient-to-br from-cyan-700 via-cyan-600 to-cyan-700",
+      image: "🛠️",
+      overlay: "bg-gradient-to-r from-cyan-800/90 to-cyan-700/80"
     }
   ];
 
@@ -58,7 +63,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative h-screen overflow-hidden">
+    <section className="relative h-[90vh] md:h-screen overflow-hidden">
       {/* Carousel Slides */}
       <div className="relative h-full">
         {slides.map((slide, index) => (
@@ -79,20 +84,20 @@ const Hero = () => {
                 <div className={`absolute inset-0 ${slide.background}`}></div>
               )}
               {/* Dark overlay */}
-              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+              <div className={`absolute inset-0 ${slide.overlay}`}></div>
               
               {/* Content */}
               <div className="container mx-auto px-4 relative z-10">
                 <div className="flex flex-col lg:flex-row items-center h-full">
                   {/* Text Content */}
-                  <div className="lg:w-1/2 text-white text-center lg:text-left mb-8 lg:mb-0">
-                    <h2 className="text-sm uppercase tracking-wider mb-4 opacity-90">
+                  <div className="lg:w-1/2 text-white text-center lg:text-left mb-8 lg:mb-0 px-4 sm:px-6 lg:px-8">
+                    <h2 className="text-sm uppercase tracking-widest font-semibold text-cyan-400 mb-4">
                       {slide.subtitle}
                     </h2>
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-200">
                       {slide.title}
                     </h1>
-                    <p className="text-lg md:text-xl mb-8 opacity-90 max-w-lg">
+                    <p className="text-lg md:text-xl mb-8 text-gray-200 max-w-lg">
                       {slide.description}
                     </p>
                     <button 
@@ -103,16 +108,30 @@ const Hero = () => {
                         if (slide.id === 3) filters.category = 'accesorios';
                         navigateToShop(navigate, filters);
                       }}
-                      className="bg-white text-gray-900 px-6 py-3 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
+                      className="bg-cyan-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-cyan-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-cyan-500/30"
                     >
                       {slide.buttonText}
                     </button>
                   </div>
 
                   {/* Image/Icon */}
-                  <div className="lg:w-1/2 flex justify-center lg:justify-end">
-                    <div className="text-8xl md:text-9xl lg:text-[12rem] opacity-80">
-                      {slide.image}
+                  <div className="lg:w-1/2 flex justify-center lg:justify-end items-center p-8">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-full transform scale-150 opacity-20"></div>
+                      {slide.hasImage ? (
+                        <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-2 border-white/20 shadow-2xl">
+                          <img 
+                            src={slide.image} 
+                            alt={slide.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                        </div>
+                      ) : (
+                        <div className="relative text-8xl md:text-9xl lg:text-[10rem] p-8 md:p-12 lg:p-16 rounded-full bg-gradient-to-br from-white/5 to-white/10 border border-white/10 shadow-2xl">
+                          {slide.image}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -125,7 +144,8 @@ const Hero = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all z-20"
+        className="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 bg-white/10 backdrop-blur-md text-white p-3 rounded-full hover:bg-cyan-500/80 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 z-20 border border-white/10"
+        aria-label="Anterior"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -134,7 +154,8 @@ const Hero = () => {
       
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all z-20"
+        className="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 bg-white/10 backdrop-blur-md text-white p-3 rounded-full hover:bg-cyan-500/80 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300 z-20 border border-white/10"
+        aria-label="Siguiente"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -142,27 +163,26 @@ const Hero = () => {
       </button>
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all ${
+            className={`w-10 h-1.5 rounded-full transition-all duration-300 ${
               index === currentSlide
-                ? 'bg-white'
-                : 'bg-white bg-opacity-50 hover:bg-opacity-75'
+                ? 'bg-cyan-400 scale-125'
+                : 'bg-white/50 hover:bg-white/75'
             }`}
+            aria-label={`Ir a la diapositiva ${index + 1}`}
           />
         ))}
       </div>
 
       {/* Scroll Down Indicator */}
-      <div className="absolute bottom-8 right-8 text-white z-20">
+      <div className="absolute bottom-8 right-8 text-white z-20 hidden md:block">
         <div className="flex flex-col items-center animate-bounce">
-          <span className="text-sm mb-2 opacity-75">Scroll</span>
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
+          <span className="text-xs font-medium tracking-widest text-cyan-300 mb-1">DESLIZA</span>
+          <div className="w-px h-12 bg-gradient-to-b from-cyan-400 to-transparent"></div>
         </div>
       </div>
     </section>
