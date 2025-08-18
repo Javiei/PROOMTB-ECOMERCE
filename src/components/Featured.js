@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { navigateToShop } from '../utils/navigation';
 
 const Featured = () => {
+  const navigate = useNavigate();
   return (
     <section className="relative h-[60vh] md:h-[70vh] overflow-hidden">
       {/* Video Background */}
@@ -37,7 +40,10 @@ const Featured = () => {
             </p>
             
             {/* Call to Action Button */}
-            <button className="bg-white text-gray-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
+            <button 
+              onClick={() => navigateToShop(navigate, {})}
+              className="bg-white text-gray-900 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+            >
               Ir A La Tienda
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />

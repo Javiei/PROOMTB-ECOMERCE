@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import cyclingImage from '../assets/Screenshot 2025-07-24 132548.webp';
+import { navigateToProduct, navigateToShop } from '../utils/navigation';
 
 const BestSellers = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +43,11 @@ const BestSellers = () => {
             (() => {
               if (products.length < 2) {
                 return products.map((product) => (
-                  <Link to={`/producto/${product.id}`} key={product.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group block cursor-pointer">
+                  <div 
+                    onClick={() => navigateToProduct(navigate, product.id)}
+                    key={product.id} 
+                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer"
+                  >
                     <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-80 flex items-center justify-center">
                       {product.image_url ? (
                         <img src={product.image_url} alt={product.name} className="h-64 object-contain" />
@@ -58,14 +64,18 @@ const BestSellers = () => {
                       </div>
                       <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">Agregar al Carrito</button>
                     </div>
-                  </Link>
+                  </div>
                 ));
               }
               // Si hay 2 o más, renderiza: producto[0], cycling card, producto[1], producto[2]...
               const cards = [];
               // Primer producto
               cards.push(
-                <Link to={`/producto/${products[0].id}`} key={products[0].id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group block cursor-pointer">
+                <div 
+                  onClick={() => navigateToProduct(navigate, products[0].id)}
+                  key={products[0].id} 
+                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer"
+                >
                   <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-80 flex items-center justify-center">
                     {products[0].image_url ? (
                         <img src={products[0].image_url} alt={products[0].name} className="h-64 object-contain" />
@@ -82,7 +92,7 @@ const BestSellers = () => {
                     </div>
                     <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">Agregar al Carrito</button>
                   </div>
-                </Link>
+                </div>
               );
               // Cycling card decorativo fijo
               cards.push(
@@ -116,7 +126,11 @@ const BestSellers = () => {
               // Segundo producto (si existe)
               if (products[1]) {
                 cards.push(
-                  <Link to={`/producto/${products[1].id}`} key={products[1].id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group block cursor-pointer">
+                  <div 
+                    onClick={() => navigateToProduct(navigate, products[1].id)}
+                    key={products[1].id} 
+                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer"
+                  >
                     <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-80 flex items-center justify-center">
                       {products[1].image_url ? (
                         <img src={products[1].image_url} alt={products[1].name} className="h-64 object-contain" />
@@ -133,13 +147,17 @@ const BestSellers = () => {
                       </div>
                       <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">Agregar al Carrito</button>
                     </div>
-                  </Link>
+                  </div>
                 );
               }
               // Resto de productos (si hay más de 2)
               for (let i = 2; i < products.length; i++) {
                 cards.push(
-                  <Link to={`/producto/${products[i].id}`} key={products[i].id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group block cursor-pointer">
+                  <div 
+                    onClick={() => navigateToProduct(navigate, products[i].id)}
+                    key={products[i].id} 
+                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer"
+                  >
                     <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-80 flex items-center justify-center">
                       {products[i].image_url ? (
                         <img src={products[i].image_url} alt={products[i].name} className="h-64 object-contain" />
@@ -156,7 +174,7 @@ const BestSellers = () => {
                       </div>
                       <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">Agregar al Carrito</button>
                     </div>
-                  </Link>
+                  </div>
                 );
               }
               return cards;
@@ -166,7 +184,10 @@ const BestSellers = () => {
         </div>
 
         <div className="text-center mt-12">
-          <button className="bg-gray-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-900 transition-colors">
+          <button 
+            onClick={() => navigateToShop(navigate, {})}
+            className="bg-gray-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-900 transition-colors"
+          >
             Ver Todos los Productos
           </button>
         </div>

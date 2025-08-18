@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import proomtbImage from '../assets/PROOMTB (1).png';
+import { navigateToShop } from '../utils/navigation';
 
 const Hero = () => {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   
   const slides = [
@@ -92,7 +95,16 @@ const Hero = () => {
                     <p className="text-lg md:text-xl mb-8 opacity-90 max-w-lg">
                       {slide.description}
                     </p>
-                    <button className="bg-white text-gray-800 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
+                    <button 
+                      onClick={() => {
+                        const filters = {};
+                        if (slide.id === 1) filters.category = 'bicicletas';
+                        if (slide.id === 2) filters.category = 'urbanas';
+                        if (slide.id === 3) filters.category = 'accesorios';
+                        navigateToShop(navigate, filters);
+                      }}
+                      className="bg-white text-gray-900 px-6 py-3 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
+                    >
                       {slide.buttonText}
                     </button>
                   </div>
