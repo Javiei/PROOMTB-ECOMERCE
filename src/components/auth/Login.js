@@ -1,29 +1,45 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const { signIn, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
     
     try {
       setError('');
-      setLoading(true);
-      const { error } = await signIn({ email, password });
-      if (error) throw error;
+      setIsLoading(true);
+      await signIn({ email, password });
       navigate('/perfil');
     } catch (error) {
-      setError(error.message);
+      console.error('Login error:', error);
+      setError(error.message || 'Error al iniciar sesión. Por favor, verifica tus credenciales.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    if (isLoading) return;
+    
+    try {
+      setError('');
+      setIsLoading(true);
+      await signInWithGoogle();
+      // No need to navigate here as the auth state change will handle it
+    } catch (error) {
+      console.error('Google sign in error:', error);
+      setError(error.message || 'Error al iniciar sesión con Google. Por favor, inténtalo de nuevo.');
+      setIsLoading(false);
     }
   };
 
@@ -56,10 +72,11 @@ export default function Login() {
               type="email"
               autoComplete="email"
               required
-              className="appearance-none block w-full px-4 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+              className="appearance-none block w-full px-4 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
               placeholder="tu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
           </div>
           
@@ -68,9 +85,9 @@ export default function Login() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Contraseña
               </label>
-              <a href="#" className="text-sm text-purple-600 hover:text-purple-500">
+              <Link to="/olvide-contrasena" className="text-sm text-purple-600 hover:text-purple-500">
                 ¿Olvidaste tu contraseña?
-              </a>
+              </Link>
             </div>
             <input
               id="password"
@@ -78,10 +95,11 @@ export default function Login() {
               type="password"
               autoComplete="current-password"
               required
-              className="appearance-none block w-full px-4 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+              className="appearance-none block w-full px-4 py-2.5 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -91,7 +109,8 @@ export default function Login() {
             id="remember-me"
             name="remember-me"
             type="checkbox"
-            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={isLoading}
           />
           <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
             Recordar mi cuenta
@@ -101,23 +120,66 @@ export default function Login() {
         <div>
           <button
             type="submit"
-            disabled={loading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed disabled:bg-purple-400"
+            disabled={isLoading}
           >
-            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Iniciando sesión...
+              </>
+            ) : 'Iniciar sesión'}
           </button>
         </div>
       </form>
 
-      <div className="text-center text-sm text-gray-600">
-        ¿No tienes una cuenta?{' '}
-        <button
-          type="button"
-          onClick={() => window.location.hash = 'signup'}
-          className="font-medium text-purple-600 hover:text-purple-500"
+      <div className="mt-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">O continúa con</span>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            className="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Procesando...
+              </>
+            ) : (
+              <>
+                <FcGoogle className="w-5 h-5 mr-2" />
+                Google
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="text-sm text-center">
+        <span className="text-gray-600">¿No tienes una cuenta? </span>
+        <Link 
+          to="/registro" 
+          className="font-medium text-purple-600 hover:text-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded px-1"
+          tabIndex={isLoading ? -1 : 0}
         >
           Regístrate
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -8,13 +8,66 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const updateUserProfile = async (user) => {
+    if (!user) return null;
+    
+    try {
+      // First try to get existing profile
+      const { data: profile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      // If no profile exists, create one
+      if (fetchError || !profile) {
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .upsert(
+            {
+              id: user.id,
+              email: user.email,
+              full_name: user.user_metadata?.full_name || 
+                         user.user_metadata?.name || 
+                         user.email?.split('@')[0] || 'Usuario',
+              avatar_url: user.user_metadata?.avatar_url || ''
+            },
+            { onConflict: 'id' }
+          )
+          .select()
+          .single();
+          
+        if (createError) throw createError;
+        return newProfile;
+      }
+      
+      return profile;
+    } catch (error) {
+      console.error('Error managing user profile:', error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     // Check active sessions and sets the user
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (session?.user) {
+          await updateUserProfile(session.user);
+        }
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error('Error getting initial session:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getInitialSession();
@@ -22,41 +75,29 @@ export const AuthProvider = ({ children }) => {
     // Listen for changes in auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          try {
-            // Create or update user profile
-            const { data: profile, error } = await supabase
-              .from('profiles')
-              .upsert(
-                {
-                  id: session.user.id,
-                  email: session.user.email,
-                  full_name: session.user.user_metadata?.full_name || 
-                             session.user.user_metadata?.name || 
-                             session.user.email.split('@')[0],
-                  avatar_url: session.user.user_metadata?.avatar_url || ''
-                },
-                { onConflict: 'id' }
-              )
-              .select()
-              .single();
-
-            if (error) {
-              console.error('Error creating/updating profile:', error);
-            }
-          } catch (err) {
-            console.error('Error in auth state change:', err);
+        try {
+          setLoading(true);
+          
+          if (event === 'SIGNED_IN' && session?.user) {
+            await updateUserProfile(session.user);
           }
+          
+          setSession(session);
+          setUser(session?.user ?? null);
+        } catch (error) {
+          console.error('Error in auth state change:', error);
+        } finally {
+          setLoading(false);
         }
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
       }
     );
 
     return () => {
-      subscription?.unsubscribe();
+      try {
+        subscription?.unsubscribe();
+      } catch (error) {
+        console.error('Error unsubscribing from auth changes:', error);
+      }
     };
   }, []);
 
