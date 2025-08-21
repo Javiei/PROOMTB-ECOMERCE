@@ -241,7 +241,7 @@ const Header = () => {
 
             {/* Right side navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              <a href="#" className="text-white hover:text-purple-400 transition-colors font-medium">NOSOTROS</a>
+              <Link to="/nosotros" className="text-white hover:text-purple-400 transition-colors font-medium">NOSOTROS</Link>
               
               {/* WhatsApp Contact */}
               <div className="flex items-center space-x-2">

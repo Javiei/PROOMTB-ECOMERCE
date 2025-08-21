@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import Footer from './Footer';
+import LegalFooter from './LegalFooter';
 import { supabase } from '../supabaseClient';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -448,6 +449,7 @@ const ProductDetail = () => {
         )}
       </div>
       <Footer />
+      <LegalFooter />
       
       {/* Auth Modal */}
       <AuthModal 

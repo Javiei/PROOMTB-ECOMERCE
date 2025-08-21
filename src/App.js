@@ -12,7 +12,14 @@ import Recommended from './components/Recommended';
 import Newsletter from './components/Newsletter';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
+import About from './pages/About';
 import ProductDetail from './components/ProductDetail';
+import LegalFooter from './components/LegalFooter';
+// Importar páginas de políticas
+import Devoluciones from './pages/policies/Devoluciones';
+import Reembolsos from './pages/policies/Reembolsos';
+import Cancelaciones from './pages/policies/Cancelaciones';
+import Entregas from './pages/policies/Entregas';
 import AdminProductsPanel from './components/AdminProductsPanel';
 import Footer from './components/Footer';
 import Login from './components/auth/Login';
@@ -69,12 +76,21 @@ function App() {
                     <Recommended />
                     <Newsletter />
                     <Footer />
+                    <LegalFooter />
                   </>
                 } />
                 <Route path="/tienda" element={<Shop />} />
+                <Route path="/nosotros" element={<About />} />
+                <Route path="/test" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Test Route Working!</h1></div>} />
                 <Route path="/producto/:id" element={<ProductDetail />} />
                 <Route path="/admin" element={<AdminProductsPanel />} />
                 <Route path="/checkout" element={<div className="min-h-screen bg-gray-900 text-white p-8"><h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1><p>Página de pago en construcción</p></div>} />
+                
+                {/* Rutas de Políticas */}
+                <Route path="/politicas/devoluciones" element={<Devoluciones />} />
+                <Route path="/politicas/reembolsos" element={<Reembolsos />} />
+                <Route path="/politicas/cancelaciones" element={<Cancelaciones />} />
+                <Route path="/politicas/entregas" element={<Entregas />} />
                 
                 {/* Rutas de autenticación */}
                 <Route
@@ -189,6 +205,7 @@ function App() {
                   element={
                     <PrivateRoute>
                       <Profile />
+                      <LegalFooter />
                     </PrivateRoute>
                   }
                 />
