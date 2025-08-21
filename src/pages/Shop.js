@@ -132,8 +132,8 @@ const Shop = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">TIENDA</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">TIENDA</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto text-sm">
             Descubre nuestra amplia selección de productos de ciclismo
           </p>
         </div>
@@ -259,7 +259,7 @@ const Shop = () => {
                             </div>
 
                             <div className="p-4">
-                              <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 h-12">
+                              <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 min-h-[3rem] flex items-start text-sm sm:text-base">
                                 {product.name}
                               </h3>
                               <div className="flex items-center mb-2">
@@ -277,7 +277,7 @@ const Shop = () => {
                                 ))}
                                 <span className="text-xs text-gray-500 ml-1">({product.rating || 0})</span>
                               </div>
-                              <p className="text-lg font-bold text-gray-900">
+                              <p className="text-base sm:text-lg font-semibold text-gray-900">
                                 {formatPrice(product.price)}
                               </p>
                               {product.old_price && (
@@ -294,8 +294,8 @@ const Shop = () => {
                 ) : (
                   // Estado vacío (sin resultados)
                   <div className="col-span-full text-center py-12">
-                    <h3 className="mt-4 text-lg font-medium text-gray-900">No se encontraron productos</h3>
-                    <p className="mt-1 text-gray-500">
+                    <h3 className="mt-4 text-base sm:text-lg font-medium text-gray-900">No se encontraron productos</h3>
+                    <p className="mt-1 text-sm sm:text-base text-gray-500">
                       Intenta con otros filtros o términos de búsqueda.
                     </p>
                     <div className="mt-6">
@@ -305,7 +305,7 @@ const Shop = () => {
                           setPriceRange(maxPrice);
                           setSearchTerm('');
                         }}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
                         Limpiar filtros
                       </button>
@@ -318,7 +318,7 @@ const Shop = () => {
                   <div className="flex justify-center mt-8">
                     <button
                       onClick={loadMore}
-                      className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium disabled:opacity-50"
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm disabled:opacity-50"
                       disabled={loading}
                     >
                       Cargar más
@@ -332,17 +332,17 @@ const Shop = () => {
           {/* Panel lateral de filtros */}
           <div className="w-full md:w-64 flex-shrink-0">
             <div className="bg-white rounded-xl shadow-md p-6 sticky top-4">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Filtros</h3>
+              <h3 className="text-base font-medium text-gray-900 mb-3">Filtros</h3>
 
               {/* Categorías */}
               <div className="mb-6">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Categorías</h4>
+                <h4 className="text-xs font-medium text-gray-700 mb-2 uppercase tracking-wider">Categorías</h4>
                 <div className="space-y-2">
                   {categories.map((item) => {
                     if (item.group) {
                       return (
                         <div key={item.group} className="mb-2">
-                          <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                          <h5 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">
                             {item.group}
                           </h5>
                           <div className="space-y-1 pl-2">
@@ -356,7 +356,7 @@ const Shop = () => {
                                   onChange={() => setCategory(option.value)}
                                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                 />
-                                <span className="ml-2 text-sm text-gray-700">{option.label}</span>
+                                <span className="ml-2 text-xs text-gray-700">{option.label}</span>
                               </label>
                             ))}
                           </div>
@@ -382,7 +382,7 @@ const Shop = () => {
 
               {/* Rango de precios */}
               <div className="border-t border-gray-200 pt-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">Rango de precios</h4>
+                <h4 className="text-xs font-medium text-gray-700 mb-2 uppercase tracking-wider">Rango de precios</h4>
                 <div className="px-1">
                   <div className="flex justify-between text-xs text-gray-500 mb-2">
                     <span>{formatPrice(minPrice)}</span>
@@ -397,7 +397,7 @@ const Shop = () => {
                     onChange={(e) => setPriceRange(Number(e.target.value))}
                     className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
-                  <div className="mt-2 text-sm text-gray-600">Máximo: {formatPrice(priceRange)}</div>
+                  <div className="mt-2 text-xs text-gray-600">Máximo: {formatPrice(priceRange)}</div>
                 </div>
               </div>
 

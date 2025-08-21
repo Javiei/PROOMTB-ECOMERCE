@@ -143,7 +143,7 @@ const Recommended = () => {
               <Link 
                 to={`/producto/${product.id}`}
                 key={product.id} 
-                className="bg-white rounded-xl overflow-hidden hover:shadow-lg transition-shadow group block"
+                className="bg-white rounded-xl overflow-hidden hover:shadow-lg transition-shadow group block h-full flex flex-col"
               >
               {/* Product Image */}
               <div className="relative pb-[100%] bg-gray-100">
@@ -166,14 +166,14 @@ const Recommended = () => {
               </div>
 
               {/* Product Info */}
-              <div className="p-4">
+              <div className="p-4 flex flex-col flex-grow">
                 <span className="text-xs text-blue-600 font-semibold uppercase tracking-wide">
                   {product.category}
                 </span>
-                <h3 className="font-semibold text-gray-800 mt-1 mb-2 line-clamp-2 h-12">
+                <h3 className="font-semibold text-gray-800 mt-1 mb-2 line-clamp-2 min-h-[3rem] flex items-start">
                   {product.name}
                 </h3>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mt-auto pt-3">
                   <span className="text-lg font-bold text-gray-800">
                     {formatPrice(product.price)}
                   </span>

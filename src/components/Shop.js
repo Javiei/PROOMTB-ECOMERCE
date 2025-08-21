@@ -19,7 +19,7 @@ const Shop = () => {
     <section className="py-16 bg-white min-h-screen">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-3">
             TIENDA
           </h2>
         </div>
@@ -40,11 +40,11 @@ const Shop = () => {
               
               {/* Content overlay */}
               <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8">
-                <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">BICICLETAS</h3>
-                <p className="text-white text-lg opacity-90 mb-6 max-w-sm">
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">BICICLETAS</h3>
+                <p className="text-white text-base opacity-90 mb-5 max-w-sm">
                   Descubre nuestra amplia gama de bicicletas para todos los estilos y terrenos
                 </p>
-                <div className="bg-white text-gray-900 px-8 py-3 rounded-lg font-bold text-lg group-hover:bg-gray-100 transition-colors">
+                <div className="bg-white text-gray-900 px-6 py-2 rounded-lg font-semibold text-base group-hover:bg-gray-100 transition-colors">
                   EXPLORAR
                 </div>
               </div>
@@ -66,11 +66,11 @@ const Shop = () => {
               
               {/* Content overlay */}
               <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8">
-                <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">EQUIPAMIENTO</h3>
-                <p className="text-white text-lg opacity-90 mb-6 max-w-sm">
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">EQUIPAMIENTO</h3>
+                <p className="text-white text-base opacity-90 mb-5 max-w-sm">
                   Accesorios y equipos de protección para una experiencia completa
                 </p>
-                <div className="bg-white text-gray-900 px-8 py-3 rounded-lg font-bold text-lg group-hover:bg-gray-100 transition-colors">
+                <div className="bg-white text-gray-900 px-6 py-2 rounded-lg font-semibold text-base group-hover:bg-gray-100 transition-colors">
                   VER TODO
                 </div>
               </div>
@@ -81,20 +81,20 @@ const Shop = () => {
         {/* Categories Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
           <div className="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
-            <div className="text-3xl mb-3">🚵‍♀️</div>
-            <h4 className="font-semibold text-gray-800">Montaña</h4>
+            <div className="text-2xl mb-2">🚵‍♀️</div>
+            <h4 className="font-medium text-gray-800 text-sm">Montaña</h4>
           </div>
           <div className="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
-            <div className="text-3xl mb-3">🚴‍♂️</div>
-            <h4 className="font-semibold text-gray-800">Ruta</h4>
+            <div className="text-2xl mb-2">🚴‍♂️</div>
+            <h4 className="font-medium text-gray-800 text-sm">Ruta</h4>
           </div>
           <div className="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
-            <div className="text-3xl mb-3">🚲</div>
-            <h4 className="font-semibold text-gray-800">Urbana</h4>
+            <div className="text-2xl mb-2">🚲</div>
+            <h4 className="font-medium text-gray-800 text-sm">Urbana</h4>
           </div>
           <div className="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
-            <div className="text-3xl mb-3">⚡</div>
-            <h4 className="font-semibold text-gray-800">Eléctrica</h4>
+            <div className="text-2xl mb-2">⚡</div>
+            <h4 className="font-medium text-gray-800 text-sm">Eléctrica</h4>
           </div>
         </div>
       </div>
