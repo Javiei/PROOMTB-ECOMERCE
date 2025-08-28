@@ -26,6 +26,7 @@ import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 import Profile from './components/profile/Profile';
 import EditProfile from './components/profile/EditProfile';
+import WhatsAppButton from './components/WhatsAppButton';
 
 // Componente de ruta protegida
 const PrivateRoute = ({ children }) => {
@@ -74,9 +75,9 @@ function App() {
                     <Featured />
                     <Home />
                     <Recommended />
-                    <Newsletter />
                     <Footer />
                     <LegalFooter />
+                    <WhatsAppButton />
                   </>
                 } />
                 <Route path="/tienda" element={<Shop />} />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { ALL_CATEGORIES } from '../constants/categories';
 
@@ -17,6 +17,8 @@ const Shop = () => {
   const [category, setCategory] = useState('all');
   const [priceRange, setPriceRange] = useState(100000);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchParams] = useSearchParams();
+  const brandFilter = searchParams.get('brand');
 
   // Cargar productos
   useEffect(() => {
@@ -57,11 +59,22 @@ const Shop = () => {
   // Reiniciar contador visible cuando cambien filtros
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
-  }, [category, searchTerm, priceRange]);
+    // Si hay un filtro de marca, actualiza el término de búsqueda
+    if (brandFilter) {
+      setSearchTerm(brandFilter);
+    }
+  }, [category, searchTerm, priceRange, brandFilter]);
 
   // Aplicar filtros
   useEffect(() => {
     let result = [...products];
+
+    // Aplicar filtro de marca desde la URL
+    if (brandFilter) {
+      result = result.filter(p => 
+        p.brand?.toLowerCase() === brandFilter.toLowerCase()
+      );
+    }
 
     if (category !== 'all') {
       result = result.filter((p) => p.category === category);

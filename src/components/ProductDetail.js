@@ -8,8 +8,21 @@ import { useAuth } from '../contexts/AuthContext';
 import AuthModal from './auth/AuthModal';
 
 const ProductDetail = () => {
-  const { id } = useParams();
-  console.log('Product ID:', id);
+  const { id: idWithName } = useParams();
+  // Extraer el ID de la URL (último segmento después del último '-')
+  // y asegurarse de que tenga el formato correcto
+  let id = idWithName.split('-').pop();
+  
+  // Si el ID es más corto que un UUID estándar (36 caracteres), 
+  // asumimos que es un ID corto y lo usamos directamente
+  // De lo contrario, intentamos extraer solo la parte del UUID
+  if (id.length >= 36) {
+    // Intentar extraer un UUID del final de la cadena
+    const uuidMatch = id.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+    if (uuidMatch) {
+      id = uuidMatch[0];
+    }
+  }
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { user } = useAuth();
@@ -34,164 +47,147 @@ const ProductDetail = () => {
     }
   }, [product]);
 
-  // Set document title when product data is loaded or when component unmounts
   useEffect(() => {
-    if (product) {
-      document.title = `${product.name} | PROOMTB`;
-    } else {
-      document.title = 'Cargando... | PROOMTB';
-    }
-    
-    return () => {
-      document.title = 'PROOMTB';
-    };
-  }, [product]);
-
-  useEffect(() => {
-    let isMounted = true;
-    
     const fetchProduct = async () => {
-      if (!id) {
-        console.error('No se pudo extraer el ID del producto de la URL');
-        navigate('/tienda');
-        return;
-      }
-
       try {
-        // Obtener el producto
-        const { data, error } = await supabase
+        let data = null;
+        let error = null;
+        
+        // Primero intentamos con una búsqueda exacta por ID
+        const { data: exactMatch, error: exactError } = await supabase
           .from('products')
           .select('*')
           .eq('id', id)
           .single();
-
-        if (error || !data) {
-          console.error('Error fetching product:', error || 'No data returned');
-          navigate('/tienda', { state: { error: 'Producto no encontrado' } });
-          return;
-        }
-
-        // Procesar las imágenes
-        document.title = `${data.name} | PROOMTB`;
-
-        // Actualizar el título con el nombre del producto
-        document.title = `${data.name} | PROOMTB`;
-
-        // Procesar imágenes
-        let processedImages = [];
-        if (data.images && typeof data.images === 'string') {
-          try {
-            processedImages = JSON.parse(data.images);
-          } catch (e) {
-            console.error('Error parsing images JSON:', e);
-            processedImages = [data.image_url || data.image || ''];
-          }
-        } else if (Array.isArray(data.images)) {
-          processedImages = data.images;
+          
+        if (!exactError && exactMatch) {
+          data = exactMatch;
         } else {
-          processedImages = [data.image_url || data.image || ''];
-        }
-
-        // Procesar colores
-        let colors = [];
-        if (data.colors && typeof data.colors === 'string') {
-          try {
-            colors = JSON.parse(data.colors);
-          } catch (e) {
-            console.error('Error parsing colors JSON:', e);
-            colors = [];
-          }
-        } else if (Array.isArray(data.colors)) {
-          colors = data.colors;
-        }
-
-        // Procesar tallas
-        let sizes = [];
-        if (data.sizes && typeof data.sizes === 'string') {
-          try {
-            sizes = JSON.parse(data.sizes);
-          } catch (e) {
-            console.error('Error parsing sizes JSON:', e);
-            sizes = [];
-          }
-        } else if (Array.isArray(data.sizes)) {
-          sizes = data.sizes;
-        }
-
-        // Asignar tallas predeterminadas si es necesario
-        if ((!sizes || sizes.length === 0) &&
-          (data.category === 'Bicicletas' ||
-            data.category === 'Ropa' ||
-            data.category === 'Accesorios')) {
-          if (data.category === 'Bicicletas') {
-            sizes = [...defaultBikeSizes];
-          } else {
-            sizes = [...defaultClothingSizes];
-          }
-          console.log('Asignando tallas predeterminadas:', sizes);
-        }
-
-        // Actualizar estados
-        setProduct({
-          ...data,
-          processedImages,
-          colors,
-          sizes
-        });
-
-        if (colors.length > 0) {
-          setSelectedColor(colors[0]);
-        }
-
-        if (sizes.length > 0) {
-          setSelectedSize(sizes[0]);
-        }
-
-        // Obtener productos relacionados
-        if (data.category) {
-          const { data: relatedData, error: relatedError } = await supabase
+          // Si no encontramos coincidencia exacta, buscamos por el ID corto
+          const { data: allProducts, error: allError } = await supabase
             .from('products')
-            .select('*')
-            .eq('category', data.category)
-            .neq('id', id)
-            .limit(4);
+            .select('*');
+            
+          if (allError) throw allError;
+          
+          // Buscamos manualmente un ID que termine con el ID corto
+          const matchingProduct = allProducts.find(product => 
+            product.id && product.id.endsWith && product.id.endsWith(id)
+          );
+          
+          if (matchingProduct) {
+            data = matchingProduct;
+          } else {
+            throw new Error('Producto no encontrado');
+          }
+        }
 
-          if (!relatedError && relatedData) {
-            const processedRelated = relatedData.map(item => ({
-              ...item,
-              processedImages: processItemImages(item)
-            }));
-            setRelatedProducts(processedRelated);
+        if (error) throw error;
+
+        // Procesar las imágenes si existen
+        if (data) {
+          // Convertir la cadena JSON de imágenes a un array si es necesario
+          if (data.images && typeof data.images === 'string') {
+            try {
+              data.processedImages = JSON.parse(data.images);
+            } catch (e) {
+              console.error('Error parsing images JSON:', e);
+              data.processedImages = [data.image_url || data.image || ''];
+            }
+          } else if (Array.isArray(data.images)) {
+            data.processedImages = data.images;
+          } else {
+            // Si no hay imágenes, usar la imagen principal
+            data.processedImages = [data.image_url || data.image || ''];
+          }
+
+          // Asegurarse de que colors y sizes sean arrays
+          if (data.colors && typeof data.colors === 'string') {
+            try {
+              data.colors = JSON.parse(data.colors);
+            } catch (e) {
+              console.error('Error parsing colors JSON:', e);
+              data.colors = [];
+            }
+          }
+
+          if (data.sizes && typeof data.sizes === 'string') {
+            try {
+              data.sizes = JSON.parse(data.sizes);
+            } catch (e) {
+              console.error('Error parsing sizes JSON:', e);
+              data.sizes = [];
+            }
+          }
+
+          // Asignar tallas predeterminadas si no hay tallas y es bicicleta o ropa
+          if ((!data.sizes || data.sizes.length === 0 || !Array.isArray(data.sizes)) && 
+              (data.category === 'Bicicletas' || 
+               data.category === 'Ropa' || 
+               data.category === 'Accesorios')) {
+            if (data.category === 'Bicicletas') {
+              data.sizes = [...defaultBikeSizes];
+            } else if (data.category === 'Ropa' || data.category === 'Accesorios') {
+              data.sizes = [...defaultClothingSizes];
+            }
+            console.log('Asignando tallas predeterminadas:', data.sizes);
+          }
+
+          // Establecer el color y talla por defecto si están disponibles
+          if (Array.isArray(data.colors) && data.colors.length > 0) {
+            setSelectedColor(data.colors[0]);
+          }
+
+          if (Array.isArray(data.sizes) && data.sizes.length > 0) {
+            setSelectedSize(data.sizes[0]);
+          }
+
+          setProduct(data);
+
+          // Obtener productos relacionados de la misma categoría
+          if (data.category) {
+            const { data: relatedData, error: relatedError } = await supabase
+              .from('products')
+              .select('*')
+              .eq('category', data.category)
+              .neq('id', id)
+              .limit(4);
+
+            if (!relatedError && relatedData) {
+              // Procesar imágenes de productos relacionados
+              const processedRelated = relatedData.map(item => {
+                let processedItem = { ...item };
+                
+                // Procesar imágenes
+                if (item.images && typeof item.images === 'string') {
+                  try {
+                    processedItem.processedImages = JSON.parse(item.images);
+                  } catch (e) {
+                    processedItem.processedImages = [item.image_url || item.image || ''];
+                  }
+                } else if (Array.isArray(item.images)) {
+                  processedItem.processedImages = item.images;
+                } else {
+                  processedItem.processedImages = [item.image_url || item.image || ''];
+                }
+                
+                return processedItem;
+              });
+              
+              setRelatedProducts(processedRelated);
+            }
           }
         }
       } catch (error) {
         console.error('Error fetching product:', error);
-        navigate('/tienda', { state: { error: 'Error al cargar el producto' } });
       } finally {
         setLoading(false);
       }
     };
 
-    const processItemImages = (item) => {
-      if (item.images && typeof item.images === 'string') {
-        try {
-          return JSON.parse(item.images);
-        } catch (e) {
-          return [item.image_url || item.image || ''];
-        }
-      }
-      return item.images || [item.image_url || item.image || ''];
-    };
-
-    // Call the fetchProduct function and handle scroll
-    fetchProduct().then(() => {
-      window.scrollTo(0, 0);
-    });
-    
-    // Cleanup function
-    return () => {
-      isMounted = false;
-    };
+    fetchProduct();
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
   }, [id, defaultBikeSizes, defaultClothingSizes]);
 
   const handleAddToCart = () => {

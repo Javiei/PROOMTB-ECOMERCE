@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 // Import sponsor images
 import montecciLogo from '../assets/MONTECCI_LOGOS-02.webp';
 import orbeaLogo from '../assets/orbea-logo.svg';
@@ -6,6 +7,14 @@ import khsLogo from '../assets/khs-logo.webp';
 import scottLogo from '../assets/scott.webp';
 
 const BrandsStrip = () => {
+  const navigate = useNavigate();
+  
+  const handleBrandClick = (brandName) => {
+    // Navegar a la ruta de productos filtrados por marca
+    navigate(`/tienda?brand=${encodeURIComponent(brandName.toLowerCase())}`);
+    // Desplazarse al inicio de la página para ver los resultados
+    window.scrollTo(0, 0);
+  };
   const sponsors = [
     {
       id: 1,
@@ -38,7 +47,15 @@ const BrandsStrip = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
           {sponsors.map((sponsor) => (
-            <div key={sponsor.id} className="flex items-center justify-center hover:scale-110 transition-transform duration-300">
+            <div 
+              key={sponsor.id} 
+              className="flex items-center justify-center hover:scale-110 transition-transform duration-300 cursor-pointer"
+              onClick={() => handleBrandClick(sponsor.name)}
+              title={`Ver productos de ${sponsor.name}`}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && handleBrandClick(sponsor.name)}
+            >
               {sponsor.image ? (
                 <img 
                   src={sponsor.image} 
