@@ -5,7 +5,7 @@ import { navigateToShop } from '../utils/navigation';
 const Featured = () => {
   const navigate = useNavigate();
   return (
-    <section className="relative h-[60vh] md:h-[70vh] overflow-hidden">
+    <section className="relative h-[80vh] min-h-[600px] overflow-hidden">
       {/* Video Background */}
       <div className="absolute inset-0">
         {/* Placeholder for video - replace with actual video file */}

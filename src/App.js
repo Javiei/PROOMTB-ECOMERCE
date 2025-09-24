@@ -69,10 +69,10 @@ function App() {
               <Routes>
                 <Route path="/" element={
                   <>
+                    <Featured />
+                    <BestSellers />
                     <Hero />
                     <BrandsStrip />
-                    <BestSellers />
-                    <Featured />
                     <Home />
                     <Recommended />
                     <Footer />

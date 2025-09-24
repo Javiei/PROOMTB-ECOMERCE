@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { FcGoogle } from 'react-icons/fc';
-import { FaApple, FaFacebook } from 'react-icons/fa';
 import Login from './Login';
 import Signup from './Signup';
 
 export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
   const [activeTab, setActiveTab] = useState(initialTab);
-  const { signInWithGoogle, signInWithApple } = useAuth();
+  const { signInWithGoogle } = useAuth();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -23,20 +22,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleSocialSignIn = async (provider) => {
+  const handleGoogleSignIn = async () => {
     try {
       setError('');
       setLoading(true);
-      
-      if (provider === 'google') {
-        await signInWithGoogle();
-      } else if (provider === 'apple') {
-        await signInWithApple();
-      }
-      
+      await signInWithGoogle();
       onClose();
     } catch (error) {
-      setError(error.message || 'Error al iniciar sesión. Por favor, inténtalo de nuevo.');
+      setError(error.message || 'Error al iniciar sesión con Google. Por favor, inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -120,33 +113,12 @@ export default function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             <div className="space-y-3">
               <button
                 type="button"
-                onClick={() => handleSocialSignIn('google')}
+                onClick={handleGoogleSignIn}
                 disabled={loading}
                 className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <FcGoogle className="w-5 h-5 mr-2" />
                 Continuar con Google
-              </button>
-              
-              {!isMobile && (
-                <button
-                  type="button"
-                  onClick={() => handleSocialSignIn('apple')}
-                  disabled={loading}
-                  className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-black text-white text-sm font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <FaApple className="w-5 h-5 mr-2" />
-                  Continuar con Apple
-                </button>
-              )}
-              
-              <button
-                type="button"
-                disabled={true}
-                className="w-full flex items-center justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-[#1877F2] text-white text-sm font-medium hover:bg-[#166FE5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1877F2] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <FaFacebook className="w-5 h-5 mr-2" />
-                Continuar con Facebook
               </button>
             </div>
           </div>
