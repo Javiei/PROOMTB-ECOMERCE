@@ -7,22 +7,19 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from './auth/AuthModal';
 
+// Function to create a URL-friendly slug from a string
+const createSlug = (str) => {
+  if (!str) return '';
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
+export { createSlug };
+
 const ProductDetail = () => {
-  const { id: idWithName } = useParams();
-  // Extraer el ID de la URL (último segmento después del último '-')
-  // y asegurarse de que tenga el formato correcto
-  let id = idWithName.split('-').pop();
-  
-  // Si el ID es más corto que un UUID estándar (36 caracteres), 
-  // asumimos que es un ID corto y lo usamos directamente
-  // De lo contrario, intentamos extraer solo la parte del UUID
-  if (id.length >= 36) {
-    // Intentar extraer un UUID del final de la cadena
-    const uuidMatch = id.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
-    if (uuidMatch) {
-      id = uuidMatch[0];
-    }
-  }
+  const { productName } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { user } = useAuth();
@@ -39,11 +36,17 @@ const ProductDetail = () => {
   const defaultBikeSizes = useMemo(() => ['S', 'M', 'L', 'XL'], []);
   const defaultClothingSizes = useMemo(() => ['S', 'M', 'L', 'XL'], []);
   
-  // Debugging para ver la categoría del producto
+  // Update URL when product data is loaded to ensure clean URL
   useEffect(() => {
-    if (product) {
-      console.log('Categoría del producto:', product.category);
-      console.log('Tallas del producto:', product.sizes);
+    if (product && product.name) {
+      const newSlug = createSlug(product.name);
+      const currentPath = window.location.pathname;
+      const expectedPath = `/producto/${newSlug}`;
+      
+      // Only update URL if it doesn't match the current one
+      if (currentPath !== expectedPath) {
+        window.history.replaceState(null, '', expectedPath);
+      }
     }
   }, [product]);
 
@@ -53,35 +56,69 @@ const ProductDetail = () => {
         let data = null;
         let error = null;
         
-        // Primero intentamos con una búsqueda exacta por ID
-        const { data: exactMatch, error: exactError } = await supabase
-          .from('products')
-          .select('*')
-          .eq('id', id)
-          .single();
+        // Buscar el producto por nombre
+        if (productName) {
+          // Convertir el slug a un formato de búsqueda más flexible
+          const searchQuery = productName
+            .replace(/-/g, ' ')
+            .replace(/[^\w\s]/gi, '')  // Eliminar caracteres especiales
+            .replace(/\s+/g, ' ')        // Reemplazar múltiples espacios por uno solo
+            .trim();
           
-        if (!exactError && exactMatch) {
-          data = exactMatch;
-        } else {
-          // Si no encontramos coincidencia exacta, buscamos por el ID corto
-          const { data: allProducts, error: allError } = await supabase
+          // Primero intentar búsqueda exacta
+          let { data: exactMatch, error: exactError } = await supabase
             .from('products')
-            .select('*');
+            .select('*')
+            .ilike('name', `%${searchQuery}%`)
+            .single();
+          
+          // Si no se encuentra con búsqueda exacta, intentar con búsqueda más amplia
+          if (exactError || !exactMatch) {
+            // Dividir la consulta en palabras clave
+            const keywords = searchQuery.split(' ').filter(k => k.length > 2);
             
-          if (allError) throw allError;
-          
-          // Buscamos manualmente un ID que termine con el ID corto
-          const matchingProduct = allProducts.find(product => 
-            product.id && product.id.endsWith && product.id.endsWith(id)
-          );
-          
-          if (matchingProduct) {
-            data = matchingProduct;
+            // Construir consulta OR para cada palabra clave
+            let query = supabase
+              .from('products')
+              .select('*');
+              
+            keywords.forEach((keyword, index) => {
+              if (index === 0) {
+                query = query.ilike('name', `%${keyword}%`);
+              } else {
+                query = query.or(`name.ilike.%${keyword}%`);
+              }
+            });
+            
+            const { data: products, error: searchError } = await query;
+            
+            if (searchError) {
+              console.error('Error en la búsqueda:', searchError);
+              throw searchError;
+            }
+            
+            // Si encontramos productos, tomar el primero
+            if (products && products.length > 0) {
+              // Ordenar por la mejor coincidencia (más palabras clave coincidentes)
+              const sortedProducts = products.map(product => {
+                const matchScore = keywords.filter(keyword => 
+                  product.name.toLowerCase().includes(keyword.toLowerCase())
+                ).length;
+                return { ...product, _matchScore: matchScore };
+              }).sort((a, b) => b._matchScore - a._matchScore);
+              
+              data = sortedProducts[0];
+            }
           } else {
-            throw new Error('Producto no encontrado');
+            data = exactMatch;
+          }
+          
+          if (!data) {
+            console.error('No se encontró ningún producto con el nombre:', searchQuery);
+            console.log('URL de búsqueda:', productName);
           }
         }
-
+        
         if (error) throw error;
 
         // Procesar las imágenes si existen
@@ -150,7 +187,7 @@ const ProductDetail = () => {
               .from('products')
               .select('*')
               .eq('category', data.category)
-              .neq('id', id)
+              .neq('id', data.id) // Use data.id instead of undefined id
               .limit(4);
 
             if (!relatedError && relatedData) {
@@ -188,7 +225,7 @@ const ProductDetail = () => {
     fetchProduct();
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
-  }, [id, defaultBikeSizes, defaultClothingSizes]);
+  }, [productName, defaultBikeSizes, defaultClothingSizes]);
 
   const handleAddToCart = () => {
     if (!user) {
@@ -493,7 +530,7 @@ const ProductDetail = () => {
                   <div className="p-4">
                     <div>
                       <h3 className="text-sm font-medium text-gray-900 truncate">
-                        <Link to={`/producto/${relatedProduct.id}`}>
+                        <Link to={`/producto/${createSlug(relatedProduct.name)}`}>
                           <span aria-hidden="true" className="absolute inset-0" />
                           {relatedProduct.name}
                         </Link>

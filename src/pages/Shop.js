@@ -5,6 +5,7 @@ import { ALL_CATEGORIES } from '../constants/categories';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
+import { createSlug } from '../components/ProductDetail';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -248,7 +249,7 @@ const Shop = () => {
                         return (
                           <div key={product.id} className="group relative">
                             <Link
-                              to={`/producto/${product.id}`}
+                              to={`/producto/${createSlug(product.name)}`}
                               className="block h-full bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-blue-100"
                             >
                               {/* Badges */}

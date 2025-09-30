@@ -83,7 +83,7 @@ function App() {
                 <Route path="/tienda" element={<Shop />} />
                 <Route path="/nosotros" element={<About />} />
                 <Route path="/test" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Test Route Working!</h1></div>} />
-                <Route path="/producto/:id" element={<ProductDetail />} />
+                <Route path="/producto/:productName" element={<ProductDetail />} />
                 <Route path="/admin" element={<AdminProductsPanel />} />
                 <Route path="/checkout" element={<div className="min-h-screen bg-gray-900 text-white p-8"><h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1><p>Página de pago en construcción</p></div>} />
                 
