@@ -16,34 +16,21 @@ const LoadingScreen = ({ onLoadingComplete }) => {
       }, 500);
     };
 
-    const playVideo = async () => {
-      try {
-        // Esperar a que el video esté listo para reproducir
-        await new Promise((resolve) => {
-          if (video.readyState >= 3) resolve();
-          else video.oncanplaythrough = resolve;
-        });
-        
-        // Reproducir el video
-        await video.play();
-        setLoading(false);
-        
-        // Configurar evento de fin
-        video.addEventListener('ended', handleVideoEnd);
-        
-      } catch (error) {
-        console.error('Error al cargar el video:', error);
-        // Si hay un error, cerrar el loading screen
-        handleVideoEnd();
-      }
-    };
-
+    // Mostrar el video inmediatamente
     if (video) {
-      playVideo();
+      video.play().catch(() => {}); // Intentar reproducir sin esperar
+      video.addEventListener('ended', handleVideoEnd);
     }
+    // Mostrar spinner solo si tarda en cargar
+    const spinnerTimeout = setTimeout(() => setLoading(true), 1000);
+    video && video.addEventListener('canplay', () => {
+      setLoading(false);
+      clearTimeout(spinnerTimeout);
+    });
 
     return () => {
       if (video) video.removeEventListener('ended', handleVideoEnd);
+      clearTimeout(spinnerTimeout);
     };
   }, [onLoadingComplete]);
 
