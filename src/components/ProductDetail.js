@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import AuthModal from './auth/AuthModal';
 import { FaWhatsapp, FaHeart, FaShoppingCart } from 'react-icons/fa';
 import { FiShare2 } from 'react-icons/fi';
+import ProductMetaTags from './ProductMetaTags';
 
 // ===================== SLUG ===================== //
 const createSlug = (str) => {
@@ -311,6 +312,7 @@ const ProductDetail = () => {
 
   return (
     <div className={STYLE.pageWrapper}>
+      <ProductMetaTags product={product} />
       <main className="bg-white">
         <div className={`${STYLE.container} py-8`}>
           {/* Breadcrumbs estilo Christmas */}
