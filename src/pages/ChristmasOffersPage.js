@@ -276,6 +276,7 @@ const ChristmasOffersPage = () => {
                       <Link
                         key={product.id}
                         to={`/navidad/${product.codigo || product.id || 'producto'}/${createSlug(product.name || 'producto')}`}
+                        state={{ product: product }}
                         className="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 h-full flex flex-col"
                       >
                         {/* Badges */}

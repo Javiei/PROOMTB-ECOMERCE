@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/Diseño sin título (17) (1).png';
 import CartIcon from './CartIcon';
@@ -7,6 +7,97 @@ import UserMenu from './UserMenu';
 import AuthModal from './auth/AuthModal';
 
 const Header = () => {
+  const location = useLocation();
+  let dynamicTitle = '';
+  // Detectar si estamos en la ruta de producto y extraer el nombre
+  const productoMatch = location.pathname.match(/\/producto\/([^/]+)/);
+  const navidadMatch = location.pathname.match(/\/navidad\/[^/]+\/([^/]+)/);
+  // Obtener el nombre real del producto si está en el state de navegación
+  const [resolvedTitle, setResolvedTitle] = React.useState('');
+  let productNameFromState = location.state && location.state.productName;
+  let fallbackSlug = '';
+  let productId = null;
+  if (productoMatch) {
+    fallbackSlug = decodeURIComponent(productoMatch[1].replace(/-/g, ' '));
+    // Buscar el ID del producto si está en la URL (por ejemplo, /producto/:slug?id=123)
+    const searchParams = new URLSearchParams(location.search);
+    productId = searchParams.get('id');
+  } else if (navidadMatch) {
+    fallbackSlug = decodeURIComponent(navidadMatch[1].replace(/-/g, ' '));
+    // Para navidad, el ID está en la URL
+    const navidadIdMatch = location.pathname.match(/\/navidad\/([^/]+)/);
+    if (navidadIdMatch) productId = navidadIdMatch[1];
+  }
+
+  React.useEffect(() => {
+    let isMounted = true;
+    if (productNameFromState) {
+      setResolvedTitle(productNameFromState);
+    } else if (productId) {
+      // Detectar tabla según la ruta
+      let table = 'products';
+      let nameField = 'name';
+      if (location.pathname.startsWith('/navidad/')) {
+        table = 'bikes_navidad_2025';
+        nameField = 'nombre';
+      }
+      import('../supabaseClient').then(({ supabase }) => {
+        supabase
+          .from(table)
+          .select(nameField)
+          .eq('id', productId)
+          .single()
+          .then(({ data }) => {
+            if (isMounted) setResolvedTitle(data?.[nameField] || fallbackSlug);
+          })
+          .catch(() => {
+            if (isMounted) setResolvedTitle(fallbackSlug);
+          });
+      });
+    } else {
+      setResolvedTitle(fallbackSlug);
+    }
+    return () => { isMounted = false; };
+  }, [productNameFromState, productId, fallbackSlug]);
+
+  React.useEffect(() => {
+    // Títulos personalizados por ruta
+    let pageTitle = 'PROOMTB';
+    
+    // Si estamos en una página de detalle de producto navideño
+    if (navidadMatch) {
+      // Usar el nombre del producto directamente del estado de navegación
+      if (location.state?.product) {
+        pageTitle = `${location.state.product.nombre} | PROOMTB`;
+      } else if (resolvedTitle) {
+        // Si no hay estado, usar el título resuelto
+        pageTitle = `${resolvedTitle} | PROOMTB`;
+      }
+    } 
+    // Si es un producto normal
+    else if (productoMatch) {
+      if (location.state?.product) {
+        pageTitle = `${location.state.product.name} | PROOMTB`;
+      } else if (resolvedTitle) {
+        pageTitle = `${resolvedTitle} | PROOMTB`;
+      }
+    }
+    // Otras rutas
+    else if (location.pathname.startsWith('/tienda')) {
+      pageTitle = 'TIENDA | PROOMTB';
+    } else if (location.pathname.startsWith('/ofertas-navidad')) {
+      pageTitle = 'OFERTAS DE NAVIDAD | PROOMTB';
+    } else if (location.pathname.startsWith('/nosotros')) {
+      pageTitle = 'NOSOTROS | PROOMTB';
+    } else if (location.pathname.startsWith('/admin')) {
+      pageTitle = 'ADMIN | PROOMTB';
+    } else if (location.pathname.startsWith('/checkout')) {
+      pageTitle = 'CHECKOUT | PROOMTB';
+    }
+    
+    document.title = pageTitle;
+  }, [resolvedTitle, location.pathname, location.state, productoMatch, navidadMatch]);
+
   const [showSearch, setShowSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const { user } = useAuth();

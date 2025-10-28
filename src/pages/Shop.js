@@ -252,6 +252,7 @@ const Shop = () => {
                           <div key={product.id} className="group relative">
                             <Link
                               to={`/producto/${createSlug(product.name)}`}
+                              state={{ product: product }}
                               className="block h-full bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-blue-100"
                             >
                               {/* Badges */}
