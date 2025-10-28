@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import cyclingImage from '../assets/Screenshot 2025-07-24 132548.webp';
 import { navigateToProduct, navigateToShop } from '../utils/navigation';
+import { createSlug } from '../utils/stringUtils';
 
 const BestSellers = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const BestSellers = () => {
         </div>
       )}
       
-      <Link to={`/producto/${product.id}`} className="block">
+      <Link to={`/producto/${createSlug(product.name)}`} className="block">
         <div className="relative pt-[100%] bg-gray-50 group">
           {product.image_url ? (
             <img 
@@ -71,7 +72,7 @@ const BestSellers = () => {
           {product.category || 'Categoría'}
         </span>
         
-        <Link to={`/producto/${product.id}`} className="block">
+        <Link to={`/producto/${createSlug(product.name)}`} className="block">
           <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2 hover:text-purple-700 transition-colors">
             {product.name}
           </h3>
@@ -90,7 +91,7 @@ const BestSellers = () => {
               )}
             </div>
             <Link 
-              to={`/producto/${product.id}`}
+              to={`/producto/${createSlug(product.name)}`}
               className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
               aria-label="Ver producto"
             >
@@ -105,7 +106,7 @@ const BestSellers = () => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('Añadir al carrito:', product.id);
+              window.location.href = `/producto/${createSlug(product.name)}`;
             }}
           >
             Añadir al carrito

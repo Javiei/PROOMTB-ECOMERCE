@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
+import { createSlug } from '../utils/stringUtils';
 
 const Recommended = () => {
   const [recommendations, setRecommendations] = useState([]);
@@ -24,13 +25,10 @@ const Recommended = () => {
         
         console.log('Iniciando búsqueda de productos recomendados...');
         
-        // Consulta simple para obtener los productos más recientes
-        console.log('Obteniendo productos más recientes...');
+        // Obtener todos los productos y luego seleccionar 4 aleatorios
         const { data, error } = await supabase
           .from('products')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(4);
+          .select('*');
           
         console.log('Resultado de la consulta:', { 
           dataLength: data?.length, 
@@ -87,7 +85,9 @@ const Recommended = () => {
             };
           });
           console.log('Productos procesados:', processedData);
-          setRecommendations(processedData.slice(0, 4));
+          // Mezclar aleatoriamente y tomar 4
+          const shuffled = processedData.sort(() => 0.5 - Math.random());
+          setRecommendations(shuffled.slice(0, 4));
         } else {
           setError('No hay productos disponibles para mostrar.');
         }
@@ -153,7 +153,7 @@ const Recommended = () => {
                 key={product.id}
                 className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full transform hover:-translate-y-1"
               >
-                <Link to={`/producto/${product.id}`} className="block">
+                <Link to={`/producto/${createSlug(product.name)}`} className="block">
                   {/* Product Image */}
                   <div className="relative pt-[100%] bg-gray-50 group">
                     {product.images && product.images[0] ? (
@@ -187,7 +187,7 @@ const Recommended = () => {
                     {product.category || 'Categoría'}
                   </span>
                   
-                  <Link to={`/producto/${product.id}`} className="block">
+                  <Link to={`/producto/${createSlug(product.name)}`} className="block">
                     <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2 hover:text-purple-700 transition-colors">
                       {product.name}
                     </h3>
@@ -206,7 +206,7 @@ const Recommended = () => {
                         )}
                       </div>
                       <Link 
-                        to={`/producto/${product.id}`}
+                        to={`/producto/${createSlug(product.name)}`}
                         className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                         aria-label="Ver producto"
                       >

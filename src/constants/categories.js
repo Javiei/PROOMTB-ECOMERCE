@@ -35,5 +35,9 @@ export const CATEGORIES = {
 export const ALL_CATEGORIES = [
   { value: 'all', label: 'Todas las categorías' },
   { group: 'Bicicletas', options: CATEGORIES.BIKES },
-  { group: 'Accesorios', options: CATEGORIES.ACCESSORIES }
+  { group: 'Accesorios', options: CATEGORIES.ACCESSORIES },
+  { group: 'Ropa', options: [
+    { value: 'Licra', label: 'Licra' },
+    { value: 'Jerseys', label: 'Jerseys' }
+  ]}
 ];

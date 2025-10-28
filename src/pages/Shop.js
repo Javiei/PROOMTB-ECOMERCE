@@ -52,8 +52,10 @@ const Shop = () => {
         if (error) throw error;
 
         const list = data || [];
-        setProducts(list);
-        setFilteredProducts(list);
+        // Mezclar aleatoriamente los productos
+        const shuffled = list.sort(() => 0.5 - Math.random());
+        setProducts(shuffled);
+        setFilteredProducts(shuffled);
       } catch (err) {
         console.error('Error al cargar productos:', err);
       } finally {
