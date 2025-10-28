@@ -78,7 +78,7 @@ function App() {
                     <BrandsStrip />
                     <Home />
                     <Recommended />
-                    <Footer />
+                    
                     <LegalFooter />
                     <WhatsAppButton />
                   </>
