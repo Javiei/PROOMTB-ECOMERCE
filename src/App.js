@@ -13,6 +13,9 @@ import Newsletter from './components/Newsletter';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import About from './pages/About';
+import ChristmasOffers from './pages/ChristmasOffers';
+import ChristmasOffersPage from './pages/ChristmasOffersPage';
+import ChristmasProductDetail from './pages/ChristmasProductDetail';
 import ProductDetail from './components/ProductDetail';
 import LegalFooter from './components/LegalFooter';
 // Importar páginas de políticas
@@ -81,6 +84,8 @@ function App() {
                   </>
                 } />
                 <Route path="/tienda" element={<Shop />} />
+                <Route path="/ofertas-navidad" element={<ChristmasOffersPage />} />
+                <Route path="/navidad/:id/:productName" element={<ChristmasProductDetail />} />
                 <Route path="/nosotros" element={<About />} />
                 <Route path="/test" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Test Route Working!</h1></div>} />
                 <Route path="/producto/:productName" element={<ProductDetail />} />

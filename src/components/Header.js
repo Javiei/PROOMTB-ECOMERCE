@@ -136,6 +136,23 @@ const Header = () => {
             <nav className="hidden md:flex space-x-8" ref={dropdownRef}>
               <Link to="/tienda" className="text-white hover:text-purple-400 transition-colors font-medium">TIENDA</Link>
               
+
+              {/* Christmas Offers */}
+              <Link 
+                to="/ofertas-navidad" 
+                className="relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-4 py-2 rounded-md text-white font-bold text-sm flex items-center space-x-2 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl overflow-hidden group"
+              >
+                <span className="relative z-10 flex items-center">
+                  <span className="mr-2 text-yellow-300 animate-pulse">🎄</span>
+                  <span className="relative">
+                    OFERTAS NAVIDEÑAS
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-yellow-300 group-hover:w-full transition-all duration-300"></span>
+                  </span>
+                </span>
+                <span className="absolute inset-0 bg-yellow-400 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
+                <span className="absolute -inset-1 bg-white/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping"></span>
+              </Link>
+
               {/* Bikes Dropdown */}
               <div className="relative group">
                 <button 

@@ -5,7 +5,7 @@ import { ALL_CATEGORIES } from '../constants/categories';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
-import { createSlug } from '../components/ProductDetail';
+import { createSlug } from '../utils/stringUtils';
 
 const ITEMS_PER_PAGE = 12;
 
