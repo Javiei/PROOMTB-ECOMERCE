@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/Diseño sin título (17) (1).png';
 import CartIcon from './CartIcon';
@@ -99,7 +99,9 @@ const Header = () => {
   }, [resolvedTitle, location.pathname, location.state, productoMatch, navidadMatch]);
 
   const [showSearch, setShowSearch] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -121,12 +123,47 @@ const Header = () => {
     };
   }, []);
 
-  const navigate = useNavigate();
+  // Actualizar el término de búsqueda desde la URL
+  useEffect(() => {
+    const searchParam = searchParams.get('search');
+    if (searchParam) {
+      setSearchTerm(searchParam);
+    }
+  }, [searchParams]);
 
   const handleCategoryClick = (category) => {
     // Navegar a la tienda con el filtro de categoría
     navigate(`/tienda?category=${encodeURIComponent(category)}`);
     setActiveDropdown(null); // Cerrar el dropdown después de hacer clic
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const trimmedSearch = searchTerm.trim();
+    const searchUrl = trimmedSearch ? `/tienda?search=${encodeURIComponent(trimmedSearch)}` : '/tienda';
+    
+    // Forzar una recarga completa si ya estamos en la página de tienda
+    if (window.location.pathname === '/tienda') {
+      window.location.href = searchUrl;
+    } else {
+      navigate(searchUrl);
+    }
+    
+    setShowSearch(false);
+  };
+  
+  // Manejar la tecla Enter en el input de búsqueda
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch(e);
+    }
+  };
+  
+  // Manejar el clic en el botón de búsqueda
+  const handleSearchClick = (e) => {
+    e.preventDefault();
+    handleSearch(e);
   };
 
   const bikeCategories = [
@@ -388,8 +425,12 @@ const Header = () => {
               <div className="relative">
                 <button
                   className="text-white hover:text-purple-400 transition-colors"
-                  onClick={() => setShowSearch((prev) => !prev)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowSearch(prev => !prev);
+                  }}
                   aria-label="Buscar"
+                  type="button"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -398,27 +439,22 @@ const Header = () => {
                 {showSearch && (
                   <form
                     className="absolute right-0 mt-2 bg-white rounded shadow-lg flex items-center z-50 p-2"
-                    onSubmit={e => {
-                      e.preventDefault();
-                      if (searchValue.trim()) {
-                        navigate(`/tienda?search=${encodeURIComponent(searchValue)}`);
-                        setShowSearch(false);
-                        setSearchValue('');
-                      }
-                    }}
+                    onSubmit={handleSearch}
                   >
                     <input
                       type="text"
                       autoFocus
-                      value={searchValue}
-                      onChange={e => setSearchValue(e.target.value)}
-                      className="border border-gray-300 rounded px-3 py-1 text-gray-900 focus:outline-none focus:ring focus:border-blue-400 text-sm"
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      className="border border-gray-300 rounded px-3 py-1 text-gray-900 focus:outline-none focus:ring focus:border-blue-400 text-sm w-64 min-w-0"
                       placeholder="Buscar productos..."
                       onBlur={() => setTimeout(() => setShowSearch(false), 200)}
                     />
                     <button
-                      type="submit"
+                      type="button"
                       className="ml-2 px-2 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+                      onClick={handleSearchClick}
                     >
                       Buscar
                     </button>
@@ -477,17 +513,43 @@ const Header = () => {
             </div>
 
             {/* Mobile menu button */}
-            <button 
-              className="md:hidden text-white"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+            <div className="flex items-center space-x-4">
+              {/* Search Icon - Mobile */}
+              <div className="md:hidden relative">
+                <form
+                  className="bg-white rounded flex items-center p-1 w-48"
+                  onSubmit={handleSearch}
+                >
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="flex-1 border-0 rounded px-2 py-1 text-gray-900 focus:outline-none focus:ring-0 text-sm w-full"
+                    placeholder="Buscar..."
+                  />
+                  <button
+                    type="submit"
+                    className="ml-1 px-2 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </button>
+                </form>
+              </div>
+              
+              <button 
+                className="md:hidden text-white"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
 
-          {/* Mobile Navigation */}
+            {/* Mobile Navigation */}
           {isMenuOpen && (
             <nav className="md:hidden mt-4 pb-4 border-t border-gray-700 pt-4">
               <div className="flex flex-col space-y-3">

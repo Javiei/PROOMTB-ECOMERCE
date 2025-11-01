@@ -38,6 +38,7 @@ const Shop = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchParams] = useSearchParams();
   const brandFilter = searchParams.get('brand');
+  const searchQuery = searchParams.get('search');
 
   // Cargar productos
   useEffect(() => {
@@ -80,16 +81,32 @@ const Shop = () => {
   // Reiniciar contador visible cuando cambien filtros
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
-    // Si hay un filtro de marca, actualiza el término de búsqueda
+    // Si hay un filtro de marca o búsqueda, actualiza el término de búsqueda
     if (brandFilter) {
       setSearchTerm(brandFilter);
+    } else if (searchQuery) {
+      setSearchTerm(searchQuery);
+    } else {
+      setSearchTerm('');
     }
-  }, [category, searchTerm, priceRange, brandFilter]);
+  }, [category, searchTerm, priceRange, brandFilter, searchQuery]);
 
   // Aplicar filtros
   useEffect(() => {
     let result = [...products];
 
+    // Aplicar filtro de búsqueda desde la URL o el estado
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(
+        (p) =>
+          (p.name || '').toLowerCase().includes(term) ||
+          (p.description || '').toLowerCase().includes(term) ||
+          (p.brand || '').toLowerCase().includes(term) ||
+          (p.category || '').toLowerCase().includes(term)
+      );
+    }
+    
     // Aplicar filtro de marca desde la URL
     if (brandFilter) {
       result = result.filter(p => 
@@ -101,14 +118,6 @@ const Shop = () => {
       result = result.filter((p) => p.category === category);
     }
 
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(
-        (p) =>
-          (p.name || '').toLowerCase().includes(term) ||
-          (p.description || '').toLowerCase().includes(term)
-      );
-    }
 
     result = result.filter((p) => Number(p.price || 0) <= Number(priceRange || 0));
 
