@@ -123,13 +123,14 @@ const Header = () => {
     };
   }, []);
 
-  // Actualizar el término de búsqueda desde la URL
+  // Sincronizar el término de búsqueda con la URL
   useEffect(() => {
-    const searchParam = searchParams.get('search');
-    if (searchParam) {
+    const searchParam = searchParams.get('search') || '';
+    // Solo actualizar si hay un cambio real
+    if (searchParam !== searchTerm) {
       setSearchTerm(searchParam);
     }
-  }, [searchParams]);
+  }, [searchParams, searchTerm]);
 
   const handleCategoryClick = (category) => {
     // Navegar a la tienda con el filtro de categoría
@@ -140,13 +141,17 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     const trimmedSearch = searchTerm.trim();
-    const searchUrl = trimmedSearch ? `/tienda?search=${encodeURIComponent(trimmedSearch)}` : '/tienda';
     
-    // Forzar una recarga completa si ya estamos en la página de tienda
-    if (window.location.pathname === '/tienda') {
-      window.location.href = searchUrl;
+    // Usar navigate para actualizar la URL sin recargar la página
+    if (trimmedSearch) {
+      // Si ya estamos en la página de tienda, usa replace: false para permitir la navegación hacia atrás
+      navigate(`/tienda?search=${encodeURIComponent(trimmedSearch)}`, { 
+        replace: window.location.pathname === '/tienda' 
+      });
     } else {
-      navigate(searchUrl);
+      navigate('/tienda', { 
+        replace: window.location.pathname === '/tienda' 
+      });
     }
     
     setShowSearch(false);
@@ -524,11 +529,13 @@ const Header = () => {
                     type="text"
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className="flex-1 border-0 rounded px-2 py-1 text-gray-900 focus:outline-none focus:ring-0 text-sm w-full"
                     placeholder="Buscar..."
                   />
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={handleSearchClick}
                     className="ml-1 px-2 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

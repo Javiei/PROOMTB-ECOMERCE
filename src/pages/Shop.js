@@ -78,26 +78,34 @@ const Shop = () => {
     updateDisplayedProducts(filteredProducts, newVisible);
   };
 
-  // Reiniciar contador visible cuando cambien filtros
+  // Sincronizar el término de búsqueda con la URL
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
-    // Si hay un filtro de marca o búsqueda, actualiza el término de búsqueda
-    if (brandFilter) {
-      setSearchTerm(brandFilter);
-    } else if (searchQuery) {
-      setSearchTerm(searchQuery);
-    } else {
-      setSearchTerm('');
+    
+    // Solo actualizar searchTerm si hay un cambio en la URL
+    // Esto evita bucles de actualización
+    const currentSearch = searchParams.get('search') || '';
+    if (currentSearch !== searchTerm) {
+      setSearchTerm(currentSearch);
     }
-  }, [category, searchTerm, priceRange, brandFilter, searchQuery]);
+    
+    // Manejar filtro de marca
+    if (brandFilter && brandFilter !== searchTerm) {
+      setSearchTerm(brandFilter);
+    }
+  }, [searchParams, brandFilter]);
 
   // Aplicar filtros
   useEffect(() => {
     let result = [...products];
+    
+    // Obtener el término de búsqueda de la URL si existe
+    const urlSearchTerm = searchParams.get('search') || '';
+    const searchToUse = searchTerm || urlSearchTerm;
 
-    // Aplicar filtro de búsqueda desde la URL o el estado
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
+    // Aplicar filtro de búsqueda
+    if (searchToUse) {
+      const term = searchToUse.toLowerCase();
       result = result.filter(
         (p) =>
           (p.name || '').toLowerCase().includes(term) ||
