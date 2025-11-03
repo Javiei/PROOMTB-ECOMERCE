@@ -126,11 +126,12 @@ const Header = () => {
   // Sincronizar el término de búsqueda con la URL
   useEffect(() => {
     const searchParam = searchParams.get('search') || '';
-    // Solo actualizar si hay un cambio real
+    // Actualizar el estado solo si el parámetro de búsqueda en la URL es diferente al estado actual
+    // y no estamos en medio de una edición del usuario
     if (searchParam !== searchTerm) {
       setSearchTerm(searchParam);
     }
-  }, [searchParams, searchTerm]);
+  }, [searchParams]); // Eliminamos searchTerm de las dependencias
 
   const handleCategoryClick = (category) => {
     // Navegar a la tienda con el filtro de categoría
