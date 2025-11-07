@@ -23,7 +23,10 @@ import Devoluciones from './pages/policies/Devoluciones';
 import Reembolsos from './pages/policies/Reembolsos';
 import Cancelaciones from './pages/policies/Cancelaciones';
 import Entregas from './pages/policies/Entregas';
+import AdminDashboard from './pages/AdminDashboard';
 import AdminProductsPanel from './components/AdminProductsPanel';
+import AdminOrdersPanel from './components/AdminOrdersPanel';
+import AdminChat from './components/admin/AdminChat';
 import Footer from './components/Footer';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
@@ -89,7 +92,13 @@ function App() {
                 <Route path="/nosotros" element={<About />} />
                 <Route path="/test" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Test Route Working!</h1></div>} />
                 <Route path="/producto/:productName" element={<ProductDetail />} />
-                <Route path="/admin" element={<AdminProductsPanel />} />
+                {/* Admin Routes */}
+                <Route path="/admin" element={<AdminDashboard />}>
+                  <Route index element={<Navigate to="productos" replace />} />
+                  <Route path="productos" element={<AdminProductsPanel />} />
+                  <Route path="pedidos" element={<AdminOrdersPanel />} />
+                  <Route path="chat" element={<AdminChat />} />
+                </Route>
                 <Route path="/checkout" element={<div className="min-h-screen bg-gray-900 text-white p-8"><h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1><p>Página de pago en construcción</p></div>} />
                 
                 {/* Rutas de Políticas */}
