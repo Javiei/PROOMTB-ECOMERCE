@@ -1,25 +1,31 @@
-import { useAuth } from '../contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 
 export default function AdminRoute({ children }) {
-  const { currentUser } = useAuth();
-  
-  // Lista de correos electrónicos permitidos
-  const ALLOWED_EMAILS = [
-    'herrerajaviersoto@gmail.com',  // Reemplaza con el primer correo permitido
-    'albelcorlione@gmail.com'   // Reemplaza con el segundo correo permitido
-  ];
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
 
-  // Si no hay usuario autenticado, redirigir al login
-  if (!currentUser) {
-    return <Navigate to="/iniciar-sesion" state={{ from: window.location.pathname }} replace />;
+  useEffect(() => {
+    // Check if the user is already authenticated
+    const authStatus = localStorage.getItem('adminAuthenticated') === 'true';
+    setIsAuthenticated(authStatus);
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
-  // Si el correo no está en la lista de permitidos, redirigir al inicio
-  if (!ALLOWED_EMAILS.includes(currentUser.email)) {
-    return <Navigate to="/" replace />;
+  // If not authenticated, redirect to admin login
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" state={{ from: location.pathname }} replace />;
   }
 
-  // Si el usuario está autenticado y tiene un correo permitido, mostrar el contenido
+  // If authenticated, render the children
   return children;
 }

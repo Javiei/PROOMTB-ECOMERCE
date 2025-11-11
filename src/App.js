@@ -27,6 +27,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminProductsPanel from './components/AdminProductsPanel';
 import AdminOrdersPanel from './components/AdminOrdersPanel';
 import AdminChat from './components/admin/AdminChat';
+import AdminLogin from './components/AdminLogin';
+import AdminRoute from './components/AdminRoute';
 import Footer from './components/Footer';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
@@ -93,7 +95,12 @@ function App() {
                 <Route path="/test" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Test Route Working!</h1></div>} />
                 <Route path="/producto/:productName" element={<ProductDetail />} />
                 {/* Admin Routes */}
-                <Route path="/admin" element={<AdminDashboard />}>
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin" element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                }>
                   <Route index element={<Navigate to="productos" replace />} />
                   <Route path="productos" element={<AdminProductsPanel />} />
                   <Route path="pedidos" element={<AdminOrdersPanel />} />
