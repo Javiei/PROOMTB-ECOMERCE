@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import verticalVideo from '../assets/VERTICAL.mp4';
+import verticalVideo from '../assets/VERTICAL.webm';
 
 const LoadingScreen = ({ onLoadingComplete }) => {
   const [isVisible, setIsVisible] = useState(true);
@@ -47,7 +47,7 @@ const LoadingScreen = ({ onLoadingComplete }) => {
         autoPlay
         preload="auto"
       >
-        <source src={verticalVideo} type="video/mp4" />
+        <source src={verticalVideo} type="video/webm" />
         Tu navegador no soporta el elemento de video.
       </video>
 
