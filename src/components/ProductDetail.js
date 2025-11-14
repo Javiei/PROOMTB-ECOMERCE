@@ -68,6 +68,8 @@ const ProductDetail = () => {
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [error, setError] = useState('');
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
@@ -91,11 +93,13 @@ const ProductDetail = () => {
     }
   }, [product]);
 
-  // =============== FETCH PRODUCT (conserva tu lógica base) =============== //
+  // =============== FETCH PRODUCT =============== //
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
+        setError('');
+        setNotFound(false);
         let data = null;
 
         if (productName) {
@@ -113,12 +117,22 @@ const ProductDetail = () => {
 
           if (exactError || !exactMatch) {
             const keywords = searchQuery.split(' ').filter(k => k.length > 2);
-            let query = supabase.from('products').select('*');
-            keywords.forEach((keyword, index) => {
-              if (index === 0) query = query.ilike('name', `%${keyword}%`);
-              else query = query.or(`name.ilike.%${keyword}%`);
-            });
-            const { data: products, error: searchError } = await query;
+            
+            // Usar solo la primera palabra clave para la búsqueda inicial
+            const firstKeyword = keywords[0] || searchQuery;
+            
+            // Realizar la consulta simple
+            const { data: products, error: searchError } = await supabase
+              .from('products')
+              .select('*')
+              .ilike('name', `%${firstKeyword}%`);
+            
+            // Filtrar localmente los resultados para incluir más palabras clave
+            const filteredProducts = products ? products.filter(product => 
+              keywords.every(keyword => 
+                product.name?.toLowerCase().includes(keyword.toLowerCase())
+              )
+            ) : [];
             if (searchError) throw searchError;
             if (products?.length) {
               const sorted = products
@@ -195,6 +209,8 @@ const ProductDetail = () => {
         }
       } catch (err) {
         console.error('Error fetching product:', err);
+        setError('No se pudo cargar el producto. Por favor, inténtalo de nuevo más tarde.');
+        setNotFound(true);
       } finally {
         setLoading(false);
       }
@@ -288,23 +304,45 @@ const ProductDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando producto...</p>
+        </div>
       </div>
     );
   }
 
-  if (!product) {
+  if (!product || notFound) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4 py-12">
         <div className="max-w-md w-full text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Producto no encontrado</h2>
-          <p className="text-gray-600 mb-8">Lo sentimos, no pudimos encontrar el producto que estás buscando.</p>
-          <button
-            onClick={() => navigate('/tienda')}
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Volver a la tienda
-          </button>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Producto no encontrado</h2>
+          <p className="text-gray-600 mb-6">
+            {error || 'El producto que buscas no existe o ha sido eliminado.'}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => navigate(-1)}
+              className="px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Volver atrás
+            </button>
+            <button
+              onClick={() => navigate('/tienda')}
+              className="px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Ver todos los productos
+            </button>
+          </div>
+          {error && (
+            <div className="mt-6 p-3 bg-red-50 text-red-700 rounded-md text-sm">
+              <p className="font-medium">Error técnico:</p>
+              <p className="mt-1">{error}</p>
+            </div>
+          )}
         </div>
       </div>
     );
