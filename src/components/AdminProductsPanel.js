@@ -49,9 +49,6 @@ export default function AdminProductsPanel() {
     description: '',
     image_url: ''
   });
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState('upload'); // 'upload' o 'url'
 
   // Calcular estadísticas de productos por categoría
   const categoryStats = useMemo(() => {
@@ -179,11 +176,6 @@ export default function AdminProductsPanel() {
       value = Math.max(0, value);
     }
     
-    // Si es la URL de la imagen, cambiar a la pestaña de URL
-    if (field === 'image_url' && !value.startsWith('blob:')) {
-      setActiveTab('url');
-    }
-    
     setEditingProduct(prev => ({
       ...prev,
       [field]: value
@@ -191,104 +183,11 @@ export default function AdminProductsPanel() {
   };
 
   const handleNewProductChange = (e) => {
-    const { name, value, files } = e.target;
-    
-    // Si es un archivo, manejarlo de manera diferente
-    if (name === 'image_file' && files && files[0]) {
-      // Cambiar a la pestaña de subida si no está activa
-      setActiveTab('upload');
-      handleImageUpload(files[0], 'new');
-      return;
-    }
-    
-    // Si es la URL de la imagen, cambiar a la pestaña de URL
-    if (name === 'image_url') {
-      setActiveTab('url');
-    }
-    
+    const { name, value } = e.target;
     setNewProduct(prev => ({
       ...prev,
       [name]: name === 'price' ? parseFloat(value) || 0 : value
     }));
-  };
-  
-  const handleEditImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      handleImageUpload(e.target.files[0], 'edit');
-    }
-  };
-  
-  const handleImageUpload = async (file, type) => {
-    try {
-      setUploading(true);
-      setUploadProgress(0);
-      
-      // Verificar el tipo de archivo
-      const validExtensions = ['image/jpeg', 'image/png', 'image/webp'];
-      if (!validExtensions.includes(file.type)) {
-        throw new Error('Formato de archivo no soportado. Usa JPG, PNG o WEBP');
-      }
-      
-      // Generar un nombre único para el archivo
-      const fileExt = file.name.split('.').pop().toLowerCase();
-      const fileName = `product_${Date.now()}.${fileExt}`;
-      
-      // 1. Primero intentamos subir el archivo
-      const { data, error } = await supabase.storage
-        .from('product-images')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false,
-          contentType: file.type,
-          onUploadProgress: (progress) => {
-            const progressPercentage = Math.round((progress.loaded / progress.total) * 100);
-            setUploadProgress(progressPercentage);
-          }
-        });
-      
-      if (error) {
-        console.error('Error al subir la imagen:', error);
-        throw new Error('No se pudo subir la imagen. Intenta de nuevo más tarde.');
-      }
-      
-      // 2. Construir manualmente la URL pública
-      const supabaseUrl = 'https://rwbxersfwgmkixulhnxp.supabase.co';
-      const publicUrl = `${supabaseUrl}/storage/v1/object/public/product-images/${fileName}`;
-      
-      // 3. Verificar que la URL sea accesible
-      try {
-        const response = await fetch(publicUrl, { method: 'HEAD' });
-        if (!response.ok) {
-          throw new Error('La imagen se subió pero no es accesible públicamente');
-        }
-      } catch (checkError) {
-        console.error('Error al verificar la URL de la imagen:', checkError);
-        throw new Error('La imagen se subió pero no se pudo verificar su accesibilidad');
-      }
-      
-      // Actualizar el estado correspondiente
-      if (type === 'new') {
-        setNewProduct(prev => ({
-          ...prev,
-          image_url: publicUrl
-        }));
-      } else {
-        setEditingProduct(prev => ({
-          ...prev,
-          image_url: publicUrl
-        }));
-      }
-      
-      setSuccess('Imagen subida correctamente');
-      setTimeout(() => setSuccess(''), 3000);
-      
-    } catch (error) {
-      console.error('Error en handleImageUpload:', error);
-      setError(error.message || 'Error al subir la imagen');
-    } finally {
-      setUploading(false);
-      setUploadProgress(0);
-    }
   };
 
   const saveChanges = async () => {
@@ -329,57 +228,22 @@ export default function AdminProductsPanel() {
   };
 
   const deleteProduct = async (id) => {
-    if (!id) {
-      setError('ID de producto no válido');
-      return;
-    }
-
-    if (window.confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.')) {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
       try {
-        setLoading(true);
-        
-        // 1. Primero intentamos eliminar la imagen asociada si existe
-        const productToDelete = products.find(p => p.id === id);
-        if (productToDelete?.image_url) {
-          try {
-            const fileName = productToDelete.image_url.split('/').pop();
-            if (fileName) {
-              const { error: storageError } = await supabase.storage
-                .from('product-images')
-                .remove([fileName]);
-              
-              if (storageError) {
-                console.warn('No se pudo eliminar la imagen del almacenamiento:', storageError.message);
-                // Continuamos con la eliminación del producto aunque falle la eliminación de la imagen
-              }
-            }
-          } catch (storageError) {
-            console.error('Error al intentar eliminar la imagen:', storageError);
-            // Continuamos con la eliminación del producto
-          }
-        }
-        
-        // 2. Luego eliminamos el producto de la base de datos
-        const { error: deleteError } = await supabase
+        const { error } = await supabase
           .from('products')
           .delete()
           .eq('id', id);
         
-        if (deleteError) throw deleteError;
+        if (error) throw error;
         
-        // 3. Actualizamos el estado local
-        setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
-        setFilteredProducts(prev => prev.filter(product => product.id !== id));
+        setProducts(products.filter(product => product.id !== id));
+        setSuccess('Producto eliminado correctamente');
         
-        setSuccess('✅ Producto eliminado correctamente');
-        
-        // Limpiar mensaje después de 5 segundos
-        setTimeout(() => setSuccess(''), 5000);
+        // Limpiar mensaje después de 3 segundos
+        setTimeout(() => setSuccess(''), 3000);
       } catch (error) {
-        console.error('Error al eliminar el producto:', error);
-        setError(`Error al eliminar el producto: ${error.message || 'Error desconocido'}. Por favor, inténtalo de nuevo.`);
-      } finally {
-        setLoading(false);
+        setError('Error al eliminar el producto: ' + error.message);
       }
     }
   };
@@ -557,104 +421,29 @@ export default function AdminProductsPanel() {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Imagen del producto</label>
-                
-                {/* Pestañas */}
-                <div className="flex border-b border-gray-200 mb-4">
-                  <button
-                    type="button"
-                    className={`py-2 px-4 font-medium text-sm ${activeTab === 'upload' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-                    onClick={() => setActiveTab('upload')}
-                  >
-                    Subir imagen
-                  </button>
-                  <button
-                    type="button"
-                    className={`py-2 px-4 font-medium text-sm ${activeTab === 'url' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-                    onClick={() => setActiveTab('url')}
-                  >
-                    Usar URL
-                  </button>
-                </div>
-
-                {/* Contenido de las pestañas */}
-                <div className="space-y-4">
-                  {activeTab === 'upload' ? (
-                    <div>
-                      <div className="mt-1 flex items-center">
-                        <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                          Seleccionar archivo
-                          <input
-                            type="file"
-                            name="image_file"
-                            accept="image/*"
-                            onChange={handleNewProductChange}
-                            className="sr-only"
-                            disabled={uploading}
-                          />
-                        </label>
-                        {uploading && (
-                          <div className="ml-4 w-full max-w-xs">
-                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-blue-500 transition-all duration-300"
-                                style={{ width: `${uploadProgress}%` }}
-                              ></div>
-                            </div>
-                            <p className="text-xs text-gray-500 mt-1">Subiendo: {Math.round(uploadProgress)}%</p>
-                          </div>
-                        )}
-                      </div>
-                      <p className="mt-1 text-xs text-gray-500">
-                        Formatos: JPG, PNG, WEBP. Máx. 5MB
-                      </p>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="rounded-md shadow-sm">
-                        <input
-                          type="url"
-                          name="image_url"
-                          value={newProduct.image_url}
-                          onChange={handleNewProductChange}
-                          className="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                          placeholder="https://ejemplo.com/imagen.jpg"
-                        />
-                      </div>
-                      <p className="mt-1 text-xs text-gray-500">
-                        Ingresa la URL completa de la imagen
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Vista previa */}
-                  {newProduct.image_url && (
-                    <div className="mt-2">
-                      <p className="text-xs text-gray-500 mb-1">Vista previa:</p>
-                      <div className="flex items-start">
-                        <img 
-                          src={newProduct.image_url} 
-                          alt="Vista previa" 
-                          className="h-20 w-20 object-cover rounded border border-gray-200"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/100x100?text=Error+imagen';
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setNewProduct(prev => ({ ...prev, image_url: '' }))}
-                          className="ml-2 text-red-500 hover:text-red-700"
-                          title="Eliminar imagen"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">URL de la imagen</label>
+                <input
+                  type="url"
+                  name="image_url"
+                  value={newProduct.image_url}
+                  onChange={handleNewProductChange}
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                {newProduct.image_url && (
+                  <div className="mt-2">
+                    <p className="text-xs text-gray-500 mb-1">Vista previa:</p>
+                    <img 
+                      src={newProduct.image_url} 
+                      alt="Vista previa" 
+                      className="h-20 w-20 object-cover rounded border border-gray-200"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/100x100?text=Error+imagen';
+                      }}
+                    />
+                  </div>
+                )}
               </div>
               
               <div>
@@ -741,102 +530,28 @@ export default function AdminProductsPanel() {
                   </div>
 
                   <div className="mb-3">
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Imagen del producto</label>
-                    
-                    {/* Pestañas */}
-                    <div className="flex border-b border-gray-200 mb-4">
-                      <button
-                        type="button"
-                        className={`py-2 px-4 font-medium text-sm ${activeTab === 'upload' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-                        onClick={() => setActiveTab('upload')}
-                      >
-                        Subir imagen
-                      </button>
-                      <button
-                        type="button"
-                        className={`py-2 px-4 font-medium text-sm ${activeTab === 'url' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
-                        onClick={() => setActiveTab('url')}
-                      >
-                        Usar URL
-                      </button>
-                    </div>
-
-                    {/* Contenido de las pestañas */}
-                    <div className="space-y-4">
-                      {activeTab === 'upload' ? (
-                        <div>
-                          <div className="mt-1">
-                            <label className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                              {editingProduct?.image_url ? 'Cambiar imagen' : 'Seleccionar imagen'}
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleEditImageChange}
-                                className="sr-only"
-                                disabled={uploading}
-                              />
-                            </label>
-                            {uploading && (
-                              <div className="mt-2 w-full max-w-xs">
-                                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                  <div 
-                                    className="h-full bg-blue-500 transition-all duration-300"
-                                    style={{ width: `${uploadProgress}%` }}
-                                  ></div>
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Subiendo: {Math.round(uploadProgress)}%</p>
-                              </div>
-                            )}
-                          </div>
-                          <p className="mt-1 text-xs text-gray-500">
-                            Formatos: JPG, PNG, WEBP. Máx. 5MB
-                          </p>
-                        </div>
-                      ) : (
-                        <div>
-                          <div className="rounded-md shadow-sm">
-                            <input
-                              type="url"
-                              value={editingProduct?.image_url || ''}
-                              onChange={(e) => handleFieldChange('image_url', e.target.value)}
-                              className="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                              placeholder="https://ejemplo.com/imagen.jpg"
-                            />
-                          </div>
-                          <p className="mt-1 text-xs text-gray-500">
-                            Ingresa la URL completa de la imagen
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Vista previa */}
-                      {editingProduct?.image_url && (
-                        <div className="mt-2">
-                          <p className="text-xs text-gray-500 mb-1">Vista previa:</p>
-                          <div className="flex items-start">
-                            <img 
-                              src={editingProduct.image_url} 
-                              alt="Vista previa" 
-                              className="h-20 w-20 object-cover rounded border border-gray-200"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = 'https://via.placeholder.com/100x100?text=Error+imagen';
-                              }}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => handleFieldChange('image_url', '')}
-                              className="ml-2 text-red-500 hover:text-red-700"
-                              title="Eliminar imagen"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <label className="block text-sm font-medium text-gray-500">URL de la imagen</label>
+                    <input
+                      type="url"
+                      value={editingProduct?.image_url || ''}
+                      onChange={(e) => handleFieldChange('image_url', e.target.value)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      placeholder="https://ejemplo.com/imagen.jpg"
+                    />
+                    {editingProduct?.image_url && (
+                      <div className="mt-2">
+                        <p className="text-xs text-gray-500 mb-1">Vista previa:</p>
+                        <img 
+                          src={editingProduct.image_url} 
+                          alt="Vista previa" 
+                          className="h-20 w-20 object-cover rounded border border-gray-200"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/100x100?text=Error+imagen';
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="mb-3">
