@@ -13,16 +13,20 @@ const LoadingScreen = ({ onLoadingComplete }) => {
       setTimeout(() => {
         setIsVisible(false);
         onLoadingComplete();
-      }, 500);
+      }, 100);
     };
 
     // Mostrar el video inmediatamente
     if (video) {
-      video.play().catch(() => {}); // Intentar reproducir sin esperar
+      video.play()
+        .then(() => {
+          video.playbackRate = 1.5; // Reproducir a 1.5x de velocidad
+        })
+        .catch(() => {});
       video.addEventListener('ended', handleVideoEnd);
     }
     // Mostrar spinner solo si tarda en cargar
-    const spinnerTimeout = setTimeout(() => setLoading(true), 1000);
+    const spinnerTimeout = setTimeout(() => setLoading(true), 500);
     video && video.addEventListener('canplay', () => {
       setLoading(false);
       clearTimeout(spinnerTimeout);
