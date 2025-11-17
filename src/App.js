@@ -80,7 +80,6 @@ function App() {
                     <Featured />
                     <BestSellers />
                     <Hero />
-                    <BrandsStrip />
                     <Home />
                     <Recommended />
                     
