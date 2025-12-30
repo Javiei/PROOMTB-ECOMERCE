@@ -63,7 +63,7 @@ const Header = () => {
   React.useEffect(() => {
     // Títulos personalizados por ruta
     let pageTitle = 'PROOMTB';
-    
+
     // Si estamos en una página de detalle de producto navideño
     if (navidadMatch) {
       // Usar el nombre del producto directamente del estado de navegación
@@ -73,7 +73,7 @@ const Header = () => {
         // Si no hay estado, usar el título resuelto
         pageTitle = `${resolvedTitle} | PROOMTB`;
       }
-    } 
+    }
     // Si es un producto normal
     else if (productoMatch) {
       if (location.state?.product) {
@@ -94,7 +94,7 @@ const Header = () => {
     } else if (location.pathname.startsWith('/checkout')) {
       pageTitle = 'CHECKOUT | PROOMTB';
     }
-    
+
     document.title = pageTitle;
   }, [resolvedTitle, location.pathname, location.state, productoMatch, navidadMatch]);
 
@@ -142,22 +142,22 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     const trimmedSearch = searchTerm.trim();
-    
+
     // Usar navigate para actualizar la URL sin recargar la página
     if (trimmedSearch) {
       // Si ya estamos en la página de tienda, usa replace: false para permitir la navegación hacia atrás
-      navigate(`/tienda?search=${encodeURIComponent(trimmedSearch)}`, { 
-        replace: window.location.pathname === '/tienda' 
+      navigate(`/tienda?search=${encodeURIComponent(trimmedSearch)}`, {
+        replace: window.location.pathname === '/tienda'
       });
     } else {
-      navigate('/tienda', { 
-        replace: window.location.pathname === '/tienda' 
+      navigate('/tienda', {
+        replace: window.location.pathname === '/tienda'
       });
     }
-    
+
     setShowSearch(false);
   };
-  
+
   // Manejar la tecla Enter en el input de búsqueda
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -165,7 +165,7 @@ const Header = () => {
       handleSearch(e);
     }
   };
-  
+
   // Manejar el clic en el botón de búsqueda
   const handleSearchClick = (e) => {
     e.preventDefault();
@@ -189,20 +189,20 @@ const Header = () => {
     { name: 'Cintas de Timón', category: 'Cintas de Timón' },
     { name: 'Protectores de Bicicletas', category: 'Protectores de Bicicletas' },
     { name: 'Guardalodos', category: 'Guardalodos' },
-    
+
     // Electrónicos
     { name: 'Milleros', category: 'Milleros' },
     { name: 'Ciclo Computadoras GPS', category: 'Ciclo Computadoras GPS' },
     { name: 'Relojes GPS', category: 'Relojes GPS' },
     { name: 'Sensores', category: 'Sensores' },
     { name: 'Luces', category: 'Luces' },
-    
+
     // Protección y Ropa
     { name: 'Cascos', category: 'Cascos' },
     { name: 'Guantillas', category: 'Guantillas' },
     { name: 'Gafas', category: 'Gafas' },
     { name: 'Protecciones', category: 'Protecciones' },
-    
+
     // Accesorios
     { name: 'Nutrición', category: 'Nutrición' },
     { name: 'Bulticos y Mochilas', category: 'Bulticos y Mochilas' },
@@ -222,7 +222,7 @@ const Header = () => {
     "DESCUENTO DE EL 10%",
     "ENVÍO DESDE LOS 500 RD$",
     "PROOMTB BIKE & ROAD"
-    
+
   ];
 
   // Create a continuous loop of all messages for the marquee
@@ -242,7 +242,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Add custom animation for marquee */}
       <style jsx global>{`
         @keyframes marquee {
@@ -271,11 +271,11 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8" ref={dropdownRef}>
               <Link to="/tienda" className="text-white hover:text-purple-400 transition-colors font-medium">TIENDA</Link>
-              
+
 
               {/* Christmas Offers */}
-              <Link 
-                to="/ofertas-navidad" 
+              <Link
+                to="/ofertas-navidad"
                 className="relative bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-4 py-2 rounded-md text-white font-bold text-sm flex items-center space-x-2 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl overflow-hidden group"
               >
                 <span className="relative z-10 flex items-center">
@@ -288,10 +288,17 @@ const Header = () => {
                 <span className="absolute inset-0 bg-yellow-400 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
                 <span className="absolute -inset-1 bg-white/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping"></span>
               </Link>
+              <Link
+                to="/kids"
+                className={`text-sm font-medium transition-colors hover:text-purple-400 ${location.pathname.startsWith('/kids') ? 'text-purple-400' : 'text-white'
+                  }`}
+              >
+                KIDS
+              </Link>
 
               {/* Bikes Dropdown */}
               <div className="relative group">
-                <button 
+                <button
                   className="text-white hover:text-purple-400 transition-colors font-medium flex items-center"
                   onMouseEnter={() => setActiveDropdown('bikes')}
                 >
@@ -301,7 +308,7 @@ const Header = () => {
                   </svg>
                 </button>
                 {activeDropdown === 'bikes' && (
-                  <div 
+                  <div
                     className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
                     onMouseLeave={() => setActiveDropdown(null)}
                   >
@@ -317,10 +324,10 @@ const Header = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Accessories Dropdown */}
               <div className="relative group">
-                <button 
+                <button
                   className="text-white hover:text-purple-400 transition-colors font-medium flex items-center"
                   onMouseEnter={() => setActiveDropdown('accessories')}
                 >
@@ -330,7 +337,7 @@ const Header = () => {
                   </svg>
                 </button>
                 {activeDropdown === 'accessories' && (
-                  <div 
+                  <div
                     className="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-50 overflow-hidden"
                     onMouseLeave={() => setActiveDropdown(null)}
                   >
@@ -347,7 +354,7 @@ const Header = () => {
                           {item.name}
                         </button>
                       ))}
-                      
+
                       <div className="bg-gray-50 px-4 py-2 border-b border-t border-gray-200">
                         <h4 className="font-medium text-gray-700 text-sm">Electrónicos</h4>
                       </div>
@@ -360,7 +367,7 @@ const Header = () => {
                           {item.name}
                         </button>
                       ))}
-                      
+
                       <div className="bg-gray-50 px-4 py-2 border-b border-t border-gray-200">
                         <h4 className="font-medium text-gray-700 text-sm">Protección y Ropa</h4>
                       </div>
@@ -373,7 +380,7 @@ const Header = () => {
                           {item.name}
                         </button>
                       ))}
-                      
+
                       <div className="bg-gray-50 px-4 py-2 border-b border-t border-gray-200">
                         <h4 className="font-medium text-gray-700 text-sm">Accesorios</h4>
                       </div>
@@ -395,27 +402,27 @@ const Header = () => {
             {/* Right side navigation */}
             <div className="hidden md:flex items-center space-x-6">
               <Link to="/nosotros" className="text-white hover:text-purple-400 transition-colors font-medium">NOSOTROS</Link>
-              
+
               {/* WhatsApp Contact */}
               <div className="flex items-center space-x-2">
-                <a 
+                <a
                   href="https://wa.me/18297163555"
-                  target="_blank" 
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center group"
                   aria-label="Contactar por WhatsApp"
                   title="Contáctanos por WhatsApp"
                 >
                   <div className="bg-green-500 rounded-full p-1.5 group-hover:bg-green-600 transition-colors flex items-center justify-center">
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      fill="currentColor" 
-                      className="bi bi-whatsapp text-white" 
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-whatsapp text-white"
                       viewBox="0 0 16 16"
                     >
-                      <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+                      <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232" />
                     </svg>
                   </div>
                   <div className="ml-2 text-left">
@@ -426,7 +433,7 @@ const Header = () => {
                   </div>
                 </a>
               </div>
-              
+
               {/* Search Icon and Input */}
               <div className="relative">
                 <button
@@ -467,13 +474,13 @@ const Header = () => {
                   </form>
                 )}
               </div>
-              
+
               {/* Cart Icon */}
               <CartIcon onUnauthorized={() => {
                 setAuthModalTab('login');
                 setIsAuthModalOpen(true);
               }} />
-              
+
               {/* User Menu or Login Icon */}
               <div className="ml-4 relative">
                 <button
@@ -489,25 +496,25 @@ const Header = () => {
                   className="text-white hover:text-purple-400 transition-colors p-2 rounded-full hover:bg-white/10 flex items-center justify-center"
                   aria-label={user ? 'Ver perfil' : 'Iniciar sesión'}
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-6 w-6" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
                     stroke="currentColor"
                   >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                     />
                   </svg>
                 </button>
                 {user && <UserMenu />}
-                
+
                 {/* Auth Modal */}
-                <AuthModal 
+                <AuthModal
                   isOpen={isAuthModalOpen}
                   onClose={() => {
                     setIsAuthModalOpen(false);
@@ -545,8 +552,8 @@ const Header = () => {
                   </button>
                 </form>
               </div>
-              
-              <button 
+
+              <button
                 className="md:hidden text-white"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
@@ -557,15 +564,16 @@ const Header = () => {
             </div>
           </div>
 
-            {/* Mobile Navigation */}
+          {/* Mobile Navigation */}
           {isMenuOpen && (
             <nav className="md:hidden mt-4 pb-4 border-t border-gray-700 pt-4">
               <div className="flex flex-col space-y-3">
                 <Link to="/tienda" className="text-white hover:text-purple-400 transition-colors font-medium">TIENDA</Link>
-                
+                <Link to="/kids" className="text-white hover:text-purple-400 transition-colors font-medium">ZONA KIDS</Link>
+
                 {/* Mobile Bikes Dropdown */}
                 <div className="pl-4">
-                  <button 
+                  <button
                     className="text-white hover:text-purple-400 transition-colors font-medium flex items-center"
                     onClick={() => setActiveDropdown(activeDropdown === 'mobile-bikes' ? null : 'mobile-bikes')}
                   >
@@ -577,8 +585,8 @@ const Header = () => {
                   {activeDropdown === 'mobile-bikes' && (
                     <div className="mt-2 ml-4 space-y-2">
                       {bikeCategories.map((item, index) => (
-                        <a 
-                          key={index} 
+                        <a
+                          key={index}
                           href={item.href}
                           className="block text-gray-300 hover:text-purple-400 text-sm py-1"
                         >
@@ -588,10 +596,10 @@ const Header = () => {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Mobile Accessories Dropdown */}
                 <div className="pl-4">
-                  <button 
+                  <button
                     className="text-white hover:text-purple-400 transition-colors font-medium flex items-center"
                     onClick={() => setActiveDropdown(activeDropdown === 'mobile-accessories' ? null : 'mobile-accessories')}
                   >
@@ -603,8 +611,8 @@ const Header = () => {
                   {activeDropdown === 'mobile-accessories' && (
                     <div className="mt-2 ml-4 space-y-2">
                       {accessoryCategories.map((item, index) => (
-                        <a 
-                          key={index} 
+                        <a
+                          key={index}
                           href={item.href}
                           className="block text-gray-300 hover:text-purple-400 text-sm py-1"
                         >
@@ -614,7 +622,10 @@ const Header = () => {
                     </div>
                   )}
                 </div>
-                
+
+                <Link to="/ofertas-navidad" className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-md text-sm text-center shadow-lg">
+                  🎄 OFERTAS NAVIDEÑAS
+                </Link>
                 <Link to="/nosotros" className="text-white hover:text-purple-400 transition-colors font-medium">NOSOTROS</Link>
                 <div className="pt-4 border-t border-gray-700">
                   <CartIcon onUnauthorized={() => {
