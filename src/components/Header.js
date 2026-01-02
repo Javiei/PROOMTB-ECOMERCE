@@ -568,8 +568,8 @@ const Header = () => {
           {isMenuOpen && (
             <nav className="md:hidden mt-4 pb-4 border-t border-gray-700 pt-4">
               <div className="flex flex-col space-y-3">
-                <Link to="/tienda" className="text-white hover:text-purple-400 transition-colors font-medium">TIENDA</Link>
-                <Link to="/kids" className="text-white hover:text-purple-400 transition-colors font-medium">ZONA KIDS</Link>
+                <Link to="/tienda" className="text-white hover:text-purple-400 transition-colors font-medium" onClick={() => setIsMenuOpen(false)}>TIENDA</Link>
+                <Link to="/kids" className="text-white hover:text-purple-400 transition-colors font-medium" onClick={() => setIsMenuOpen(false)}>ZONA KIDS</Link>
 
                 {/* Mobile Bikes Dropdown */}
                 <div className="pl-4">
@@ -623,10 +623,10 @@ const Header = () => {
                   )}
                 </div>
 
-                <Link to="/ofertas-navidad" className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-md text-sm text-center shadow-lg">
+                <Link to="/ofertas-navidad" className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-md text-sm text-center shadow-lg" onClick={() => setIsMenuOpen(false)}>
                   🎄 OFERTAS NAVIDEÑAS
                 </Link>
-                <Link to="/nosotros" className="text-white hover:text-purple-400 transition-colors font-medium">NOSOTROS</Link>
+                <Link to="/nosotros" className="text-white hover:text-purple-400 transition-colors font-medium" onClick={() => setIsMenuOpen(false)}>NOSOTROS</Link>
                 <div className="pt-4 border-t border-gray-700">
                   <CartIcon onUnauthorized={() => {
                     setAuthModalTab('login');

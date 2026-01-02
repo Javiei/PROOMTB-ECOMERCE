@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import proomtbImage from '../assets/PROOMTB (1).png';
 import orcaMyo from '../assets/orca-myo.png';
+import kidsImage from '../assets/kids-banner.png';
 import { navigateToShop } from '../utils/navigation';
 
 const Hero = () => {
@@ -32,6 +33,17 @@ const Hero = () => {
     },
     {
       id: 3,
+      title: "ZONA KIDS",
+      subtitle: "Diversión sobre ruedas",
+      description: "Las mejores bicicletas para introducir a los pequeños en el mundo del ciclismo con seguridad y estilo.",
+      buttonText: "Ver Zona Kids",
+      background: "bg-gradient-to-br from-orange-500 via-red-500 to-pink-500",
+      image: kidsImage,
+      overlay: "bg-gradient-to-r from-orange-600/90 to-red-600/80",
+      hasImage: true
+    },
+    {
+      id: 4,
       title: "Equipamiento Premium",
       subtitle: "Alto rendimiento",
       description: "Todo el equipamiento que necesitas para llevar tu experiencia al siguiente nivel.",
@@ -102,10 +114,14 @@ const Hero = () => {
                     </p>
                     <button 
                       onClick={() => {
+                        if (slide.id === 3) {
+                          navigate('/kids');
+                          return;
+                        }
                         const filters = {};
                         if (slide.id === 1) filters.category = 'bicicletas';
                         if (slide.id === 2) filters.category = 'urbanas';
-                        if (slide.id === 3) filters.category = 'accesorios';
+                        if (slide.id === 4) filters.category = 'accesorios';
                         navigateToShop(navigate, filters);
                       }}
                       className="bg-cyan-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-cyan-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-cyan-500/30"

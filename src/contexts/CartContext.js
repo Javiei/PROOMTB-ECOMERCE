@@ -9,7 +9,6 @@ export const CartProvider = ({ children }) => {
       try {
         const savedCart = localStorage.getItem('cart');
         const parsedCart = savedCart ? JSON.parse(savedCart) : [];
-        console.log('Loaded cart from localStorage:', parsedCart);
         return parsedCart;
       } catch (error) {
         console.error('Error loading cart from localStorage:', error);
@@ -23,7 +22,6 @@ export const CartProvider = ({ children }) => {
   useEffect(() => {
     const saveCart = () => {
       try {
-        console.log('Saving cart to localStorage:', cart);
         localStorage.setItem('cart', JSON.stringify(cart));
       } catch (error) {
         console.error('Error saving cart to localStorage:', error);
@@ -38,7 +36,7 @@ export const CartProvider = ({ children }) => {
         }
       }
     };
-    
+
     // Only save if we're on the client side
     if (typeof window !== 'undefined') {
       saveCart();
@@ -51,19 +49,18 @@ export const CartProvider = ({ children }) => {
         console.error('Invalid product:', product);
         throw new Error('Producto no válido');
       }
-      
-      console.log('Adding to cart - Product:', { 
-        id: product.id, 
-        name: product.name,
-        price: product.price,
-        quantity 
-      });
-      
+
+      if (!product || !product.id) {
+        console.error('Invalid product:', product);
+        throw new Error('Producto no válido');
+      }
+
+
       setCart(prevCart => {
         // Check if product is already in cart
         const existingItemIndex = prevCart.findIndex(item => item.id === product.id);
         let newCart = [...prevCart];
-        
+
         if (existingItemIndex >= 0) {
           // Update quantity if product exists
           const updatedItem = {
@@ -71,11 +68,10 @@ export const CartProvider = ({ children }) => {
             quantity: newCart[existingItemIndex].quantity + quantity
           };
           newCart[existingItemIndex] = updatedItem;
-          console.log('Updated existing item in cart:', updatedItem);
         } else {
           // Add new item to cart
-          const newItem = { 
-            ...product, 
+          const newItem = {
+            ...product,
             quantity,
             // Ensure we have all required fields
             name: product.name || 'Producto sin nombre',
@@ -83,13 +79,11 @@ export const CartProvider = ({ children }) => {
             image: product.image || product.images?.[0] || ''
           };
           newCart = [...newCart, newItem];
-          console.log('Added new item to cart:', newItem);
         }
-        
-        console.log('New cart state:', newCart);
+
         return newCart;
       });
-      
+
       return true;
     } catch (error) {
       console.error('Error in addToCart:', error);
@@ -106,7 +100,7 @@ export const CartProvider = ({ children }) => {
       removeFromCart(productId);
       return;
     }
-    
+
     setCart(prevCart =>
       prevCart.map(item =>
         item.id === productId ? { ...item, quantity: newQuantity } : item

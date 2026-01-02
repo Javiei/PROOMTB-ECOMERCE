@@ -4,7 +4,6 @@ import { CartProvider } from './contexts/CartContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LoadingScreen from './components/LoadingScreen';
 import Header from './components/Header';
-import Hero from './components/Hero';
 import BrandsStrip from './components/BrandsStrip';
 import BestSellers from './components/BestSellers';
 import Featured from './components/Featured';
@@ -81,7 +80,7 @@ function App() {
                     <>
                       <Featured />
                       <BestSellers />
-                      <Hero />
+
                       <Home />
                       <Recommended />
 

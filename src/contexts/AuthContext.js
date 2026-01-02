@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateUserProfile = async (user) => {
     if (!user) return null;
-    
+
     try {
       // First try to get existing profile
       const { data: profile, error: fetchError } = await supabase
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
         .select('*')
         .eq('id', user.id)
         .single();
-      
+
       // If no profile exists, create one
       if (fetchError || !profile) {
         const { data: newProfile, error: createError } = await supabase
@@ -27,20 +27,20 @@ export const AuthProvider = ({ children }) => {
             {
               id: user.id,
               email: user.email,
-              full_name: user.user_metadata?.full_name || 
-                         user.user_metadata?.name || 
-                         user.email?.split('@')[0] || 'Usuario',
+              full_name: user.user_metadata?.full_name ||
+                user.user_metadata?.name ||
+                user.email?.split('@')[0] || 'Usuario',
               avatar_url: user.user_metadata?.avatar_url || ''
             },
             { onConflict: 'id' }
           )
           .select()
           .single();
-          
+
         if (createError) throw createError;
         return newProfile;
       }
-      
+
       return profile;
     } catch (error) {
       console.error('Error managing user profile:', error);
@@ -54,13 +54,13 @@ export const AuthProvider = ({ children }) => {
       try {
         setLoading(true);
         const { data: { session }, error } = await supabase.auth.getSession();
-        
+
         if (error) throw error;
-        
+
         if (session?.user) {
           await updateUserProfile(session.user);
         }
-        
+
         setSession(session);
         setUser(session?.user ?? null);
       } catch (error) {
@@ -77,11 +77,11 @@ export const AuthProvider = ({ children }) => {
       async (event, session) => {
         try {
           setLoading(true);
-          
+
           if (event === 'SIGNED_IN' && session?.user) {
             await updateUserProfile(session.user);
           }
-          
+
           setSession(session);
           setUser(session?.user ?? null);
         } catch (error) {
@@ -114,13 +114,10 @@ export const AuthProvider = ({ children }) => {
     },
     signInWithGoogle: async () => {
       try {
-        console.log('Initiating Google OAuth...');
-        
         // First, check if we can get the current session
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-        console.log('Current session:', sessionData);
-        if (sessionError) console.error('Session error:', sessionError);
-        
+        if (sessionError) console.error('Session error:', sessionError.message);
+
         // Try the simplest possible OAuth configuration
         const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
@@ -131,18 +128,12 @@ export const AuthProvider = ({ children }) => {
             }
           }
         });
-        
+
         if (error) {
-          console.error('Google OAuth error details:', {
-            message: error.message,
-            status: error.status,
-            code: error.code,
-            stack: error.stack
-          });
+          console.error('Google OAuth error details:', error.message);
           throw error;
         }
-        
-        console.log('Google OAuth response:', data);
+
         return data;
       } catch (err) {
         console.error('Error in signInWithGoogle:', err);
