@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { ShoppingBag, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { slugify } from '../utils';
 
 const Accessories = () => {
     const [products, setProducts] = useState([]);
@@ -97,7 +98,7 @@ const Accessories = () => {
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
                             {currentProducts.map((product) => (
-                                <Link to={`/product/${product.id}`} key={product.id} className="group cursor-pointer">
+                                <Link to={`/product/${slugify(product.name)}`} key={product.id} className="group cursor-pointer">
                                     {/* Product Image */}
                                     <div className="bg-gray-50/50 rounded-lg p-8 mb-6 transition-transform duration-300 group-hover:-translate-y-1">
                                         <div className="aspect-[4/3] flex items-center justify-center">

@@ -34,17 +34,15 @@ const Hero = () => {
                         Ingeniería de precisión para quienes buscan superar sus límites. Descubre la nueva generación de e-bikes Raymon.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Link to="/ebikes" className="bg-white text-black px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-200 transition-all transform hover:-translate-y-1 text-center inline-flex items-center justify-center">
-                            Ver E-Bikes
+                        <Link to="/catalogo" className="bg-white text-black px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-200 transition-all transform hover:-translate-y-1 text-center inline-flex items-center justify-center">
+                            Ver Bicicletas
                         </Link>
-                        <a
-                            href="https://www.google.com/maps/place/Proo+MTB+%26+Road/@18.472833,-69.9625717,17z/data=!3m1!4b1!4m6!3m5!1s0x8eaf8bf63c6292a5:0xeba7934faeefcc3a!8m2!3d18.4728279!4d-69.9599914!16s%2Fg%2F11rffl73cy?entry=ttu&g_ep=EgoyMDI2MDEwNy4wIKXMDSoASAFQAw%3D%3D"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <Link
+                            to="/accesorios"
                             className="border border-white text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-white/10 transition-all backdrop-blur-sm text-center inline-flex items-center justify-center"
                         >
-                            Buscar Concesionario
-                        </a>
+                            Ver Accesorios
+                        </Link>
                     </div>
                 </div>
             </div>

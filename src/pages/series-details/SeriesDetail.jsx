@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useParams, Link } from 'react-router-dom';
+import { slugify } from '../../utils';
 import { ChevronLeft, ChevronRight, Zap, Battery, Activity, ArrowUpCircle } from 'lucide-react';
 
 const SeriesDetail = () => {
@@ -107,7 +108,7 @@ const SeriesDetail = () => {
 
                                 {/* Active Bike Display */}
                                 <div className="text-center w-full max-w-4xl animate-fade-in-up">
-                                    <Link to={`/product/${bikes[activeIndex].id}`} className="block group">
+                                    <Link to={`/product/${slugify(bikes[activeIndex].modelo)}`} className="block group">
                                         <div className="relative aspect-[16/10] mb-8">
                                             <img
                                                 src={bikes[activeIndex].imagenes_urls?.[0]}

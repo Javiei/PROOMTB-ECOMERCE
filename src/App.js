@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -60,80 +61,87 @@ function App() {
     }, 700); // Match duration with CSS transition
   };
 
+
+
+  // ...
+
   return (
-    <Router>
-      <PageTitleUpdater />
-      <ScrollToTop />
-      <AuthProvider>
-        <CartProvider>
-          <div className="flex flex-col min-h-screen bg-white">
-            {loading && (
-              <LoadingScreen
-                onComplete={handleLoadingComplete}
-                isFading={isFading}
-              />
-            )}
+    <HelmetProvider>
+      <Router>
+        <PageTitleUpdater />
+        <ScrollToTop />
+        <AuthProvider>
+          <CartProvider>
+            <div className="flex flex-col min-h-screen bg-white">
+              {loading && (
+                <LoadingScreen
+                  onComplete={handleLoadingComplete}
+                  isFading={isFading}
+                />
+              )}
 
-            <Header />
-            <div className="flex-grow pt-20"> {/* Add padding for fixed header */}
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/accesorios" element={<Accessories />} />
-                <Route path="/ebikes" element={<AllEBikes />} />
-                <Route path="/category/:categorySlug" element={<AllEBikes />} />
-                <Route path="/serie/:serieId" element={<SeriesDetail />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/series/ravor" element={<SeriesDetailRavor />} />
-                <Route path="/series/vantor" element={<SeriesDetailVantor />} />
-                <Route path="/series/trailray" element={<SeriesDetailTrailray />} />
-                <Route path="/series/hardray" element={<SeriesDetailHardRay />} />
-                <Route path="/series/vamok" element={<SeriesDetailVamok />} />
-                <Route path="/series/korak" element={<SeriesDetailKorak />} />
-                <Route path="/series/airok" element={<SeriesDetailAirok />} />
-                <Route path="/series/norza" element={<SeriesDetailNorza />} />
-                <Route path="/series/tavano" element={<SeriesDetailTavano />} />
-                <Route path="/series/tahona" element={<SeriesDetailTahona />} />
-                <Route path="/series/metmo" element={<SeriesDetailMetmo />} />
-                <Route path="/series/arva" element={<SeriesDetailArva />} />
-                <Route path="/series/kirana" element={<SeriesDetailKirana />} />
-                <Route path="/series/soreno" element={<SeriesDetailSoreno />} />
-                <Route path="/series/territ" element={<SeriesDetailTerrit />} />
-                <Route path="/series/zayn" element={<SeriesDetailZayn />} />
-                <Route path="/series/rokua" element={<SeriesDetailRokua />} />
-                <Route path="/series/yara" element={<SeriesDetailYara />} />
-                <Route path="/series/arid" element={<SeriesDetailArid />} />
-                <Route path="/series/arid" element={<SeriesDetailArid />} />
-                <Route path="/series/nayta" element={<SeriesDetailNayta />} />
-                <Route path="/search" element={<SearchResults />} />
+              <Header />
+              <div className="flex-grow pt-20"> {/* Add padding for fixed header */}
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/accesorios" element={<Accessories />} />
+                  <Route path="/catalogo" element={<AllEBikes />} />
+                  <Route path="/ebikes" element={<AllEBikes />} />
+                  <Route path="/category/:categorySlug" element={<AllEBikes />} />
+                  <Route path="/serie/:serieId" element={<SeriesDetail />} />
+                  <Route path="/product/:id" element={<ProductDetail />} />
+                  <Route path="/series/ravor" element={<SeriesDetailRavor />} />
+                  <Route path="/series/vantor" element={<SeriesDetailVantor />} />
+                  <Route path="/series/trailray" element={<SeriesDetailTrailray />} />
+                  <Route path="/series/hardray" element={<SeriesDetailHardRay />} />
+                  <Route path="/series/vamok" element={<SeriesDetailVamok />} />
+                  <Route path="/series/korak" element={<SeriesDetailKorak />} />
+                  <Route path="/series/airok" element={<SeriesDetailAirok />} />
+                  <Route path="/series/norza" element={<SeriesDetailNorza />} />
+                  <Route path="/series/tavano" element={<SeriesDetailTavano />} />
+                  <Route path="/series/tahona" element={<SeriesDetailTahona />} />
+                  <Route path="/series/metmo" element={<SeriesDetailMetmo />} />
+                  <Route path="/series/arva" element={<SeriesDetailArva />} />
+                  <Route path="/series/kirana" element={<SeriesDetailKirana />} />
+                  <Route path="/series/soreno" element={<SeriesDetailSoreno />} />
+                  <Route path="/series/territ" element={<SeriesDetailTerrit />} />
+                  <Route path="/series/zayn" element={<SeriesDetailZayn />} />
+                  <Route path="/series/rokua" element={<SeriesDetailRokua />} />
+                  <Route path="/series/yara" element={<SeriesDetailYara />} />
+                  <Route path="/series/arid" element={<SeriesDetailArid />} />
+                  <Route path="/series/arid" element={<SeriesDetailArid />} />
+                  <Route path="/series/nayta" element={<SeriesDetailNayta />} />
+                  <Route path="/search" element={<SearchResults />} />
 
-                {/* Admin Routes */}
-                <Route element={<AdminRoute />}>
-                  <Route path="/admin" element={<AdminLayout />}>
-                    <Route index element={<Dashboard />} />
-                    <Route path="bikes" element={<ProductList type="bikes" />} />
-                    <Route path="bikes/new" element={<ProductForm type="bikes" />} />
-                    <Route path="bikes/edit/:id" element={<ProductForm type="bikes" />} />
+                  {/* Admin Routes */}
+                  <Route element={<AdminRoute />}>
+                    <Route path="/admin" element={<AdminLayout />}>
+                      <Route index element={<Dashboard />} />
+                      <Route path="bikes" element={<ProductList type="bikes" />} />
+                      <Route path="bikes/new" element={<ProductForm type="bikes" />} />
+                      <Route path="bikes/edit/:id" element={<ProductForm type="bikes" />} />
 
-                    <Route path="accessories" element={<ProductList type="accessories" />} />
-                    <Route path="accessories/new" element={<ProductForm type="accessories" />} />
-                    <Route path="accessories/edit/:id" element={<ProductForm type="accessories" />} />
+                      <Route path="accessories" element={<ProductList type="accessories" />} />
+                      <Route path="accessories/new" element={<ProductForm type="accessories" />} />
+                      <Route path="accessories/edit/:id" element={<ProductForm type="accessories" />} />
 
-                    <Route path="products" element={<ProductList />} /> {/* Fallback */}
+                      <Route path="products" element={<ProductList />} /> {/* Fallback */}
+                    </Route>
                   </Route>
-                </Route>
 
-                {/* User Routes */}
-                <Route element={<PrivateRoute />}>
-                  <Route path="/profile" element={<UserProfile />} />
-                </Route>
-              </Routes>
-            </div>
-            <Footer />
-          </div >
-        </CartProvider>
-      </AuthProvider>
-      <WhatsAppButton />
-    </Router>
+                  {/* User Routes */}
+                  <Route element={<PrivateRoute />}>
+                    <Route path="/profile" element={<UserProfile />} />
+                  </Route>
+                </Routes>
+              </div>
+              <Footer />
+            </div >
+          </CartProvider>
+        </AuthProvider>
+        <WhatsAppButton />
+      </Router>
+    </HelmetProvider>
   );
 }
 

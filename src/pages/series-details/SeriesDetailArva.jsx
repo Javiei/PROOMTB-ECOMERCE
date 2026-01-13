@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Link } from 'react-router-dom';
+import { slugify } from '../../utils';
 import { ChevronLeft, ChevronRight, Activity, Cpu, Circle, Anchor } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Navigation } from 'swiper/modules';
@@ -97,10 +98,10 @@ const SeriesDetailArva = () => {
                                 className="w-full h-full"
                             >
                                 {bikes.map((bike, index) => (
-                                    <SwiperSlide key={bike.id} className={`!w-[85vw] md:!w-[1000px] !h-full flex items-center justify-center transition-all duration-700 ${index === activeIndex ? 'scale-125 opacity-100 z-10' : 'scale-90 opacity-40 blur-[2px]'}`}>
+                                    <SwiperSlide key={slugify(bike.modelo)} className={`!w-[85vw] md:!w-[1000px] !h-full flex items-center justify-center transition-all duration-700 ${index === activeIndex ? 'scale-125 opacity-100 z-10' : 'scale-90 opacity-40 blur-[2px]'}`}>
                                         {({ isActive }) => (
                                             <div className="relative w-full h-full flex flex-col items-center justify-center">
-                                                <Link to={`/product/${bike.id}`} className="relative group block w-full">
+                                                <Link to={`/product/${slugify(bike.modelo)}`} className="relative group block w-full">
                                                     <div className="relative aspect-[16/10] mb-8">
                                                         <img
                                                             src={bike.imagenes_urls?.[0]}
@@ -204,7 +205,7 @@ const SeriesDetailArva = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {bikes.length > 0 ? (
                         bikes.map((bike) => (
-                            <Link to={`/product/${bike.id}`} key={bike.id} className="group block text-center" onClick={() => window.scrollTo(0, 0)}>
+                            <Link to={`/product/${slugify(bike.modelo)}`} key={slugify(bike.modelo)} className="group block text-center" onClick={() => window.scrollTo(0, 0)}>
                                 <div className="bg-gray-50 rounded-3xl p-8 mb-6 relative aspect-[4/3] flex items-center justify-center transition-colors group-hover:bg-gray-100">
                                     <img
                                         src={bike.imagenes_urls?.[0]}

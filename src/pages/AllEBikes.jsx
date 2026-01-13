@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { LayoutGrid, List, ChevronDown } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
+import { slugify } from '../utils';
 
 const AllEBikes = () => {
     const { categorySlug } = useParams();
@@ -199,7 +200,7 @@ const AllEBikes = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
                         {currentProducts.map((product) => (
                             <Link
-                                to={`/product/${product.id}`}
+                                to={`/product/${slugify(product.modelo)}`}
                                 key={product.id}
                                 className="group block"
                                 onClick={() => window.scrollTo(0, 0)}
@@ -249,7 +250,7 @@ const AllEBikes = () => {
                     <div className="space-y-6">
                         {currentProducts.map((product) => (
                             <Link
-                                to={`/product/${product.id}`}
+                                to={`/product/${slugify(product.modelo)}`}
                                 key={product.id}
                                 className="group block bg-white border border-gray-100 rounded-3xl p-8 transition-all duration-500 shadow-sm hover:shadow-lg"
                                 onClick={() => window.scrollTo(0, 0)}

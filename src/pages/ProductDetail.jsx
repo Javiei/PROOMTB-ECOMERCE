@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { ChevronLeft, ChevronUp, ChevronDown, Ruler, FileText, Check, Zap, Battery, Scale, Disc, Circle, MoveHorizontal, Maximize, GitBranch, Settings2, Layers, Link as LinkIcon, Plug, Monitor, Component, Hexagon, Activity, ArrowUpCircle } from 'lucide-react';
+import { ChevronLeft, Check, Ruler, FileText } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
+import { Helmet } from 'react-helmet-async';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import { slugify } from '../utils';
 
 import { useCart } from '../context/CartContext';
 
 const ProductDetail = () => {
     const { id } = useParams();
     const { addToCart } = useCart();
+
+    // State Declarations
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedSize, setSelectedSize] = useState('M');
     const [relatedProducts, setRelatedProducts] = useState([]);
-
     const [activeImage, setActiveImage] = useState(null);
-
     const [activeColorIndex, setActiveColorIndex] = useState(0);
     const [selectedFrame, setSelectedFrame] = useState(null);
 
@@ -65,78 +67,79 @@ const ProductDetail = () => {
         fetchProduct();
     }, [id]);
 
-
-
     const fetchProduct = async () => {
         try {
             setLoading(true);
 
-            // Try 'bicicletas' first
-            let { data, error } = await supabase
-                .from('bicicletas')
-                .select('*')
-                .eq('id', id)
-                .single();
+            const isId = !isNaN(id);
+            let matchedData = null;
+            let matchedTable = '';
 
-            let mappedProduct = null;
-
-            if (data) {
-                mappedProduct = {
-                    ...data,
-                    name: data.modelo,
-                    price: data.precio_eur,
-                    description: data.description,
-                    images: data.imagenes_urls || [],
-                    image_url: data.imagenes_urls && data.imagenes_urls.length > 0 ? data.imagenes_urls[0] : null,
-                    tipos_marco: data.tipos_marco
-                };
+            // 1. Try finding in 'bicicletas'
+            let queryBikes = supabase.from('bicicletas').select('*');
+            if (isId) {
+                queryBikes = queryBikes.eq('id', id);
             } else {
-                // Try 'products' table
-                const { data: prodData, error: prodError } = await supabase
-                    .from('products')
-                    .select('*')
-                    .eq('id', id)
-                    .single();
+                const nameSearch = id.replace(/-/g, ' ');
+                queryBikes = queryBikes.ilike('modelo', nameSearch);
+            }
+
+            const { data: bikeData } = await queryBikes.maybeSingle();
+
+            if (bikeData) {
+                matchedData = bikeData;
+                matchedTable = 'bicicletas';
+            } else {
+                // 2. Try finding in 'products'
+                let queryProds = supabase.from('products').select('*');
+                if (isId) {
+                    queryProds = queryProds.eq('id', id);
+                } else {
+                    const nameSearch = id.replace(/-/g, ' ');
+                    queryProds = queryProds.ilike('name', nameSearch);
+                }
+                const { data: prodData } = await queryProds.maybeSingle();
 
                 if (prodData) {
-                    mappedProduct = {
-                        ...prodData,
-                        name: prodData.name,
-                        price: prodData.price,
-                        description: prodData.description,
-                        images: prodData.image_url ? [prodData.image_url] : [],
-                        image_url: prodData.image_url
-                    };
-                } else if (prodError && !error) {
-                    // If both failed, use the error from first or second? 
-                    // We'll throw generic or log.
-                    console.error('Error fetching from products:', prodError);
+                    matchedData = prodData;
+                    matchedTable = 'products';
                 }
             }
 
-            if (!mappedProduct) {
-                // Nothing found
+            if (!matchedData) {
                 setProduct(null);
             } else {
+                const mappedProduct = matchedTable === 'bicicletas' ? {
+                    ...matchedData,
+                    name: matchedData.modelo,
+                    price: matchedData.precio_eur,
+                    description: matchedData.description,
+                    images: matchedData.imagenes_urls || [],
+                    image_url: matchedData.imagenes_urls?.[0] || null,
+                    tipos_marco: matchedData.tipos_marco
+                } : {
+                    ...matchedData,
+                    name: matchedData.name,
+                    price: matchedData.price,
+                    description: matchedData.description,
+                    images: matchedData.image_url ? [matchedData.image_url] : [],
+                    image_url: matchedData.image_url
+                };
+
                 setProduct(mappedProduct);
 
-                // Set default frame
-                if (mappedProduct.tipos_marco && mappedProduct.tipos_marco.length > 0) {
+                if (mappedProduct.tipos_marco?.length > 0) {
                     setSelectedFrame(mappedProduct.tipos_marco[0]);
                 }
 
-                // Fetch related products (same series)
                 if (mappedProduct.serie_id) {
                     const { data: related } = await supabase
                         .from('bicicletas')
                         .select('id, modelo, precio_eur, imagenes_urls')
                         .eq('serie_id', mappedProduct.serie_id)
-                        .neq('id', id) // Exclude current product
+                        .neq('id', matchedData.id)
                         .limit(3);
-
-                    if (related) {
-                        setRelatedProducts(related);
-                    }
+                    if (related) setRelatedProducts(related);
                 }
             }
 
@@ -150,14 +153,27 @@ const ProductDetail = () => {
     if (loading) return <div className="min-h-screen bg-white flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div></div>;
     if (!product) return <div className="min-h-screen bg-white flex items-center justify-center">Producto no encontrado</div>;
 
-    // Split name for styling "ARID PRO" -> "ARID" bold, "PRO" gray if possible, 
-    // but for generic products we'll just display the name.
-    // For the demo feeling, let's assume the last word might be the "variant" if it's multi-word.
     const mainName = product.name;
     const subName = '';
 
     return (
         <div className="bg-white min-h-screen pt-24 pb-16">
+            <Helmet>
+                <title>{mainName} | PROOMTB & ROAD</title>
+                <meta name="description" content={product?.description?.substring(0, 160) || `Buy ${mainName} at PROOMTB`} />
+                <meta property="og:type" content="product" />
+                <meta property="og:title" content={mainName} />
+                <meta property="og:description" content={product?.description?.substring(0, 200)} />
+                <meta property="og:image" content={product?.image_url} />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="product:price:amount" content={product?.price} />
+                <meta property="product:price:currency" content="EUR" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={mainName} />
+                <meta name="twitter:description" content={product?.description?.substring(0, 200)} />
+                <meta name="twitter:image" content={product?.image_url} />
+            </Helmet>
+
             <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
 
                 {/* Breadcrumb / Back */}
@@ -372,7 +388,7 @@ const ProductDetail = () => {
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                             {relatedProducts.map(p => (
-                                <Link to={`/product/${p.id}`} key={p.id} className="group block text-center" onClick={() => window.scrollTo(0, 0)}>
+                                <Link to={`/product/${slugify(p.modelo)}`} key={p.id} className="group block text-center" onClick={() => window.scrollTo(0, 0)}>
                                     <div className="bg-gray-50 rounded-3xl p-8 mb-6 relative aspect-[4/3] flex items-center justify-center transition-colors group-hover:bg-gray-100">
                                         <img
                                             src={p.imagenes_urls && p.imagenes_urls.length > 0 ? p.imagenes_urls[0] : p.imagen_url}

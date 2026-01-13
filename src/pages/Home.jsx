@@ -1,12 +1,14 @@
 import React from 'react';
 import Hero from '../components/home/Hero';
 import JourneySection from '../components/home/JourneySection';
+import ServiceMarketing from '../components/home/ServiceMarketing';
 
 const Home = () => {
     return (
         <main>
             <Hero />
             <JourneySection />
+            <ServiceMarketing />
 
             {/* Short Brand Statement Section (common in Raymon) */}
             <section className="bg-raymon-gray py-24">
