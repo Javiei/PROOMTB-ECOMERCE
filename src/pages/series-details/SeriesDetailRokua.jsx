@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { slugify } from '../../utils';
 import { ChevronLeft, ChevronRight, Activity, Cpu, Circle, Anchor, ShieldCheck, Compass } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -50,6 +51,15 @@ const SeriesDetailRokua = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <Helmet>
+                <title>Serie Rokua | PROOMTB</title>
+                <meta name="description" content="Descubre la serie Rokua de Raymon en PROOMTB. Rendimiento extremo y diseño innovador." />
+                <meta property="og:title" content="Serie Rokua | PROOMTB" />
+                <meta property="og:description" content="Descubre la serie Rokua de Raymon en PROOMTB. Rendimiento extremo y diseño innovador." />
+                <meta property="og:image" content="https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2Fd9%2Fb1%2Fb3%2F1747034724%2FRokua_hero.png&w=1920&q=100" />
+                <meta property="og:type" content="website" />
+                <meta name="twitter:card" content="summary_large_image" />
+            </Helmet>
 
             {/* Top Section: Image, Carousel, Specs */}
             <div className="relative text-white pb-32 overflow-hidden">

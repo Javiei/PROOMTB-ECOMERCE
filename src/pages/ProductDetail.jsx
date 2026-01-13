@@ -159,18 +159,24 @@ const ProductDetail = () => {
     return (
         <div className="bg-white min-h-screen pt-24 pb-16">
             <Helmet>
-                <title>{mainName} | PROOMTB & ROAD</title>
-                <meta name="description" content={product?.description?.substring(0, 160) || `Buy ${mainName} at PROOMTB`} />
+                <title>{mainName} | PROOMTB</title>
+                <meta name="description" content={product?.description?.substring(0, 160) || `Descubre el ${mainName} en PROOMTB & ROAD.`} />
+
+                {/* Open Graph / Facebook / WhatsApp */}
                 <meta property="og:type" content="product" />
-                <meta property="og:title" content={mainName} />
-                <meta property="og:description" content={product?.description?.substring(0, 200)} />
+                <meta property="og:site_name" content="PROOMTB" />
+                <meta property="og:title" content={`${mainName} | PROOMTB`} />
+                <meta property="og:description" content={product?.description?.substring(0, 200) || `Consigue tu ${mainName} en nuestra tienda oficial.`} />
                 <meta property="og:image" content={product?.image_url} />
+                <meta property="og:image:secure_url" content={product?.image_url} />
                 <meta property="og:url" content={window.location.href} />
                 <meta property="product:price:amount" content={product?.price} />
                 <meta property="product:price:currency" content="EUR" />
+
+                {/* Twitter */}
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={mainName} />
-                <meta name="twitter:description" content={product?.description?.substring(0, 200)} />
+                <meta name="twitter:title" content={`${mainName} | PROOMTB`} />
+                <meta name="twitter:description" content={product?.description?.substring(0, 200) || `Descubre el ${mainName} en PROOMTB.`} />
                 <meta name="twitter:image" content={product?.image_url} />
             </Helmet>
 
