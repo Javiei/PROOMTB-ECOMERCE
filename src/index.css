@@ -1,127 +1,94 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  html {
-    font-family: 'Noto Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
   body {
-    @apply bg-white text-gray-900 text-base leading-relaxed;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight;
-  }
-
-  h1 { @apply text-4xl md:text-5xl; }
-  h2 { @apply text-3xl md:text-4xl; }
-  h3 { @apply text-2xl md:text-3xl; }
-  h4 { @apply text-xl md:text-2xl; }
-  h5 { @apply text-lg md:text-xl; }
-  h6 { @apply text-base md:text-lg; }
-
-  p, a, li, button, input, textarea, select, label {
-    @apply font-sans;
-  }
-
-  a {
-    @apply text-purple-600 hover:text-purple-800 transition-colors;
-  }
-
-  button, [type='button'], [type='submit'] {
-    @apply font-medium;
+    @apply font-sans antialiased text-raymon-black bg-raymon-white;
   }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Custom Scrollbar to match minimalism */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* Custom animations for loading screen */
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
 
-.fade-out {
-  animation: fadeOut 0.3s ease-out forwards;
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
 }
 
-/* Horizontal scrolling animation for BestSellers */
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
   }
-  100% {
-    transform: translateX(-50%);
-  }
-}
 
-.animate-scroll {
-  animation: scroll 8s linear infinite;
-}
-
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
+  .animate-fade-in-up {
+    animation: fadeInUp 0.7s ease-out forwards;
   }
-  to {
-    transform: rotate(360deg);
-  }
-}
 
-@keyframes spin-slow-reverse {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
 
-@keyframes progress {
-  0% {
-    transform: translateX(-100%);
+    to {
+      opacity: 1;
+    }
   }
-  100% {
-    transform: translateX(0%);
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-}
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px) scale(1);
-    opacity: 0.6;
+  /* Carousel Slide Animations */
+  .animate-slide-in-right {
+    animation: slideInRight 0.5s ease-out forwards;
   }
-  50% {
-    transform: translateY(-20px) scale(1.1);
-    opacity: 1;
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.5s ease-out forwards;
   }
-}
 
-.animate-spin-slow {
-  animation: spin-slow 8s linear infinite;
-}
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(50px);
+    }
 
-.animate-spin-slow-reverse {
-  animation: spin-slow-reverse 12s linear infinite;
-}
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
 
-.animate-progress {
-  animation: progress 3s ease-out;
-}
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
 }

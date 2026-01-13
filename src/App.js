@@ -1,254 +1,139 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { CartProvider } from './contexts/CartContext';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import LoadingScreen from './components/LoadingScreen';
-import Header from './components/Header';
-import BrandsStrip from './components/BrandsStrip';
-import BestSellers from './components/BestSellers';
-import Featured from './components/Featured';
-import Recommended from './components/Recommended';
-import Newsletter from './components/Newsletter';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import Header from './components/common/Header';
+import Footer from './components/common/Footer';
+import WhatsAppButton from './components/common/WhatsAppButton';
+import { Link } from 'react-router-dom';
+import LoadingScreen from './components/common/LoadingScreen';
 import Home from './pages/Home';
-import Shop from './pages/Shop';
-import About from './pages/About';
-import ChristmasOffers from './pages/ChristmasOffers';
-import ChristmasOffersPage from './pages/ChristmasOffersPage';
-import ChristmasProductDetail from './pages/ChristmasProductDetail';
-import KidsPage from './pages/KidsPage';
-import KidsProductDetail from './pages/KidsProductDetail';
-import ProductDetail from './components/ProductDetail';
-import LegalFooter from './components/LegalFooter';
-// Importar páginas de políticas
-import Devoluciones from './pages/policies/Devoluciones';
-import Reembolsos from './pages/policies/Reembolsos';
-import Cancelaciones from './pages/policies/Cancelaciones';
-import Entregas from './pages/policies/Entregas';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminProductsPanel from './components/AdminProductsPanel';
-import AdminOrdersPanel from './components/AdminOrdersPanel';
-import AdminChat from './components/admin/AdminChat';
-import AdminLogin from './components/AdminLogin';
-import AdminRoute from './components/AdminRoute';
-import Footer from './components/Footer';
-import Login from './components/auth/Login';
-import Signup from './components/auth/Signup';
-import Profile from './components/profile/Profile';
-import EditProfile from './components/profile/EditProfile';
-import WhatsAppButton from './components/WhatsAppButton';
+import Accessories from './pages/Accessories';
+import AllEBikes from './pages/AllEBikes';
+import ProductDetail from './pages/ProductDetail';
+import SeriesDetail from './pages/series-details/SeriesDetail';
+import SeriesDetailRavor from './pages/series-details/SeriesDetailRavor';
+import SeriesDetailVantor from './pages/series-details/SeriesDetailVantor';
+import SeriesDetailTrailray from './pages/series-details/SeriesDetailTrailray';
+import SeriesDetailHardRay from './pages/series-details/SeriesDetailHardRay';
+import SeriesDetailVamok from './pages/series-details/SeriesDetailVamok';
+import SeriesDetailKorak from './pages/series-details/SeriesDetailKorak';
+import SeriesDetailAirok from './pages/series-details/SeriesDetailAirok';
+import SeriesDetailNorza from './pages/series-details/SeriesDetailNorza';
+import SeriesDetailTavano from './pages/series-details/SeriesDetailTavano';
+import SeriesDetailTahona from './pages/series-details/SeriesDetailTahona'; // Tahona Series
+import SeriesDetailMetmo from './pages/series-details/SeriesDetailMetmo'; // Metmo Series
+import SeriesDetailArva from './pages/series-details/SeriesDetailArva';
+import SeriesDetailKirana from './pages/series-details/SeriesDetailKirana';
+import SeriesDetailSoreno from './pages/series-details/SeriesDetailSoreno';
+import SeriesDetailTerrit from './pages/series-details/SeriesDetailTerrit';
+import SeriesDetailZayn from './pages/series-details/SeriesDetailZayn';
+import SeriesDetailRokua from './pages/series-details/SeriesDetailRokua';
+import SeriesDetailYara from './pages/series-details/SeriesDetailYara';
+import SeriesDetailArid from './pages/series-details/SeriesDetailArid';
+import SeriesDetailNayta from './pages/series-details/SeriesDetailNayta';
 
-// Componente de ruta protegida
-const PrivateRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+// Admin Components
+import AdminRoute from './components/admin/AdminRoute';
+import AdminLayout from './components/admin/AdminLayout';
+import Dashboard from './pages/admin/Dashboard';
+import ProductList from './pages/admin/ProductList';
+import ProductForm from './components/admin/ProductForm';
 
-  if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Cargando...</div>;
-  }
+// User Components
+import PrivateRoute from './components/auth/PrivateRoute';
+import UserProfile from './pages/UserProfile';
 
-  return user ? children : <Navigate to="/iniciar-sesion" replace />;
-};
-
-// Componente de ruta para invitados (no autenticados)
-const GuestRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Cargando...</div>;
-  }
-
-  return !user ? children : <Navigate to="/perfil" replace />;
-};
+import ScrollToTop from './components/common/ScrollToTop';
+import PageTitleUpdater from './components/common/PageTitleUpdater';
+import SearchResults from './pages/SearchResults';
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [isFading, setIsFading] = useState(false);
 
+  // Simulate initial loading or wait for resources
   const handleLoadingComplete = () => {
-    setIsLoading(false);
+    setIsFading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 700); // Match duration with CSS transition
   };
 
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <div className="App">
-            {isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
-            <div className={`transition-all duration-1000 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
-              <Header />
-              <main className="pt-20">
-                <Routes>
-                  <Route path="/" element={
-                    <>
-                      <Featured />
-                      <BestSellers />
+    <Router>
+      <PageTitleUpdater />
+      <ScrollToTop />
+      <AuthProvider>
+        <CartProvider>
+          <div className="flex flex-col min-h-screen bg-white">
+            {loading && (
+              <LoadingScreen
+                onComplete={handleLoadingComplete}
+                isFading={isFading}
+              />
+            )}
 
-                      <Home />
-                      <Recommended />
+            <Header />
+            <div className="flex-grow pt-20"> {/* Add padding for fixed header */}
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/accesorios" element={<Accessories />} />
+                <Route path="/ebikes" element={<AllEBikes />} />
+                <Route path="/category/:categorySlug" element={<AllEBikes />} />
+                <Route path="/serie/:serieId" element={<SeriesDetail />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/series/ravor" element={<SeriesDetailRavor />} />
+                <Route path="/series/vantor" element={<SeriesDetailVantor />} />
+                <Route path="/series/trailray" element={<SeriesDetailTrailray />} />
+                <Route path="/series/hardray" element={<SeriesDetailHardRay />} />
+                <Route path="/series/vamok" element={<SeriesDetailVamok />} />
+                <Route path="/series/korak" element={<SeriesDetailKorak />} />
+                <Route path="/series/airok" element={<SeriesDetailAirok />} />
+                <Route path="/series/norza" element={<SeriesDetailNorza />} />
+                <Route path="/series/tavano" element={<SeriesDetailTavano />} />
+                <Route path="/series/tahona" element={<SeriesDetailTahona />} />
+                <Route path="/series/metmo" element={<SeriesDetailMetmo />} />
+                <Route path="/series/arva" element={<SeriesDetailArva />} />
+                <Route path="/series/kirana" element={<SeriesDetailKirana />} />
+                <Route path="/series/soreno" element={<SeriesDetailSoreno />} />
+                <Route path="/series/territ" element={<SeriesDetailTerrit />} />
+                <Route path="/series/zayn" element={<SeriesDetailZayn />} />
+                <Route path="/series/rokua" element={<SeriesDetailRokua />} />
+                <Route path="/series/yara" element={<SeriesDetailYara />} />
+                <Route path="/series/arid" element={<SeriesDetailArid />} />
+                <Route path="/series/arid" element={<SeriesDetailArid />} />
+                <Route path="/series/nayta" element={<SeriesDetailNayta />} />
+                <Route path="/search" element={<SearchResults />} />
 
-                      <LegalFooter />
-                      <WhatsAppButton />
-                    </>
-                  } />
-                  <Route path="/tienda" element={<Shop />} />
-                  <Route path="/navidad" element={<ChristmasOffersPage />} />
-                  <Route path="/ofertas-navidad" element={<ChristmasOffersPage />} />
-                  <Route path="/navidad/:id/:name" element={<ChristmasProductDetail />} />
-                  <Route path="/kids" element={<KidsPage />} />
-                  <Route path="/kids/:id/:name" element={<KidsProductDetail />} />
-                  <Route path="/nosotros" element={<About />} />
-                  <Route path="/test" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-4xl font-bold">Test Route Working!</h1></div>} />
-                  <Route path="/producto/:productName" element={<ProductDetail />} />
-                  {/* Admin Routes */}
-                  <Route path="/admin/login" element={<AdminLogin />} />
-                  <Route path="/admin" element={
-                    <AdminRoute>
-                      <AdminDashboard />
-                    </AdminRoute>
-                  }>
-                    <Route index element={<Navigate to="productos" replace />} />
-                    <Route path="productos" element={<AdminProductsPanel />} />
-                    <Route path="pedidos" element={<AdminOrdersPanel />} />
-                    <Route path="chat" element={<AdminChat />} />
+                {/* Admin Routes */}
+                <Route element={<AdminRoute />}>
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="bikes" element={<ProductList type="bikes" />} />
+                    <Route path="bikes/new" element={<ProductForm type="bikes" />} />
+                    <Route path="bikes/edit/:id" element={<ProductForm type="bikes" />} />
+
+                    <Route path="accessories" element={<ProductList type="accessories" />} />
+                    <Route path="accessories/new" element={<ProductForm type="accessories" />} />
+                    <Route path="accessories/edit/:id" element={<ProductForm type="accessories" />} />
+
+                    <Route path="products" element={<ProductList />} /> {/* Fallback */}
                   </Route>
-                  <Route path="/checkout" element={<div className="min-h-screen bg-gray-900 text-white p-8"><h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1><p>Página de pago en construcción</p></div>} />
+                </Route>
 
-                  {/* Rutas de Políticas */}
-                  <Route path="/politicas/devoluciones" element={<Devoluciones />} />
-                  <Route path="/politicas/reembolsos" element={<Reembolsos />} />
-                  <Route path="/politicas/cancelaciones" element={<Cancelaciones />} />
-                  <Route path="/politicas/entregas" element={<Entregas />} />
-
-                  {/* Rutas de autenticación */}
-                  <Route
-                    path="/iniciar-sesion"
-                    element={
-                      <GuestRoute>
-                        <Login />
-                      </GuestRoute>
-                    }
-                  />
-                  <Route
-                    path="/registro"
-                    element={
-                      <GuestRoute>
-                        <Signup />
-                      </GuestRoute>
-                    }
-                  />
-                  <Route
-                    path="/olvide-contrasena"
-                    element={<div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-                      <div className="max-w-md w-full space-y-8">
-                        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Restablecer contraseña</h2>
-                        <p className="mt-2 text-center text-sm text-gray-600">
-                          Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
-                        </p>
-                        <form className="mt-8 space-y-6">
-                          <div className="rounded-md shadow-sm -space-y-px">
-                            <div>
-                              <label htmlFor="email-address" className="sr-only">
-                                Correo electrónico
-                              </label>
-                              <input
-                                id="email-address"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                                placeholder="Correo electrónico"
-                              />
-                            </div>
-                          </div>
-
-                          <div>
-                            <button
-                              type="submit"
-                              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                            >
-                              Enviar enlace
-                            </button>
-                          </div>
-                        </form>
-                      </div>
-                    </div>}
-                  />
-                  <Route
-                    path="/restablecer-contrasena"
-                    element={
-                      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-md w-full space-y-8">
-                          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Nueva contraseña</h2>
-                          <form className="mt-8 space-y-6">
-                            <div className="rounded-md shadow-sm -space-y-px">
-                              <div>
-                                <label htmlFor="password" className="sr-only">
-                                  Nueva contraseña
-                                </label>
-                                <input
-                                  id="password"
-                                  name="password"
-                                  type="password"
-                                  autoComplete="new-password"
-                                  required
-                                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                                  placeholder="Nueva contraseña"
-                                />
-                              </div>
-                              <div>
-                                <label htmlFor="confirm-password" className="sr-only">
-                                  Confirmar contraseña
-                                </label>
-                                <input
-                                  id="confirm-password"
-                                  name="confirm-password"
-                                  type="password"
-                                  autoComplete="new-password"
-                                  required
-                                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
-                                  placeholder="Confirmar contraseña"
-                                />
-                              </div>
-                            </div>
-
-                            <div>
-                              <button
-                                type="submit"
-                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                              >
-                                Restablecer contraseña
-                              </button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    }
-                  />
-
-                  {/* Rutas protegidas */}
-                  <Route
-                    path="/perfil"
-                    element={
-                      <PrivateRoute>
-                        <Profile />
-                        <LegalFooter />
-                      </PrivateRoute>
-                    }
-                  />
-                  <Route
-                    path="/perfil/editar"
-                    element={
-                      <PrivateRoute>
-                        <EditProfile />
-                      </PrivateRoute>
-                    }
-                  />
-                </Routes>
-              </main>
+                {/* User Routes */}
+                <Route element={<PrivateRoute />}>
+                  <Route path="/profile" element={<UserProfile />} />
+                </Route>
+              </Routes>
             </div>
-          </div>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+            <Footer />
+          </div >
+        </CartProvider>
+      </AuthProvider>
+      <WhatsAppButton />
+    </Router>
   );
 }
 

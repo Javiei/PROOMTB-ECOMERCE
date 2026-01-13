@@ -6,21 +6,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#1e40af',
-        secondary: '#f59e0b',
+        'raymon-black': '#000000',
+        'raymon-white': '#ffffff',
+        'raymon-gray': '#f5f5f5',
+        'raymon-dark-gray': '#333333',
       },
       fontFamily: {
-        sans: [
-          'Noto Sans',
-          'system-ui',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Segoe UI',
-          'Roboto',
-          'Helvetica Neue',
-          'Arial',
-          'sans-serif',
-        ],
+        sans: ['"Noto Sans"', 'sans-serif'],
       },
     },
   },
