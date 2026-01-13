@@ -33,6 +33,7 @@ import SeriesDetailRokua from './pages/series-details/SeriesDetailRokua';
 import SeriesDetailYara from './pages/series-details/SeriesDetailYara';
 import SeriesDetailArid from './pages/series-details/SeriesDetailArid';
 import SeriesDetailNayta from './pages/series-details/SeriesDetailNayta';
+import Success from './pages/Success';
 
 // Admin Components
 import AdminRoute from './components/admin/AdminRoute';
@@ -112,6 +113,7 @@ function App() {
                   <Route path="/series/arid" element={<SeriesDetailArid />} />
                   <Route path="/series/nayta" element={<SeriesDetailNayta />} />
                   <Route path="/search" element={<SearchResults />} />
+                  <Route path="/gracias" element={<Success />} />
 
                   {/* Admin Routes */}
                   <Route element={<AdminRoute />}>

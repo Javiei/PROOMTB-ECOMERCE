@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CartDrawer = () => {
     const {
@@ -12,6 +12,7 @@ const CartDrawer = () => {
         updateQuantity,
         cartTotal
     } = useCart();
+    const navigate = useNavigate();
 
     if (!isCartOpen) return null;
 
@@ -126,6 +127,10 @@ const CartDrawer = () => {
 
                                 const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
                                 window.open(whatsappUrl, '_blank');
+
+                                // Close cart and navigate to success page
+                                setIsCartOpen(false);
+                                navigate('/gracias');
                             }}
                             className="w-full bg-[#25D366] text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-[#128C7E] transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
                         >
