@@ -127,7 +127,7 @@ const ProductList = ({ type }) => {
                                         </span>
                                     </td>
                                     <td className="p-4 font-bold text-sm">
-                                        {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(product.precio_eur || product.price)}
+                                        {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.precio_eur || product.price)}
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex items-center justify-end gap-2">

@@ -129,7 +129,7 @@ const SeriesDetailRavor = () => {
                                 {bikes[activeIndex].modelo}
                             </h2>
                             <p className="text-lg text-gray-700 font-medium">
-                                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(bikes[activeIndex].precio_eur)}
+                                {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(bikes[activeIndex].precio_eur)}
                             </p>
                         </div>
                     )}
@@ -207,7 +207,7 @@ const SeriesDetailRavor = () => {
                             </div>
                             <h4 className="text-xl font-black uppercase mb-2">{bike.modelo}</h4>
                             <p className="text-gray-500 font-medium text-lg">
-                                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(bike.precio_eur)}
+                                {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(bike.precio_eur)}
                             </p>
                         </Link>
                     ))}

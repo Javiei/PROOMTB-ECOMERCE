@@ -122,7 +122,7 @@ const Accessories = () => {
                                             {truncateText(product.name, 25)}
                                         </h3>
                                         <p className="text-sm font-medium text-gray-900">
-                                            {product.price} €
+                                            {product.price} RD$
                                         </p>
                                     </div>
                                 </Link>

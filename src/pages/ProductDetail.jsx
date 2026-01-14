@@ -171,7 +171,7 @@ const ProductDetail = () => {
                 <meta property="og:image:secure_url" content={product?.image_url} />
                 <meta property="og:url" content={window.location.href} />
                 <meta property="product:price:amount" content={product?.price} />
-                <meta property="product:price:currency" content="EUR" />
+                <meta property="product:price:currency" content="DOP" />
 
                 {/* Twitter */}
                 <meta name="twitter:card" content="summary_large_image" />
@@ -339,7 +339,7 @@ const ProductDetail = () => {
 
                         {/* Price & Add to Cart */}
                         <div className="flex items-center justify-between">
-                            <div className="text-3xl font-black tracking-tight">{new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(product.price)}</div>
+                            <div className="text-3xl font-black tracking-tight">{new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.price)}</div>
                             <button
                                 onClick={() => addToCart({ ...product, selectedSize }, 1)}
                                 className="bg-black text-white px-12 py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-900 transition-transform transform hover:-translate-y-1"
@@ -404,7 +404,7 @@ const ProductDetail = () => {
                                     </div>
                                     <h4 className="text-xl font-black uppercase mb-2">{p.modelo}</h4>
                                     <p className="text-gray-500 font-medium text-lg">
-                                        {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(p.precio_eur)}
+                                        {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(p.precio_eur)}
                                     </p>
                                 </Link>
                             ))}

@@ -283,7 +283,7 @@ const JourneySection = () => {
                                                                             <svg className="w-3 h-3 text-gray-300" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" /></svg>
                                                                         </div>
                                                                         <p className="text-xs text-gray-500 font-medium">
-                                                                            {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(product.price)}
+                                                                            {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.price)}
                                                                         </p>
                                                                     </div>
                                                                 </Link>

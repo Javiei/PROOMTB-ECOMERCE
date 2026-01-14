@@ -86,7 +86,7 @@ const SearchResults = () => {
                                 </div>
                                 <h3 className="font-bold uppercase text-sm mb-1">{bike.modelo}</h3>
                                 <p className="text-gray-500 text-sm">
-                                    {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(bike.precio_eur)}
+                                    {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(bike.precio_eur)}
                                 </p>
                             </Link>
                         ))}
@@ -109,7 +109,7 @@ const SearchResults = () => {
                                 </div>
                                 <h3 className="font-bold uppercase text-sm mb-1">{product.name}</h3>
                                 <p className="text-gray-500 text-sm">
-                                    {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(product.price)}
+                                    {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.price)}
                                 </p>
                             </Link>
                         ))}

@@ -72,7 +72,7 @@ const CartDrawer = () => {
                                             <p className="text-xs text-gray-500 font-medium">Size: {item.selectedSize}</p>
                                         )}
                                         <p className="text-sm font-bold mt-1">
-                                            {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(item.price)}
+                                            {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(item.price)}
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between mt-2">
@@ -111,17 +111,17 @@ const CartDrawer = () => {
                         <div className="flex justify-between items-center mb-4">
                             <span className="text-sm text-gray-500 font-medium uppercase tracking-wider">Total</span>
                             <span className="text-xl font-black">
-                                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(cartTotal)}
+                                {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(cartTotal)}
                             </span>
                         </div>
                         <button
                             onClick={() => {
                                 const phoneNumber = '8297163555';
                                 const itemsList = cartItems.map(item =>
-                                    `- ${item.modelo || item.name} ${item.selectedSize ? `(Talla: ${item.selectedSize})` : ''} x${item.quantity}: ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(item.price)}`
+                                    `- ${item.modelo || item.name} ${item.selectedSize ? `(Talla: ${item.selectedSize})` : ''} x${item.quantity}: ${new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(item.price)}`
                                 ).join('\n');
 
-                                const totalFormatted = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(cartTotal);
+                                const totalFormatted = new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(cartTotal);
 
                                 const message = `Hola! Me gustaría consultar disponibilidad para los siguientes productos:\n\n${itemsList}\n\nTotal estimado: ${totalFormatted}\n\nGracias!`;
 

@@ -120,7 +120,7 @@ const SeriesDetail = () => {
                                             {bikes[activeIndex].modelo}
                                         </h2>
                                         <p className="text-xl text-gray-300 font-medium">
-                                            {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(bikes[activeIndex].precio_eur)}
+                                            {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(bikes[activeIndex].precio_eur)}
                                         </p>
                                     </Link>
                                 </div>

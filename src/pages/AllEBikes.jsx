@@ -239,7 +239,7 @@ const AllEBikes = () => {
                                     </h3>
 
                                     <p className="text-lg font-bold text-black">
-                                        {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(product.precio_eur)}
+                                        {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.precio_eur)}
                                     </p>
                                 </div>
                             </Link>
@@ -289,7 +289,7 @@ const AllEBikes = () => {
                                     {/* Right: Price & Arrow */}
                                     <div className="flex items-center gap-8">
                                         <p className="text-2xl font-black text-black">
-                                            {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(product.precio_eur)}
+                                            {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.precio_eur)}
                                         </p>
                                         <div className="hidden md:flex w-12 h-12 rounded-full border border-gray-100 items-center justify-center group-hover:bg-black group-hover:text-white transition-all duration-300">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
