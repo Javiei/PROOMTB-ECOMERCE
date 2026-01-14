@@ -26,6 +26,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "sitemap": "node scripts/generate-sitemap.js",
+    "prebuild": "npm run sitemap",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
