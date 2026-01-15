@@ -1,16 +1,27 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ChevronDown, ChevronRight, Globe, MapPin, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ChevronDown, ChevronRight, Globe, MapPin, X, Search } from 'lucide-react';
 import { menuData } from '../../config/menuConfig';
 import useSeriesData from '../../hooks/useSeriesData';
 
 const MobileMenu = ({ isOpen, onClose, isAdmin }) => {
     const [expandedSection, setExpandedSection] = useState(null);
     const [expandedCategory, setExpandedCategory] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
 
     const { dbItems } = useSeriesData(isOpen);
 
     if (!isOpen) return null;
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+            onClose();
+            setSearchQuery('');
+        }
+    };
 
     const toggleSection = (section) => {
         setExpandedSection(expandedSection === section ? null : section);
@@ -100,6 +111,20 @@ const MobileMenu = ({ isOpen, onClose, isAdmin }) => {
     return (
         <div className="lg:hidden bg-white absolute top-20 left-0 w-full border-t border-gray-100 h-[calc(100vh-80px)] overflow-y-auto z-40">
             <div className="flex flex-col">
+                {/* Search Bar in Mobile Menu */}
+                <div className="p-4 border-b border-gray-100">
+                    <form onSubmit={handleSearch} className="relative">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Buscar bicicletas, accesorios..."
+                            className="w-full bg-gray-50 border-none rounded-xl py-3 pl-10 pr-4 text-sm focus:ring-2 focus:ring-black transition-all"
+                        />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    </form>
+                </div>
+
                 {renderAccordion('ebikes', 'E-Bikes')}
                 {renderAccordion('bikes', 'Bicicletas')}
 
@@ -142,3 +167,4 @@ const MobileMenu = ({ isOpen, onClose, isAdmin }) => {
 };
 
 export default MobileMenu;
+
