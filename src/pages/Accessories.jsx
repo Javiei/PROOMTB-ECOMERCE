@@ -6,6 +6,8 @@ import { slugify } from '../utils';
 
 const Accessories = () => {
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('all');
     const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
     const [currentPage, setCurrentPage] = useState(1);
@@ -22,19 +24,55 @@ const Accessories = () => {
     ];
 
     useEffect(() => {
-        fetchAccessories();
-    }, [sortBy]);
+        fetchCategories();
+    }, []);
 
-    // Reset to first page when view mode changes
+    useEffect(() => {
+        fetchAccessories();
+    }, [sortBy, selectedCategory]);
+
+    // Reset to first page when view mode or category changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [viewMode]);
+    }, [viewMode, selectedCategory]);
+
+    const fetchCategories = async () => {
+        try {
+            // Fetch all unique categories from the 'category' column
+            const { data, error } = await supabase
+                .from('products')
+                .select('category')
+                .not('category', 'is', null)
+                .order('category');
+
+            if (error) throw error;
+
+            // Get unique category names and normalize them (trimming spaces/newlines)
+            const normalizedCategories = data
+                .map(item => {
+                    let cat = item.category?.trim();
+                    if (cat === 'Guantilllas') return 'Guantillas';
+                    return cat;
+                })
+                .filter(Boolean);
+
+            const uniqueCategories = [...new Set(normalizedCategories)];
+            console.log('Fetched categories (normalized):', uniqueCategories);
+            setCategories(uniqueCategories);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
 
     const fetchAccessories = async () => {
         try {
             setLoading(true);
 
             let query = supabase.from('products').select('*');
+
+            if (selectedCategory !== 'all') {
+                query = query.eq('category', selectedCategory);
+            }
 
             if (sortBy === 'name-asc') query = query.order('name', { ascending: true });
             else if (sortBy === 'name-desc') query = query.order('name', { ascending: false });
@@ -74,13 +112,7 @@ const Accessories = () => {
         window.scrollTo(0, 0);
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
-            </div>
-        );
-    }
+    // We will handle loading inside the main return to keep UI stable
 
     // Helper to truncate text
     const truncateText = (text, maxLength) => {
@@ -100,56 +132,92 @@ const Accessories = () => {
 
             <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16">
                 {/* Toolbar */}
-                <div className="flex justify-end items-center mb-12 text-sm text-gray-500 space-x-8 border-b border-gray-100 pb-6">
-                    <span className="font-medium">{products.length} Accesorios</span>
+                <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-8 border-b border-gray-100 pb-6">
+                    {/* Category Filter */}
+                    <div className="flex items-center gap-4 overflow-x-auto pb-4 md:pb-0 w-full md:w-auto scrollbar-hide">
+                        <button
+                            onClick={() => setSelectedCategory('all')}
+                            className={`px-6 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap ${selectedCategory === 'all'
+                                ? 'bg-black text-white'
+                                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                        >
+                            Todos
+                        </button>
+                        {categories.map((catName) => {
+                            // Safety check: catName should be a string, but handle objects if they appear
+                            const displayName = typeof catName === 'string' ? catName : (catName?.name || 'Uncategorized');
+                            const filterValue = typeof catName === 'string' ? catName : (catName?.id || catName);
 
-                    <div className="flex items-center space-x-4">
-                        <button
-                            onClick={() => setViewMode('grid')}
-                            className={`p-1 transition-colors ${viewMode === 'grid' ? 'text-black' : 'text-gray-300 hover:text-gray-400'}`}
-                        >
-                            <LayoutGrid size={20} />
-                        </button>
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`p-1 transition-colors ${viewMode === 'list' ? 'text-black' : 'text-gray-300 hover:text-gray-400'}`}
-                        >
-                            <List size={20} />
-                        </button>
+                            return (
+                                <button
+                                    key={typeof catName === 'string' ? catName : (catName?.id || Math.random())}
+                                    onClick={() => setSelectedCategory(filterValue)}
+                                    className={`px-6 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap ${selectedCategory === filterValue
+                                        ? 'bg-black text-white'
+                                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                                >
+                                    {displayName}
+                                </button>
+                            );
+                        })}
                     </div>
 
-                    <div className="h-4 w-[1px] bg-gray-200"></div>
+                    <div className="flex items-center text-sm text-gray-500 space-x-8">
+                        <span className="font-medium whitespace-nowrap">{products.length} Accesorios</span>
 
-                    <div className="relative">
-                        <div
-                            onClick={() => setIsSortOpen(!isSortOpen)}
-                            className="flex items-center cursor-pointer hover:text-black transition-colors font-medium"
-                        >
-                            <span className="mr-2">Ordenar por</span>
-                            <ChevronDown size={16} className={`transition-transform duration-300 ${isSortOpen ? 'rotate-180' : ''}`} />
+                        <div className="flex items-center space-x-4">
+                            <button
+                                onClick={() => setViewMode('grid')}
+                                className={`p-1 transition-colors ${viewMode === 'grid' ? 'text-black' : 'text-gray-300 hover:text-gray-400'}`}
+                            >
+                                <LayoutGrid size={20} />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`p-1 transition-colors ${viewMode === 'list' ? 'text-black' : 'text-gray-300 hover:text-gray-400'}`}
+                            >
+                                <List size={20} />
+                            </button>
                         </div>
 
-                        {isSortOpen && (
-                            <div className="absolute right-0 mt-4 w-56 bg-white border border-gray-100 rounded-2xl shadow-2xl py-4 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
-                                {sortOptions.map((option) => (
-                                    <button
-                                        key={option.id}
-                                        onClick={() => {
-                                            setSortBy(option.id);
-                                            setIsSortOpen(false);
-                                        }}
-                                        className={`w-full text-left px-6 py-3 text-sm transition-colors hover:bg-gray-50 ${sortBy === option.id ? 'text-black font-bold' : 'text-gray-500'}`}
-                                    >
-                                        {option.label}
-                                    </button>
-                                ))}
+                        <div className="h-4 w-[1px] bg-gray-200"></div>
+
+                        <div className="relative">
+                            <div
+                                onClick={() => setIsSortOpen(!isSortOpen)}
+                                className="flex items-center cursor-pointer hover:text-black transition-colors font-medium whitespace-nowrap"
+                            >
+                                <span className="mr-2">Ordenar por</span>
+                                <ChevronDown size={16} className={`transition-transform duration-300 ${isSortOpen ? 'rotate-180' : ''}`} />
                             </div>
-                        )}
+
+                            {isSortOpen && (
+                                <div className="absolute right-0 mt-4 w-56 bg-white border border-gray-100 rounded-2xl shadow-2xl py-4 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    {sortOptions.map((option) => (
+                                        <button
+                                            key={option.id}
+                                            onClick={() => {
+                                                setSortBy(option.id);
+                                                setIsSortOpen(false);
+                                            }}
+                                            className={`w-full text-left px-6 py-3 text-sm transition-colors hover:bg-gray-50 ${sortBy === option.id ? 'text-black font-bold' : 'text-gray-500'}`}
+                                        >
+                                            {option.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Product Listing */}
-                {products.length === 0 ? (
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-40 space-y-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+                        <p className="text-gray-400 font-medium animate-pulse text-sm uppercase tracking-widest">Cargando accesorios...</p>
+                    </div>
+                ) : products.length === 0 ? (
                     <div className="text-center py-20">
                         <p className="text-xl text-gray-500">No se encontraron accesorios.</p>
                     </div>
