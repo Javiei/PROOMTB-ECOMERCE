@@ -33,6 +33,8 @@ import SeriesDetailRokua from './pages/series-details/SeriesDetailRokua';
 import SeriesDetailYara from './pages/series-details/SeriesDetailYara';
 import SeriesDetailArid from './pages/series-details/SeriesDetailArid';
 import SeriesDetailNayta from './pages/series-details/SeriesDetailNayta';
+import SeriesDetailNaytaKids from './pages/series-details/SeriesDetailNaytaKids';
+import SeriesDetailYangaKids from './pages/series-details/SeriesDetailYangaKids';
 import Success from './pages/Success';
 
 // Admin Components
@@ -110,8 +112,9 @@ function App() {
                   <Route path="/series/rokua" element={<SeriesDetailRokua />} />
                   <Route path="/series/yara" element={<SeriesDetailYara />} />
                   <Route path="/series/arid" element={<SeriesDetailArid />} />
-                  <Route path="/series/arid" element={<SeriesDetailArid />} />
                   <Route path="/series/nayta" element={<SeriesDetailNayta />} />
+                  <Route path="/series/nayta-kids" element={<SeriesDetailNaytaKids />} />
+                  <Route path="/series/yanga-kids" element={<SeriesDetailYangaKids />} />
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/gracias" element={<Success />} />
 

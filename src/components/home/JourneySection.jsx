@@ -260,7 +260,9 @@ const JourneySection = () => {
                                                                                                                                             product.serie_id === 18 ? '/series/yara' :
                                                                                                                                                 product.serie_id === 19 ? '/series/arid' :
                                                                                                                                                     product.serie_id === 20 ? '/series/nayta' :
-                                                                                                                                                        `/serie/${product.serie_id}`
+                                                                                                                                                        product.serie_id === 21 ? '/series/nayta-kids' :
+                                                                                                                                                            product.serie_id === 22 ? '/series/yanga-kids' :
+                                                                                                                                                                `/serie/${product.serie_id}`
                                                                     }
                                                                     className="block group w-full h-full flex flex-col justify-end"
                                                                 >

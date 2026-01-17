@@ -19,7 +19,9 @@ export const SERIES_CONFIG = {
     17: { id: 'rokua', label: 'Rokua', link: '/series/rokua', sub: 'MTB', categoryId: 'mtb' },
     18: { id: 'yara', label: 'Yara', link: '/series/yara', sub: 'MTB', categoryId: 'mtb' },
     19: { id: 'arid', label: 'Arid', link: '/series/arid', sub: 'MTB', categoryId: 'mtb' },
-    20: { id: 'nayta', label: 'Nayta', link: '/series/nayta', sub: 'MTB', categoryId: 'mtb' }
+    20: { id: 'nayta', label: 'Nayta', link: '/series/nayta', sub: 'MTB', categoryId: 'mtb' },
+    21: { id: 'nayta-kids', label: 'Nayta Kids', link: '/series/nayta-kids', sub: 'Kids', categoryId: 'kids' },
+    22: { id: 'yanga-kids', label: 'Yanga Kids', link: '/series/yanga-kids', sub: 'Kids', categoryId: 'kids' }
 };
 
 export const menuData = {
