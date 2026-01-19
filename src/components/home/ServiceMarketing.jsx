@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wrench, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
+import { Wrench, ShieldCheck, Zap, ArrowRight, Truck } from 'lucide-react';
 
 const ServiceMarketing = () => {
     return (
@@ -33,21 +33,76 @@ const ServiceMarketing = () => {
                         Nuestro taller especializado cuenta con mecánicos certificados y herramientas de precisión para mantener tu bicicleta como el primer día.
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                        <div className="flex flex-col space-y-3">
-                            <Wrench className="w-8 h-8 text-white" />
-                            <h3 className="font-bold uppercase tracking-wider text-sm">Ajuste de Precisión</h3>
-                            <p className="text-xs text-gray-400">Calibración exacta de transmisiones y frenos.</p>
+                    <div className="space-y-8 mb-10">
+                        {/* Packages */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <a
+                                href="https://wa.me/8297163555?text=Hola,%20me%20interesa%20el%20Mantenimiento%20Básico%20para%20mi%20bicicleta."
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block border border-white/20 p-6 bg-white/5 backdrop-blur-sm rounded-sm hover:border-white/40 transition-colors cursor-pointer group hover:bg-white/10"
+                            >
+                                <div className="flex justify-between items-start">
+                                    <h3 className="text-lg font-bold uppercase mb-1 text-white group-hover:text-raymon-blue transition-colors">Mantenimiento Básico</h3>
+                                    <ArrowRight className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors opacity-0 group-hover:opacity-100" />
+                                </div>
+                                <div className="text-2xl font-black text-gray-200 mb-4">RD$700</div>
+                                <ul className="text-sm text-gray-400 space-y-2">
+                                    <li className="flex items-center gap-2"><div className="w-1 h-1 bg-white rounded-full"></div> Lavado premium</li>
+                                    <li className="flex items-center gap-2"><div className="w-1 h-1 bg-white rounded-full"></div> Engrase de Cadena</li>
+                                    <li className="flex items-center gap-2"><div className="w-1 h-1 bg-white rounded-full"></div> Ajuste de cambios</li>
+                                </ul>
+                            </a>
+                            <a
+                                href="https://wa.me/8297163555?text=Hola,%20me%20interesa%20el%20Mantenimiento%20Full%20para%20mi%20bicicleta."
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block border border-white/40 p-6 bg-white/10 backdrop-blur-sm rounded-sm relative overflow-hidden group hover:bg-white/15 transition-all cursor-pointer"
+                            >
+                                <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-bold px-2 py-1 uppercase">Recomendado</div>
+                                <div className="flex justify-between items-start">
+                                    <h3 className="text-lg font-bold uppercase mb-1 text-white group-hover:text-raymon-blue transition-colors">Mantenimiento Full</h3>
+                                    <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors opacity-0 group-hover:opacity-100" />
+                                </div>
+                                <div className="text-2xl font-black text-white mb-4">RD$1,200</div>
+                                <ul className="text-sm text-gray-200 space-y-2">
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-white rounded-full"></div> Lavado premium</li>
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-white rounded-full"></div> Desarme completo</li>
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-white rounded-full"></div> Engrase total</li>
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-white rounded-full"></div> Ajuste de cambios</li>
+                                </ul>
+                            </a>
                         </div>
-                        <div className="flex flex-col space-y-3">
-                            <ShieldCheck className="w-8 h-8 text-white" />
-                            <h3 className="font-bold uppercase tracking-wider text-sm">Garantía Oficial</h3>
-                            <p className="text-xs text-gray-400">Repuestos originales y respaldo de marca.</p>
-                        </div>
-                        <div className="flex flex-col space-y-3">
-                            <Zap className="w-8 h-8 text-white" />
-                            <h3 className="font-bold uppercase tracking-wider text-sm">Suspensión Pro</h3>
-                            <p className="text-xs text-gray-400">Mantenimiento completo de horquillas y shocks.</p>
+
+                        {/* Additional Services & Delivery */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm pt-4 border-t border-white/10">
+                            <div>
+                                <h4 className="font-bold text-white uppercase mb-4 flex items-center gap-2">
+                                    <Wrench className="w-4 h-4 text-raymon-blue" /> Servicios Adicionales
+                                </h4>
+                                <ul className="text-gray-400 space-y-2">
+                                    <li>Sangrado de frenos</li>
+                                    <li>Mantenimiento de suspensión</li>
+                                    <li>Mantenimiento de catre</li>
+                                    <li>Nivelado de aros</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-white uppercase mb-4 flex items-center gap-2">
+                                    <Truck className="w-4 h-4 text-raymon-blue" /> Servicio a Domicilio
+                                </h4>
+                                <div className="space-y-3 text-gray-400">
+                                    <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                                        <span>Santo Domingo DN</span>
+                                        <span className="text-white font-bold bg-white/10 px-2 py-0.5 rounded">RD$500</span>
+                                    </div>
+                                    <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                                        <span>Santo Domingo Este</span>
+                                        <span className="text-white font-bold bg-white/10 px-2 py-0.5 rounded">RD$1,000</span>
+                                    </div>
+                                    <p className="text-[10px] italic text-gray-500 mt-2">*Buscar y llevar</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
