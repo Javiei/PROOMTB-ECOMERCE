@@ -1,3 +1,0 @@
---- Normal Bike Series ---
-ID: 12, Name: Arva, Cat ID: 5, Bikes: 4
-ID: 13, Name: Kirana, Cat ID: 5, Bikes: 5
