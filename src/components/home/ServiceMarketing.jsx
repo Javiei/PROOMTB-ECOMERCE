@@ -3,7 +3,7 @@ import { Wrench, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
 
 const ServiceMarketing = () => {
     return (
-        <section className="relative bg-black py-24 lg:py-32 overflow-hidden">
+        <section id="mantenimiento" className="relative bg-black py-24 lg:py-32 overflow-hidden">
             {/* Background Image with Overlay */}
             <div className="absolute inset-0 opacity-40">
                 <img

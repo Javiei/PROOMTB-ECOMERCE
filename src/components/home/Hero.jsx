@@ -4,6 +4,13 @@ import { Link } from 'react-router-dom';
 
 
 const Hero = () => {
+    const scrollToMaintenance = () => {
+        const section = document.getElementById('mantenimiento');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="relative w-full h-screen overflow-hidden bg-black">
             {/* Background Video - Vimeo */}
@@ -43,6 +50,12 @@ const Hero = () => {
                         >
                             Ver Accesorios
                         </Link>
+                        <button
+                            onClick={scrollToMaintenance}
+                            className="border border-white text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-white/10 transition-all backdrop-blur-sm text-center inline-flex items-center justify-center cursor-pointer"
+                        >
+                            Mantenimiento
+                        </button>
                     </div>
                 </div>
             </div>
