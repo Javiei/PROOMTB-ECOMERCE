@@ -7,7 +7,7 @@ import { Pagination } from 'swiper/modules';
 import { Helmet } from 'react-helmet-async';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { slugify } from '../utils';
+import { slugify, formatPrice } from '../utils';
 
 import { useCart } from '../context/CartContext';
 
@@ -18,7 +18,7 @@ const ProductDetail = () => {
     // State Declarations
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedSize, setSelectedSize] = useState('M');
+    const [selectedSize, setSelectedSize] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [activeImage, setActiveImage] = useState(null);
     const [activeColorIndex, setActiveColorIndex] = useState(0);
@@ -116,17 +116,26 @@ const ProductDetail = () => {
                     description: matchedData.description,
                     images: matchedData.imagenes_urls || [],
                     image_url: matchedData.imagenes_urls?.[0] || null,
-                    tipos_marco: matchedData.tipos_marco
+                    tipos_marco: matchedData.tipos_marco,
+                    sizes: (matchedData.sizes || []).filter(s => s && s.size),
+                    type: 'bikes'
                 } : {
                     ...matchedData,
                     name: matchedData.name,
                     price: matchedData.price,
                     description: matchedData.description,
                     images: matchedData.image_url ? [matchedData.image_url] : [],
-                    image_url: matchedData.image_url
+                    image_url: matchedData.image_url,
+                    sizes: (matchedData.sizes || []).filter(s => s && s.size),
+                    type: 'accessories'
                 };
 
                 setProduct(mappedProduct);
+
+                // Auto-select first size if available
+                if (mappedProduct.sizes?.length > 0) {
+                    setSelectedSize(mappedProduct.sizes[0].size);
+                }
 
                 if (mappedProduct.tipos_marco?.length > 0) {
                     setSelectedFrame(mappedProduct.tipos_marco[0]);
@@ -308,22 +317,38 @@ const ProductDetail = () => {
                             </div>
                         )}
 
-                        {/* Size Selection Mock */}
+                        {/* Size Selection */}
                         <div className="mb-12">
-                            <h3 className="text-sm font-bold uppercase tracking-wider mb-4">2. Choose Size(s)</h3>
+                            <h3 className="text-sm font-bold uppercase tracking-wider mb-4">Choose Size</h3>
                             <div className="grid grid-cols-4 gap-4">
-                                {['S', 'M', 'L', 'XL'].map(size => (
-                                    <button
-                                        key={size}
-                                        onClick={() => setSelectedSize(size)}
-                                        className={`h-12 border flex items-center justify-center text-sm font-bold transition-all ${selectedSize === size
-                                            ? 'border-2 border-black bg-white text-black'
-                                            : 'border-gray-200 text-gray-500 hover:border-black'
-                                            }`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
+                                {product.sizes && product.sizes.length > 0 ? (
+                                    product.sizes.map((variant, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedSize(variant.size)}
+                                            className={`h-12 border flex flex-col items-center justify-center transition-all ${selectedSize === variant.size
+                                                ? 'border-2 border-black bg-white text-black'
+                                                : 'border-gray-200 text-gray-500 hover:border-black'
+                                                }`}
+                                        >
+                                            <span className="text-sm font-bold">{variant.size}</span>
+                                        </button>
+                                    ))
+                                ) : (
+                                    // Fallback for objects without variants
+                                    ['S', 'M', 'L', 'XL'].map(size => (
+                                        <button
+                                            key={size}
+                                            onClick={() => setSelectedSize(size)}
+                                            className={`h-12 border flex items-center justify-center text-sm font-bold transition-all ${selectedSize === size
+                                                ? 'border-2 border-black bg-white text-black'
+                                                : 'border-gray-200 text-gray-500 hover:border-black'
+                                                }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))
+                                )}
                             </div>
                         </div>
 
@@ -339,9 +364,19 @@ const ProductDetail = () => {
 
                         {/* Price & Add to Cart */}
                         <div className="flex items-center justify-between">
-                            <div className="text-3xl font-black tracking-tight">{new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.price)}</div>
+                            <div className="text-3xl font-black tracking-tight">
+                                {(() => {
+                                    const currentVariant = product.sizes?.find(s => s.size === selectedSize);
+                                    const displayPrice = currentVariant && currentVariant.price ? currentVariant.price : product.price;
+                                    return formatPrice(displayPrice, product.type);
+                                })()}
+                            </div>
                             <button
-                                onClick={() => addToCart({ ...product, selectedSize }, 1)}
+                                onClick={() => {
+                                    const currentVariant = product.sizes?.find(s => s.size === selectedSize);
+                                    const finalPrice = currentVariant && currentVariant.price ? currentVariant.price : product.price;
+                                    addToCart({ ...product, price: finalPrice, selectedSize }, 1);
+                                }}
                                 className="bg-black text-white px-12 py-4 text-sm font-bold uppercase tracking-widest hover:bg-gray-900 transition-transform transform hover:-translate-y-1"
                             >
                                 Add to Cart
@@ -404,7 +439,7 @@ const ProductDetail = () => {
                                     </div>
                                     <h4 className="text-xl font-black uppercase mb-2">{p.modelo}</h4>
                                     <p className="text-gray-500 font-medium text-lg">
-                                        {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(p.precio_eur)}
+                                        {formatPrice(p.precio_eur, 'bikes')}
                                     </p>
                                 </Link>
                             ))}

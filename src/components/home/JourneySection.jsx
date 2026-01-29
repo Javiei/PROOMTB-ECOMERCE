@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { formatPrice } from '../../utils';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, EffectCoverflow } from 'swiper/modules';
 import 'swiper/css';
@@ -285,7 +286,7 @@ const JourneySection = () => {
                                                                             <svg className="w-3 h-3 text-gray-300" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" /></svg>
                                                                         </div>
                                                                         <p className="text-xs text-gray-500 font-medium">
-                                                                            {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.price)}
+                                                                            {formatPrice(product.price, 'bikes')}
                                                                         </p>
                                                                     </div>
                                                                 </Link>

@@ -3,6 +3,7 @@ import { supabase } from '../../supabaseClient';
 import { Edit, Trash2, Plus, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SERIES_CONFIG } from '../../config/menuConfig';
+import { formatPrice } from '../../utils';
 
 const ProductList = ({ type }) => {
     const [products, setProducts] = useState([]);
@@ -127,7 +128,7 @@ const ProductList = ({ type }) => {
                                         </span>
                                     </td>
                                     <td className="p-4 font-bold text-sm">
-                                        {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.precio_eur || product.price)}
+                                        {formatPrice(product.precio_eur || product.price, type)}
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex items-center justify-end gap-2">

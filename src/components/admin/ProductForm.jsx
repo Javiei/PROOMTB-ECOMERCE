@@ -24,6 +24,7 @@ const ProductForm = ({ type }) => {
         serie_id: '',
         image_url: '',
         imagenes_urls: [],
+        sizes: [], // Array of { size: 'M', price: 1200 }
         specs: {}
     });
 
@@ -48,6 +49,7 @@ const ProductForm = ({ type }) => {
                     ...data,
                     // Ensure arrays/objects are initialized if null
                     imagenes_urls: data.imagenes_urls || [],
+                    sizes: data.sizes || [],
                     specs: data.specs || {}
                 });
             }
@@ -130,6 +132,28 @@ const ProductForm = ({ type }) => {
         }));
     };
 
+    const addVariant = () => {
+        setFormData(prev => ({
+            ...prev,
+            sizes: [...(prev.sizes || []), { size: '', price: '' }]
+        }));
+    };
+
+    const updateVariant = (index, field, value) => {
+        setFormData(prev => {
+            const newSizes = [...prev.sizes];
+            newSizes[index] = { ...newSizes[index], [field]: value };
+            return { ...prev, sizes: newSizes };
+        });
+    };
+
+    const removeVariant = (index) => {
+        setFormData(prev => ({
+            ...prev,
+            sizes: prev.sizes.filter((_, i) => i !== index)
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -146,6 +170,10 @@ const ProductForm = ({ type }) => {
                     precio_eur: parseFloat(formData.precio_eur),
                     serie_id: formData.serie_id ? parseInt(formData.serie_id) : null,
                     imagenes_urls: formData.imagenes_urls,
+                    sizes: (formData.sizes || []).map(s => ({
+                        size: s.size,
+                        price: parseFloat(s.price) || 0
+                    })),
                     specs: formData.specs,
                     category_id: formData.category_id // Mapped from series 
                 };
@@ -156,7 +184,11 @@ const ProductForm = ({ type }) => {
                     description: formData.description,
                     price: parseFloat(formData.price),
                     category_id: formData.category_id,
-                    image_url: formData.image_url
+                    image_url: formData.image_url,
+                    sizes: (formData.sizes || []).map(s => ({
+                        size: s.size,
+                        price: parseFloat(s.price) || 0
+                    }))
                 };
             }
 
@@ -233,7 +265,9 @@ const ProductForm = ({ type }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-gray-500">Price (RD$)</label>
+                        <label className="text-xs font-bold uppercase text-gray-500">
+                            Price ({type === 'bikes' ? 'USD' : 'RD$'})
+                        </label>
                         <input
                             type="number"
                             name={type === 'bikes' ? 'precio_eur' : 'price'}
@@ -290,6 +324,59 @@ const ProductForm = ({ type }) => {
                         onChange={handleChange}
                         className="w-full p-3 bg-gray-50 rounded-xl border-none focus:ring-2 focus:ring-black resize-none"
                     />
+                </div>
+
+                {/* Sizes and Prices Variants */}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold uppercase text-gray-500">Sizes & Prices Variants</label>
+                        <button
+                            type="button"
+                            onClick={addVariant}
+                            className="text-xs font-bold uppercase bg-black text-white px-3 py-1 rounded-lg hover:bg-gray-800 transition-colors"
+                        >
+                            + Add Variant
+                        </button>
+                    </div>
+
+                    <div className="space-y-3">
+                        {formData.sizes?.map((variant, idx) => (
+                            <div key={idx} className="flex gap-4 items-center bg-gray-50 p-4 rounded-xl relative group">
+                                <div className="flex-1">
+                                    <label className="text-[10px] font-bold uppercase text-gray-400 block mb-1">Size</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. M, L, 42..."
+                                        value={variant.size}
+                                        onChange={(e) => updateVariant(idx, 'size', e.target.value)}
+                                        className="w-full bg-white border-none rounded-lg p-2 text-sm focus:ring-2 focus:ring-black"
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <label className="text-[10px] font-bold uppercase text-gray-400 block mb-1">Price ({type === 'bikes' ? 'USD' : 'RD$'})</label>
+                                    <input
+                                        type="number"
+                                        placeholder="0.00"
+                                        value={variant.price}
+                                        onChange={(e) => updateVariant(idx, 'price', e.target.value)}
+                                        className="w-full bg-white border-none rounded-lg p-2 text-sm focus:ring-2 focus:ring-black"
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => removeVariant(idx)}
+                                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg mt-5"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+                        ))}
+                        {(!formData.sizes || formData.sizes.length === 0) && (
+                            <div className="text-center py-4 text-gray-400 text-sm italic">
+                                No variants added. The main price will be used.
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Image Upload */}

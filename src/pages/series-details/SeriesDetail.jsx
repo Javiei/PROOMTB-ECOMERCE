@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { useParams, Link } from 'react-router-dom';
-import { slugify } from '../../utils';
+import { slugify, formatPrice } from '../../utils';
 import { ChevronLeft, ChevronRight, Zap, Battery, Activity, ArrowUpCircle } from 'lucide-react';
 
 const SeriesDetail = () => {
@@ -120,7 +120,7 @@ const SeriesDetail = () => {
                                             {bikes[activeIndex].modelo}
                                         </h2>
                                         <p className="text-xl text-gray-300 font-medium">
-                                            {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(bikes[activeIndex].precio_eur)}
+                                            {formatPrice(bikes[activeIndex].precio_eur, 'bikes')}
                                         </p>
                                     </Link>
                                 </div>

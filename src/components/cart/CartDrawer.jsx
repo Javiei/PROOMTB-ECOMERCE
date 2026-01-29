@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { formatPrice } from '../../utils';
 
 const CartDrawer = () => {
     const {
@@ -72,7 +73,7 @@ const CartDrawer = () => {
                                             <p className="text-xs text-gray-500 font-medium">Size: {item.selectedSize}</p>
                                         )}
                                         <p className="text-sm font-bold mt-1">
-                                            {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(item.price)}
+                                            {formatPrice(item.price, item.type || (item.modelo ? 'bikes' : 'accessories'))}
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between mt-2">
@@ -111,17 +112,23 @@ const CartDrawer = () => {
                         <div className="flex justify-between items-center mb-4">
                             <span className="text-sm text-gray-500 font-medium uppercase tracking-wider">Total</span>
                             <span className="text-xl font-black">
-                                {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(cartTotal)}
+                                {(() => {
+                                    // Heuristic for total: default to RD$ unless everything is a bike
+                                    const allBikes = cartItems.every(item => item.type === 'bikes' || item.modelo);
+                                    return formatPrice(cartTotal, allBikes ? 'bikes' : 'accessories');
+                                })()}
                             </span>
                         </div>
                         <button
                             onClick={() => {
                                 const phoneNumber = '8297163555';
-                                const itemsList = cartItems.map(item =>
-                                    `- ${item.modelo || item.name} ${item.selectedSize ? `(Talla: ${item.selectedSize})` : ''} x${item.quantity}: ${new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(item.price)}`
-                                ).join('\n');
+                                const itemsList = cartItems.map(item => {
+                                    const type = item.type || (item.modelo ? 'bikes' : 'accessories');
+                                    return `- ${item.modelo || item.name} ${item.selectedSize ? `(Talla: ${item.selectedSize})` : ''} x${item.quantity}: ${formatPrice(item.price, type)}`;
+                                }).join('\n');
 
-                                const totalFormatted = new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(cartTotal);
+                                const allBikes = cartItems.every(item => item.type === 'bikes' || item.modelo);
+                                const totalFormatted = formatPrice(cartTotal, allBikes ? 'bikes' : 'accessories');
 
                                 const message = `Hola! Me gustaría consultar disponibilidad para los siguientes productos:\n\n${itemsList}\n\nTotal estimado: ${totalFormatted}\n\nGracias!`;
 

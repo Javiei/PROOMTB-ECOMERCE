@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Zap, Battery, Activity, ArrowUpCircle } from 'lucide-react';
-import { slugify } from '../../utils';
+import { slugify, formatPrice } from '../../utils';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Navigation } from 'swiper/modules';
@@ -128,7 +128,7 @@ const SeriesDetailVantor = () => {
                             {bikes[activeIndex].modelo}
                         </h2>
                         <p className="text-lg text-gray-700 font-medium">
-                            {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(bikes[activeIndex].precio_eur)}
+                            {formatPrice(bikes[activeIndex].precio_eur, 'bikes')}
                         </p>
                     </div>
                 )}
@@ -212,7 +212,7 @@ const SeriesDetailVantor = () => {
                             </div>
                             <h4 className="text-xl font-black uppercase mb-2">{bike.modelo}</h4>
                             <p className="text-gray-500 font-medium text-lg">
-                                {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(bike.precio_eur)}
+                                {formatPrice(bike.precio_eur, 'bikes')}
                             </p>
                         </Link>
                     ))}

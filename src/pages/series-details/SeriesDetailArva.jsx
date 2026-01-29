@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Link } from 'react-router-dom';
-import { slugify } from '../../utils';
+import { slugify, formatPrice } from '../../utils';
 import { ChevronLeft, ChevronRight, Activity, Cpu, Circle, Anchor } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Navigation } from 'swiper/modules';
@@ -128,7 +128,7 @@ const SeriesDetailArva = () => {
                             {currentBike.modelo}
                         </h2>
                         <p className="text-lg text-gray-600 font-medium">
-                            {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(currentBike.precio_eur)}
+                            {formatPrice(currentBike.precio_eur, 'bikes')}
                         </p>
                     </div>
                 )}
@@ -215,7 +215,7 @@ const SeriesDetailArva = () => {
                                 </div>
                                 <h4 className="text-xl font-black uppercase mb-2">{bike.modelo}</h4>
                                 <p className="text-gray-500 font-medium text-lg">
-                                    {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(bike.precio_eur)}
+                                    {formatPrice(bike.precio_eur, 'bikes')}
                                 </p>
                             </Link>
                         ))

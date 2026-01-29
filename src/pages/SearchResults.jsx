@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { Loader2 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { formatPrice } from '../utils';
 
 const SearchResults = () => {
     const [searchParams] = useSearchParams();
@@ -86,7 +87,7 @@ const SearchResults = () => {
                                 </div>
                                 <h3 className="font-bold uppercase text-sm mb-1">{bike.modelo}</h3>
                                 <p className="text-gray-500 text-sm">
-                                    {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(bike.precio_eur)}
+                                    {formatPrice(bike.precio_eur, 'bikes')}
                                 </p>
                             </Link>
                         ))}
@@ -109,7 +110,7 @@ const SearchResults = () => {
                                 </div>
                                 <h3 className="font-bold uppercase text-sm mb-1">{product.name}</h3>
                                 <p className="text-gray-500 text-sm">
-                                    {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(product.price)}
+                                    {formatPrice(product.price, 'accessories')}
                                 </p>
                             </Link>
                         ))}
