@@ -176,7 +176,22 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/vamok-ultra</loc>
+    <loc>https://proomtb.com/series/nayta-kids</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/series/yanga-kids</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/yanga-24</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/nayta-26-pro-street</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -186,7 +201,22 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/trailray-180-ultra</loc>
+    <loc>https://proomtb.com/product/rokua-150-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/nayta-26-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/kirana-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/nayta-26-comp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -196,12 +226,37 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/trailray-150-ultra</loc>
+    <loc>https://proomtb.com/product/nayta-24-pro</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/airok-pure</loc>
+    <loc>https://proomtb.com/product/nayta-24-pro-street</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/kirana</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/nayta-24-comp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/yanga-pro-24</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/yanga-street-24</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/territ-comp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -211,22 +266,27 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/norza-comp-commute</loc>
+    <loc>https://proomtb.com/product/territ-ultra</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/tavano-ultra</loc>
+    <loc>https://proomtb.com/product/yanga-pro-20</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/tavano-comp</loc>
+    <loc>https://proomtb.com/product/yanga-street-20</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/tavano-sport</loc>
+    <loc>https://proomtb.com/product/nayta</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/yanga-20</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -241,27 +301,12 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/metmo-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/metmo-comp</loc>
+    <loc>https://proomtb.com/product/soreno</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://proomtb.com/product/trailray-150</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/trailray-120-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/soreno</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -276,7 +321,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/ravor-pure</loc>
+    <loc>https://proomtb.com/product/vantor-pro</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -286,32 +331,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/vantor-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/trailray-170-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/trailray-180-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://proomtb.com/product/vamok-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/korak-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/trailray-120</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -321,17 +341,192 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/trailray-150-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://proomtb.com/product/vamok-comp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/norza-pro-street</loc>
+    <loc>https://proomtb.com/product/korak-comp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/korak-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/arva-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/norza-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/norza-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/tahona</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/tahona-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/tavano-pure</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/arva-ultimate</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/tahona-pure</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/kirana-ultimate</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/territ-pure-street</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/arva-comp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/kirana-pure</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/soreno-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/territ-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/soreno-pure</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/territ-pure</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/territ-comp-commute</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/zayn-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/zayn-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/yara-150-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/rokua-150</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/zayn-comp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/arid</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/arid-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/yara-120</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/arid-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/nayta-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/nayta-comp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/vantor-comp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/trailray-180-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/trailray-150-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/trailray-120</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/trailray-120-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/trailray-170-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/trailray-150-ultra</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -346,22 +541,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/korak-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/korak-comp</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/airok-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/airok-pro</loc>
+    <loc>https://proomtb.com/product/norza-comp-commute</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -371,17 +551,52 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/norza-ultra</loc>
+    <loc>https://proomtb.com/product/airok-pro</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/norza-pro</loc>
+    <loc>https://proomtb.com/product/tavano-sport</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/arva-ultra</loc>
+    <loc>https://proomtb.com/product/tavano-comp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/trailray-180-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/airok-pure</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/airok-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/korak-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/ravor-pure</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/vamok-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/tavano-ultra</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -391,27 +606,22 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/tavano-pure</loc>
+    <loc>https://proomtb.com/product/metmo</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/tahona-ultra</loc>
+    <loc>https://proomtb.com/product/norza-pro-street</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/tahona</loc>
+    <loc>https://proomtb.com/product/metmo-pro</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/kirana-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/tahona-pure</loc>
+    <loc>https://proomtb.com/product/metmo-comp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -421,52 +631,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/metmo</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/arva-ultimate</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/arva-comp</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/arva-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/kirana-ultimate</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/kirana-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/territ-pure-street</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/kirana</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/kirana-pure</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/territ-auto-street</loc>
+    <loc>https://proomtb.com/product/soreno-pro</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -476,37 +641,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/soreno-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/soreno-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/soreno-pure</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/territ-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/territ-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/territ-comp</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/territ-pure</loc>
+    <loc>https://proomtb.com/product/arva-pro</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -516,22 +651,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/territ-comp-commute</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/zayn-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/zayn-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/zayn-comp</loc>
+    <loc>https://proomtb.com/product/territ-auto-street</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -541,22 +661,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/rokua-150-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/rokua-150</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://proomtb.com/product/yara-150-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/yara-150-pro</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -566,37 +671,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/arid-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/arid-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/arid</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/yara-120</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/nayta-ultra</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://proomtb.com/product/nayta-pro</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://proomtb.com/product/nayta-comp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -606,7 +681,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://proomtb.com/product/vantor-comp</loc>
+    <loc>https://proomtb.com/product/kirana-pro</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

@@ -1,17 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.56b04ff1.css",
-    "main.js": "/static/js/main.c0145c5b.js",
-    "static/media/Raymon-2024-nauders-1874.webp": "/static/media/Raymon-2024-nauders-1874.c90bf3764dc55f78a370.webp",
-    "static/media/Raymon-2024-nauders-1715.webp": "/static/media/Raymon-2024-nauders-1715.7e464d0b70023870db5d.webp",
+    "main.css": "/static/css/main.5ee93512.css",
+    "main.js": "/static/js/main.e3b2f8f2.js",
     "static/media/Raymon_logo_black schriftzug.png": "/static/media/Raymon_logo_black schriftzug.6c8d80d0743686e89e0a.png",
     "static/media/LOGO PRO MTB AND ROAD VECTORES CORREGIDOS.pdf.png": "/static/media/LOGO PRO MTB AND ROAD VECTORES CORREGIDOS.pdf.0b103f2a86d22ea4fdd3.png",
     "index.html": "/index.html",
-    "main.56b04ff1.css.map": "/static/css/main.56b04ff1.css.map",
-    "main.c0145c5b.js.map": "/static/js/main.c0145c5b.js.map"
+    "main.5ee93512.css.map": "/static/css/main.5ee93512.css.map",
+    "main.e3b2f8f2.js.map": "/static/js/main.e3b2f8f2.js.map"
   },
   "entrypoints": [
-    "static/css/main.56b04ff1.css",
-    "static/js/main.c0145c5b.js"
+    "static/css/main.5ee93512.css",
+    "static/js/main.e3b2f8f2.js"
   ]
 }

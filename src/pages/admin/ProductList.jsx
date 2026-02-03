@@ -8,7 +8,11 @@ import { formatPrice } from '../../utils';
 const ProductList = ({ type }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const itemsPerPage = 20;
 
     // Helper to get Series Name
     const getSeriesName = (id) => {
@@ -17,26 +21,70 @@ const ProductList = ({ type }) => {
         return series ? series.label : `ID: ${id}`;
     };
 
-    useEffect(() => {
-        fetchProducts();
-    }, [type]);
+    // Data is fetched via the debouncedSearch effect below to handle both initial load and search transitions
+    // Resetting states when type or search changes is handled there.
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (currentPage, term = searchTerm) => {
         try {
-            const tableName = type === 'bikes' ? 'bicicletas' : 'products';
+            if (currentPage === 0) setLoading(true);
+            else setLoadingMore(true);
 
-            const { data, error } = await supabase
+            const tableName = type === 'bikes' ? 'bicicletas' : 'products';
+            const from = currentPage * itemsPerPage;
+            const to = from + itemsPerPage - 1;
+
+            let query = supabase
                 .from(tableName)
                 .select('*')
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: false })
+                .range(from, to);
+
+            // Add server-side search filters
+            if (term.trim()) {
+                const searchPattern = `%${term.trim()}%`;
+                if (type === 'bikes') {
+                    query = query.ilike('modelo', searchPattern);
+                } else {
+                    query = query.ilike('name', searchPattern);
+                }
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
-            setProducts(data);
+
+            if (data) {
+                if (currentPage === 0) {
+                    setProducts(data);
+                } else {
+                    setProducts(prev => [...prev, ...data]);
+                }
+                setHasMore(data.length === itemsPerPage);
+            }
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {
             setLoading(false);
+            setLoadingMore(false);
         }
+    };
+
+    // Debounce search effect
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setProducts([]);
+            setPage(0);
+            setHasMore(true);
+            fetchProducts(0, searchTerm);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [searchTerm, type]);
+
+    const handleLoadMore = () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchProducts(nextPage, searchTerm);
     };
 
     const handleDelete = async (id) => {
@@ -57,20 +105,13 @@ const ProductList = ({ type }) => {
         }
     };
 
-    const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.modelo?.toLowerCase().includes(searchTerm.toLowerCase());
-
-        return matchesSearch;
-    });
-
-    if (loading) return <div>Loading products...</div>;
+    // if (loading) return <div>Loading products...</div>; // Remove this line
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <h2 className="text-2xl font-black uppercase tracking-tight">
-                    {type === 'bikes' ? 'Bicycles' : type === 'accessories' ? 'Accessories' : 'All Products'} ({filteredProducts.length})
+                    {type === 'bikes' ? 'Bicycles' : type === 'accessories' ? 'Accessories' : 'All Products'} ({products.length}{hasMore ? '+' : ''})
                 </h2>
                 <Link
                     to={`/admin/${type === 'bikes' ? 'bikes' : 'accessories'}/new`}
@@ -94,7 +135,7 @@ const ProductList = ({ type }) => {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 min-h-[400px]">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-gray-50 text-left">
@@ -107,7 +148,24 @@ const ProductList = ({ type }) => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {filteredProducts.map((product) => (
+                            {loading && (
+                                <tr>
+                                    <td colSpan="5" className="p-20 text-center">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+                                            <span className="text-sm text-gray-400 font-medium uppercase tracking-widest">Cargando productos...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                            {!loading && products.length === 0 && (
+                                <tr>
+                                    <td colSpan="5" className="p-20 text-center text-gray-400 uppercase text-xs font-bold tracking-widest">
+                                        No se encontraron productos
+                                    </td>
+                                </tr>
+                            )}
+                            {!loading && products.map((product) => (
                                 <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="p-4 w-20">
                                         <div className="w-12 h-12 bg-gray-100 rounded-lg p-1">
@@ -128,7 +186,14 @@ const ProductList = ({ type }) => {
                                         </span>
                                     </td>
                                     <td className="p-4 font-bold text-sm">
-                                        {formatPrice(product.precio_eur || product.price, type)}
+                                        <div className="flex flex-col">
+                                            <span>{formatPrice(product.precio_eur || product.price, type)}</span>
+                                            {product.sizes && product.sizes.length > 0 && (
+                                                <span className="text-[10px] text-gray-400 font-normal uppercase">
+                                                    +{product.sizes.length} variants
+                                                </span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
@@ -151,6 +216,18 @@ const ProductList = ({ type }) => {
                         </tbody>
                     </table>
                 </div>
+
+                {hasMore && (
+                    <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-center">
+                        <button
+                            onClick={handleLoadMore}
+                            disabled={loadingMore}
+                            className="bg-white border border-gray-200 text-black px-8 py-2 rounded-xl font-bold uppercase text-xs tracking-widest hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                        >
+                            {loadingMore ? 'Cargando...' : 'Cargar más'}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

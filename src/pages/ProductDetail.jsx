@@ -117,7 +117,14 @@ const ProductDetail = () => {
                     images: matchedData.imagenes_urls || [],
                     image_url: matchedData.imagenes_urls?.[0] || null,
                     tipos_marco: matchedData.tipos_marco,
-                    sizes: (matchedData.sizes || []).filter(s => s && s.size),
+                    sizes: (() => {
+                        const dbSizes = Array.isArray(matchedData.sizes) ? matchedData.sizes : [];
+                        const dbPrices = Array.isArray(matchedData.precio_eur) ? matchedData.precio_eur : [];
+                        return dbSizes.map((s, i) => ({
+                            size: s || '',
+                            price: dbPrices[i] || (Array.isArray(matchedData.precio_eur) ? matchedData.precio_eur[0] : matchedData.precio_eur)
+                        }));
+                    })(),
                     type: 'bikes'
                 } : {
                     ...matchedData,
@@ -126,7 +133,13 @@ const ProductDetail = () => {
                     description: matchedData.description,
                     images: matchedData.image_url ? [matchedData.image_url] : [],
                     image_url: matchedData.image_url,
-                    sizes: (matchedData.sizes || []).filter(s => s && s.size),
+                    sizes: (matchedData.sizes || []).map(s => {
+                        if (typeof s === 'string') return { size: s, price: matchedData.price };
+                        return {
+                            size: s.size || s.talla || '',
+                            price: s.price || s.precio || matchedData.price
+                        };
+                    }),
                     type: 'accessories'
                 };
 
@@ -151,7 +164,6 @@ const ProductDetail = () => {
                     if (related) setRelatedProducts(related);
                 }
             }
-
         } catch (error) {
             console.error('Error fetching product:', error);
         } finally {

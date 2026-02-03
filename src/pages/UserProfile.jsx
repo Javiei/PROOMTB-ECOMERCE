@@ -12,7 +12,7 @@ const UserProfile = () => {
             await signOut();
             navigate('/');
         } catch (error) {
-            console.error('Error signing out:', error);
+            console.error()
         }
     };
 
@@ -32,7 +32,7 @@ const UserProfile = () => {
                     <div className="text-center md:text-left flex-1">
                         <h1 className="text-2xl font-black uppercase tracking-tight mb-2">My Profile</h1>
                         <p className="text-gray-500 font-medium">{user.email}</p>
-                        <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-2">
+                        <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-2">D
                             <span className="px-3 py-1 bg-gray-100 rounded-full text-xs font-bold uppercase tracking-wide text-gray-600 flex items-center gap-1">
                                 <Shield size={12} />
                                 Rider Account
