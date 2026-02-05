@@ -182,6 +182,7 @@ const ProductDetail = () => {
             <Helmet>
                 <title>{mainName} | PROOMTB</title>
                 <meta name="description" content={product?.description?.substring(0, 160) || `Descubre el ${mainName} en PROOMTB & ROAD.`} />
+                <link rel="canonical" href={`${window.location.origin}/product/${id}`} />
 
                 {/* Open Graph / Facebook / WhatsApp */}
                 <meta property="og:type" content="product" />
@@ -190,12 +191,21 @@ const ProductDetail = () => {
                 <meta property="og:description" content={product?.description?.substring(0, 200) || `Consigue tu ${mainName} en nuestra tienda oficial.`} />
                 <meta property="og:image" content={product?.image_url} />
                 <meta property="og:image:secure_url" content={product?.image_url} />
+                <meta property="og:image:type" content="image/jpeg" />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
                 <meta property="og:url" content={window.location.href} />
+
+                {/* Product specific OG tags */}
+                <meta property="product:brand" content="Raymon" />
+                <meta property="product:availability" content="instock" />
+                <meta property="product:condition" content="new" />
                 <meta property="product:price:amount" content={product?.price} />
                 <meta property="product:price:currency" content="DOP" />
 
                 {/* Twitter */}
                 <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:site" content="@proomtb" />
                 <meta name="twitter:title" content={`${mainName} | PROOMTB`} />
                 <meta name="twitter:description" content={product?.description?.substring(0, 200) || `Descubre el ${mainName} en PROOMTB.`} />
                 <meta name="twitter:image" content={product?.image_url} />
