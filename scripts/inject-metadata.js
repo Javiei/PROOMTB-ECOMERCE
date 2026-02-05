@@ -70,20 +70,37 @@ async function injectMetadata() {
 
             let html = template;
 
-            // Simple replace of meta tags (matching the ones in index.html)
-            // Replace Title
-            html = html.replace(/<title>.*?<\/title>/g, `<title>${product.name} | PROOMTB</title>`);
+            // 1. Replace Title
+            html = html.replace(/<title>.*?<\/title>/i, `<title>${product.name} | PROOMTB</title>`);
 
-            // Replace OG Tags
-            html = html.replace(/<meta property="og:title" content=".*?" \/>/g, `<meta property="og:title" content="${product.name} | PROOMTB" />`);
-            html = html.replace(/<meta property="og:description" content=".*?" \/>/g, `<meta property="og:description" content="${product.description.substring(0, 200)}" />`);
-            html = html.replace(/<meta property="og:image" content=".*?" \/>/g, `<meta property="og:image" content="${product.image}" />`);
-            html = html.replace(/<meta property="og:url" content=".*?" \/>/g, `<meta property="og:url" content="${BASE_URL}/product/${product.slug}" />`);
+            // 2. Standard Meta Description
+            html = html.replace(/<meta name="description" content=".*?" ?\/?>/i, `<meta name="description" content="${product.description.substring(0, 160)}" />`);
 
-            // Replace Twitter Tags
-            html = html.replace(/<meta name="twitter:title" content=".*?" \/>/g, `<meta name="twitter:title" content="${product.name} | PROOMTB" />`);
-            html = html.replace(/<meta name="twitter:description" content=".*?" \/>/g, `<meta name="twitter:description" content="${product.description.substring(0, 200)}" />`);
-            html = html.replace(/<meta name="twitter:image" content=".*?" \/>/g, `<meta name="twitter:image" content="${product.image}" />`);
+            // 3. Open Graph Tags (more robust regex for POST-BUILD environments)
+            html = html.replace(/<meta property="og:title" content=".*?" ?\/?>/i, `<meta property="og:title" content="${product.name} | PROOMTB" />`);
+            html = html.replace(/<meta property="og:description" content=".*?" ?\/?>/i, `<meta property="og:description" content="${product.description.substring(0, 200)}" />`);
+
+            // Image handling (ensure absolute and encoded)
+            const imageUrl = product.image.startsWith('http') ? product.image : `${BASE_URL}${product.image}`;
+            html = html.replace(/<meta property="og:image" content=".*?" ?\/?>/i, `<meta property="og:image" content="${imageUrl}" />`);
+
+            // Inject secure_url and dimensions if they don't exist, or replace if they do
+            if (html.includes('og:image:secure_url')) {
+                html = html.replace(/<meta property="og:image:secure_url" content=".*?" ?\/?>/i, `<meta property="og:image:secure_url" content="${imageUrl}" />`);
+            } else {
+                html = html.replace(/<meta property="og:image" content=".*?" ?\/?>/i, `<meta property="og:image" content="${imageUrl}" />\n  <meta property="og:image:secure_url" content="${imageUrl}" />`);
+            }
+
+            html = html.replace(/<meta property="og:url" content=".*?" ?\/?>/i, `<meta property="og:url" content="${BASE_URL}/product/${product.slug}" />`);
+
+            // 4. Twitter Tags
+            html = html.replace(/<meta name="twitter:title" content=".*?" ?\/?>/i, `<meta name="twitter:title" content="${product.name} | PROOMTB" />`);
+            html = html.replace(/<meta name="twitter:description" content=".*?" ?\/?>/i, `<meta name="twitter:description" content="${product.description.substring(0, 200)}" />`);
+            html = html.replace(/<meta name="twitter:image" content=".*?" ?\/?>/i, `<meta name="twitter:image" content="${imageUrl}" />`);
+
+            // 5. Cleanup generic width/height from template if present to let platforms decide or use standard 1200x630
+            html = html.replace(/<meta property="og:image:width" content=".*?" ?\/?>/gi, '<meta property="og:image:width" content="1200" />');
+            html = html.replace(/<meta property="og:image:height" content=".*?" ?\/?>/gi, '<meta property="og:image:height" content="630" />');
 
             // Add Product Price (Optional injection at the end of head)
             const priceMeta = `\n  <meta property="product:price:amount" content="${product.price}" />\n  <meta property="product:price:currency" content="DOP" />\n</head>`;
