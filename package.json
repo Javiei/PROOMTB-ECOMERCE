@@ -60,6 +60,10 @@
   },
   "reactSnap": {
     "source": "build",
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
+    ],
     "minifyHtml": {
       "collapseWhitespace": true,
       "removeComments": true
