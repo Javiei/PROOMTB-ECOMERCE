@@ -36,6 +36,8 @@ import SeriesDetailNayta from './pages/series-details/SeriesDetailNayta';
 import SeriesDetailNaytaKids from './pages/series-details/SeriesDetailNaytaKids';
 import SeriesDetailYangaKids from './pages/series-details/SeriesDetailYangaKids';
 import Success from './pages/Success';
+import EventAttendance from './pages/EventAttendance';
+
 
 // Admin Components
 import AdminRoute from './components/admin/AdminRoute';
@@ -43,6 +45,8 @@ import AdminLayout from './components/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import ProductList from './pages/admin/ProductList';
 import ProductForm from './components/admin/ProductForm';
+import AttendanceList from './pages/admin/AttendanceList';
+
 
 // User Components
 import PrivateRoute from './components/auth/PrivateRoute';
@@ -101,6 +105,8 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/series/yanga-kids" element={<SeriesDetailYangaKids />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/gracias" element={<Success />} />
+          <Route path="/confirmar-asistencia" element={<EventAttendance />} />
+
 
           {/* Admin Routes */}
           <Route element={<AdminRoute />}>
@@ -113,7 +119,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
               <Route path="accessories" element={<ProductList type="accessories" />} />
               <Route path="accessories/new" element={<ProductForm type="accessories" />} />
               <Route path="accessories/edit/:id" element={<ProductForm type="accessories" />} />
-
+              <Route path="attendance" element={<AttendanceList />} />
               <Route path="products" element={<ProductList />} />
             </Route>
           </Route>

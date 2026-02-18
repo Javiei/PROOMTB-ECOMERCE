@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
-import { Package, Bike, Wrench } from 'lucide-react';
+import { Package, Bike, Wrench, Users } from 'lucide-react';
+
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
         totalProducts: 0,
         totalBikes: 0,
-        totalAccessories: 0
+        totalAccessories: 0,
+        totalAttendance: 0
     });
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,11 +35,20 @@ const Dashboard = () => {
 
             if (productsError) throw productsError;
 
+            // Fetch Attendance Count
+            const { count: attendanceCount, error: attendanceError } = await supabase
+                .from('event_attendance')
+                .select('*', { count: 'exact', head: true });
+
+            if (attendanceError) throw attendanceError;
+
             setStats({
-                totalProducts: (bikesCount || 0) + (accessoriesCount || 0), // Total Items
+                totalProducts: (bikesCount || 0) + (accessoriesCount || 0),
                 totalBikes: bikesCount || 0,
-                totalAccessories: accessoriesCount || 0
+                totalAccessories: accessoriesCount || 0,
+                totalAttendance: attendanceCount || 0
             });
+
         } catch (error) {
             console.error('Error fetching stats:', error);
         } finally {
@@ -134,7 +146,14 @@ const Dashboard = () => {
                     icon={Wrench}
                     color="bg-gray-500"
                 />
+                <StatCard
+                    title="Attendance"
+                    value={stats.totalAttendance}
+                    icon={Users}
+                    color="bg-blue-600"
+                />
             </div>
+
 
             {/* User Management Section */}
             <div className="pt-8">

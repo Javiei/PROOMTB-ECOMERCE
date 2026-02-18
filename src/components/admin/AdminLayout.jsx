@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Menu, X, Users } from 'lucide-react';
+
 import { useAuth } from '../../context/AuthContext';
 
 const AdminLayout = () => {
@@ -22,7 +23,9 @@ const AdminLayout = () => {
         { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
         { path: '/admin/bikes', label: 'Bicycles', icon: Package },
         { path: '/admin/accessories', label: 'Accessories', icon: Package },
+        { path: '/admin/attendance', label: 'Attendance', icon: Users },
     ];
+
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
