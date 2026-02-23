@@ -1,5 +1,6 @@
 import React from 'react';
 import { Wrench, ShieldCheck, Zap, ArrowRight, Truck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const ServiceMarketing = () => {
     return (
@@ -106,15 +107,13 @@ const ServiceMarketing = () => {
                         </div>
                     </div>
 
-                    <a
-                        href="https://wa.me/8297163555?text=Hola,%20deseo%20agendar%20un%20mantenimiento%20para%20mi%20bicicleta."
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <Link
+                        to="/agendar-mantenimiento"
                         className="inline-flex items-center space-x-4 bg-white text-black px-10 py-5 text-sm font-bold uppercase tracking-widest hover:bg-gray-200 transition-all group"
                     >
                         <span>Agendar Mantenimiento</span>
                         <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                    </a>
+                    </Link>
                 </div>
 
                 {/* Optional: Second Visual Element for Desktop */}

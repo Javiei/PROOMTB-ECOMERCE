@@ -37,6 +37,7 @@ import SeriesDetailNaytaKids from './pages/series-details/SeriesDetailNaytaKids'
 import SeriesDetailYangaKids from './pages/series-details/SeriesDetailYangaKids';
 import Success from './pages/Success';
 import EventAttendance from './pages/EventAttendance';
+import MaintenanceBooking from './pages/MaintenanceBooking';
 
 
 // Admin Components
@@ -46,6 +47,7 @@ import Dashboard from './pages/admin/Dashboard';
 import ProductList from './pages/admin/ProductList';
 import ProductForm from './components/admin/ProductForm';
 import AttendanceList from './pages/admin/AttendanceList';
+import MaintenanceList from './pages/admin/MaintenanceList';
 
 
 // User Components
@@ -106,6 +108,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/search" element={<SearchResults />} />
           <Route path="/gracias" element={<Success />} />
           <Route path="/confirmar-asistencia" element={<EventAttendance />} />
+          <Route path="/agendar-mantenimiento" element={<MaintenanceBooking />} />
 
 
           {/* Admin Routes */}
@@ -120,6 +123,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
               <Route path="accessories/new" element={<ProductForm type="accessories" />} />
               <Route path="accessories/edit/:id" element={<ProductForm type="accessories" />} />
               <Route path="attendance" element={<AttendanceList />} />
+              <Route path="maintenance" element={<MaintenanceList />} />
               <Route path="products" element={<ProductList />} />
             </Route>
           </Route>

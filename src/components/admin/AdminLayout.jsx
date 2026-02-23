@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, LogOut, Menu, X, Users } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Menu, X, Users, Wrench } from 'lucide-react';
 
 import { useAuth } from '../../context/AuthContext';
 
@@ -24,6 +24,7 @@ const AdminLayout = () => {
         { path: '/admin/bikes', label: 'Bicycles', icon: Package },
         { path: '/admin/accessories', label: 'Accessories', icon: Package },
         { path: '/admin/attendance', label: 'Attendance', icon: Users },
+        { path: '/admin/maintenance', label: 'Mantenimiento', icon: Wrench },
     ];
 
 
