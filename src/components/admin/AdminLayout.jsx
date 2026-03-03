@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate, useOutletContext, Navigate } from 'react-router-dom';
 import { LayoutDashboard, Package, LogOut, Menu, X, Users, Wrench } from 'lucide-react';
 
 import { useAuth } from '../../context/AuthContext';
@@ -8,6 +8,7 @@ const AdminLayout = () => {
     const { signOut } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const { userRole } = useOutletContext();
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
     const handleSignOut = async () => {
@@ -19,13 +20,25 @@ const AdminLayout = () => {
         }
     };
 
-    const navItems = [
+    const allNavItems = [
         { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
         { path: '/admin/bikes', label: 'Bicycles', icon: Package },
         { path: '/admin/accessories', label: 'Accessories', icon: Package },
         { path: '/admin/attendance', label: 'Attendance', icon: Users },
         { path: '/admin/maintenance', label: 'Mantenimiento', icon: Wrench },
     ];
+
+    const navItems = React.useMemo(() => {
+        if (userRole === 'staff') {
+            return allNavItems.filter(item => item.path === '/admin/attendance');
+        }
+        return allNavItems;
+    }, [userRole]);
+
+    // Redirect staff away from dashboard
+    if (userRole === 'staff' && location.pathname === '/admin') {
+        return <Navigate to="/admin/attendance" replace />;
+    }
 
 
     return (
@@ -107,7 +120,7 @@ const AdminLayout = () => {
 
                 {/* Page Content */}
                 <main className="p-6 md:p-8 overflow-y-auto h-full">
-                    <Outlet />
+                    <Outlet context={{ userRole }} />
                 </main>
             </div>
         </div>

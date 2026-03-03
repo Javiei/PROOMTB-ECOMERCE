@@ -38,6 +38,8 @@ import SeriesDetailYangaKids from './pages/series-details/SeriesDetailYangaKids'
 import Success from './pages/Success';
 import EventAttendance from './pages/EventAttendance';
 import MaintenanceBooking from './pages/MaintenanceBooking';
+import Giveaway from './pages/Giveaway';
+
 
 
 // Admin Components
@@ -109,6 +111,8 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/gracias" element={<Success />} />
           <Route path="/confirmar-asistencia" element={<EventAttendance />} />
           <Route path="/agendar-mantenimiento" element={<MaintenanceBooking />} />
+          <Route path="/sorteo" element={<Giveaway />} />
+
 
 
           {/* Admin Routes */}

@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 const AdminRoute = () => {
     const { user, loading: authLoading } = useAuth();
     const [isAdmin, setIsAdmin] = React.useState(null);
+    const [userRole, setUserRole] = React.useState(null);
     const [roleCheckLoading, setRoleCheckLoading] = React.useState(true);
 
     React.useEffect(() => {
@@ -29,15 +30,20 @@ const AdminRoute = () => {
                     // This creates a safety net while you set up the DB
                     if (user.email.toLowerCase() === 'albelcorlione@gmail.com') {
                         setIsAdmin(true);
+                        setUserRole('admin');
                     } else {
                         setIsAdmin(false);
+                        setUserRole(null);
                     }
                 } else {
-                    setIsAdmin(data.Role === 'admin');
+                    const isAuthorized = data.Role === 'admin' || data.Role === 'staff';
+                    setIsAdmin(isAuthorized);
+                    setUserRole(data.Role);
                 }
             } catch (err) {
                 console.error('Error checking admin role:', err);
                 setIsAdmin(false);
+                setUserRole(null);
             } finally {
                 setRoleCheckLoading(false);
             }
@@ -60,7 +66,7 @@ const AdminRoute = () => {
         return <Navigate to="/" replace />;
     }
 
-    return <Outlet />;
+    return <Outlet context={{ userRole }} />;
 };
 
 export default AdminRoute;
