@@ -13,7 +13,8 @@ import {
     Download,
     Filter,
     RefreshCw,
-    CreditCard
+    CreditCard,
+    ClipboardList
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -48,7 +49,8 @@ const MaintenanceList = () => {
         const matchesSearch =
             booking.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.cedula.toLowerCase().includes(searchTerm.toLowerCase());
+            booking.cedula.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (booking.notes && booking.notes.toLowerCase().includes(searchTerm.toLowerCase()));
 
         // Status filter could be added if you add a status column to the table
         return matchesSearch;
@@ -119,6 +121,7 @@ const MaintenanceList = () => {
                                 <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Servicio</th>
                                 <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Fecha Cita</th>
                                 <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Dirección</th>
+                                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Notas</th>
                                 <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400 text-right">Acciones</th>
                             </tr>
                         </thead>
@@ -126,7 +129,7 @@ const MaintenanceList = () => {
                             {loading ? (
                                 Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i} className="animate-pulse">
-                                        <td colSpan="6" className="px-6 py-6 border-b border-gray-50">
+                                        <td colSpan="7" className="px-6 py-6 border-b border-gray-50">
                                             <div className="h-10 bg-gray-100 rounded-lg w-full"></div>
                                         </td>
                                     </tr>
@@ -165,8 +168,8 @@ const MaintenanceList = () => {
                                         </td>
                                         <td className="px-6 py-5">
                                             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${booking.maintenance_type === 'Full'
-                                                    ? 'bg-black text-white'
-                                                    : 'bg-gray-100 text-gray-600'
+                                                ? 'bg-black text-white'
+                                                : 'bg-gray-100 text-gray-600'
                                                 }`}>
                                                 <Wrench size={12} />
                                                 {booking.maintenance_type}
@@ -184,6 +187,14 @@ const MaintenanceList = () => {
                                                 <div className="text-xs text-gray-500 line-clamp-2">{booking.address}</div>
                                             </div>
                                         </td>
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-start gap-2 max-w-[200px]">
+                                                <ClipboardList size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                                                <div className="text-xs text-gray-500 line-clamp-2">
+                                                    {booking.notes || <span className="italic text-gray-400">Sin notas</span>}
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td className="px-6 py-5 text-right">
                                             <button className="p-2 text-gray-400 hover:text-black hover:bg-gray-100 rounded-lg transition-all">
                                                 <MoreVertical size={20} />
@@ -193,7 +204,7 @@ const MaintenanceList = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-12 text-center text-gray-500 font-medium">
+                                    <td colSpan="7" className="px-6 py-12 text-center text-gray-500 font-medium">
                                         No se encontraron agendamientos.
                                     </td>
                                 </tr>
