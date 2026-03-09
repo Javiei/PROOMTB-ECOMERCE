@@ -14,15 +14,18 @@ import {
     Filter,
     RefreshCw,
     CreditCard,
-    ClipboardList
+    ClipboardList,
+    CheckCircle,
+    XCircle
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const MaintenanceList = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('pending');
+    const [activeDropdown, setActiveDropdown] = useState(null);
 
     useEffect(() => {
         fetchBookings();
@@ -45,6 +48,39 @@ const MaintenanceList = () => {
         }
     };
 
+    const handleUpdateStatus = async (id, newStatus) => {
+        try {
+            // Optimistic update
+            const updatedBookings = bookings.map(booking =>
+                booking.id === id ? { ...booking, status: newStatus } : booking
+            );
+            setBookings(updatedBookings);
+            setActiveDropdown(null);
+
+            const { error } = await supabase
+                .from('maintenance_bookings')
+                .update({ status: newStatus })
+                .eq('id', id);
+
+            if (error) {
+                // Revert optimistic update on error
+                console.error('Error updating status:', error);
+                fetchBookings();
+                alert('Hubo un error al actualizar el estado.');
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            fetchBookings();
+        }
+    };
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = () => setActiveDropdown(null);
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
+
     const filteredBookings = bookings.filter(booking => {
         const matchesSearch =
             booking.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -52,8 +88,12 @@ const MaintenanceList = () => {
             booking.cedula.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (booking.notes && booking.notes.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        // Status filter could be added if you add a status column to the table
-        return matchesSearch;
+        // Manejar el estado: si es null o undefined, asumimos 'pending' (para registros antiguos)
+        const currentStatus = booking.status || 'pending';
+
+        const matchesStatus = statusFilter === 'all' || currentStatus === statusFilter;
+
+        return matchesSearch && matchesStatus;
     });
 
     return (
@@ -140,7 +180,10 @@ const MaintenanceList = () => {
                                         key={booking.id}
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        className="hover:bg-gray-50 transition-colors group"
+                                        className={`transition-colors group ${(booking.status || 'pending') === 'completed'
+                                                ? 'bg-gray-50/50 opacity-70 hover:opacity-100 hover:bg-gray-50'
+                                                : 'hover:bg-gray-50'
+                                            }`}
                                     >
                                         <td className="px-6 py-5">
                                             <div className="flex items-center gap-3">
@@ -195,10 +238,52 @@ const MaintenanceList = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5 text-right">
-                                            <button className="p-2 text-gray-400 hover:text-black hover:bg-gray-100 rounded-lg transition-all">
+                                        <td className="px-6 py-5 text-right relative">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setActiveDropdown(activeDropdown === booking.id ? null : booking.id);
+                                                }}
+                                                className={`p-2 rounded-lg transition-all ${activeDropdown === booking.id
+                                                        ? 'bg-black text-white'
+                                                        : 'text-gray-400 hover:text-black hover:bg-gray-100'
+                                                    }`}
+                                            >
                                                 <MoreVertical size={20} />
                                             </button>
+
+                                            <AnimatePresence>
+                                                {activeDropdown === booking.id && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                                        transition={{ duration: 0.15 }}
+                                                        className="absolute right-6 top-14 z-50 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden text-left"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <div className="p-1">
+                                                            {(booking.status || 'pending') === 'pending' ? (
+                                                                <button
+                                                                    onClick={() => handleUpdateStatus(booking.id, 'completed')}
+                                                                    className="w-full text-left px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-black hover:text-white rounded-lg flex items-center gap-2 transition-colors"
+                                                                >
+                                                                    <CheckCircle size={16} />
+                                                                    Marcar Atendido
+                                                                </button>
+                                                            ) : (
+                                                                <button
+                                                                    onClick={() => handleUpdateStatus(booking.id, 'pending')}
+                                                                    className="w-full text-left px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2 transition-colors"
+                                                                >
+                                                                    <XCircle size={16} className="text-gray-400" />
+                                                                    Marcar Pendiente
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                         </td>
                                     </motion.tr>
                                 ))
