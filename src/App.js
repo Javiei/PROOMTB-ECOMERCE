@@ -39,6 +39,8 @@ import Success from './pages/Success';
 import EventAttendance from './pages/EventAttendance';
 import MaintenanceBooking from './pages/MaintenanceBooking';
 import Giveaway from './pages/Giveaway';
+import TotemCatalog from './pages/TotemCatalog';
+import TotemSeriesDetail from './pages/TotemSeriesDetail';
 
 
 
@@ -64,6 +66,7 @@ import SearchResults from './pages/SearchResults';
 const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
   const location = useLocation();
   const isAdminPath = location.pathname.startsWith('/admin');
+  const isTotemPath = location.pathname.startsWith('/totem');
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -74,9 +77,9 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
         />
       )}
 
-      <Header />
+      {!isTotemPath && <Header />}
 
-      <div className="flex-grow pt-20">
+      <div className={`flex-grow ${!isTotemPath ? 'pt-20' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/accesorios" element={<Accessories />} />
@@ -112,6 +115,8 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/confirmar-asistencia" element={<EventAttendance />} />
           <Route path="/agendar-mantenimiento" element={<MaintenanceBooking />} />
           <Route path="/sorteo" element={<Giveaway />} />
+          <Route path="/totem" element={<TotemCatalog />} />
+          <Route path="/totem/series/:serieName" element={<TotemSeriesDetail />} />
 
 
 
@@ -140,8 +145,8 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
       </div>
 
       {/* Hide footer and whatsapp on admin routes */}
-      {!isAdminPath && <Footer />}
-      {!isAdminPath && <WhatsAppButton />}
+      {!isAdminPath && !isTotemPath && <Footer />}
+      {!isAdminPath && !isTotemPath && <WhatsAppButton />}
     </div>
   );
 };
