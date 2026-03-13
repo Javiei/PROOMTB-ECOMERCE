@@ -28,9 +28,11 @@ const Hero = () => {
             {/* Content */}
             <div className="relative h-full flex items-center justify-start max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-white max-w-2xl pt-20">
-                    <span className="inline-block py-1 px-3 border border-white/30 text-xs font-bold uppercase tracking-[0.2em] mb-6 backdrop-blur-sm">
-                        Novedades 2026
-                    </span>
+                    <Link to="/totem" className="cursor-default">
+                        <span className="inline-block py-1 px-3 border border-white/30 text-xs font-bold uppercase tracking-[0.2em] mb-6 backdrop-blur-sm hover:bg-white/10 transition-colors">
+                            Novedades 2026
+                        </span>
+                    </Link>
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase italic leading-tight mb-8">
                         Domina <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
