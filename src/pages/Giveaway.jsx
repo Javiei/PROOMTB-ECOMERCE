@@ -2,45 +2,216 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { FaBicycle, FaFlagCheckered, FaRedo, FaChevronRight } from 'react-icons/fa';
+import { supabase } from '../supabaseClient';
+import toast, { Toaster } from 'react-hot-toast';
 
-const PRIZES = [
-    { id: 1, name: "Termo", icon: "💧", color: "#06b6d4" }, // Cyan-500
-    { id: 2, name: "Gorras", icon: "🧢", color: "black" },  // Keep black for stark contrast on white
-    { id: 3, name: "Mantenimiento Full", icon: "🔧", color: "black" },
-    { id: 4, name: "Llaveros", icon: "🔑", color: "black" },
-    { id: 5, name: "Tshirt", icon: "👕", color: "#06b6d4" } // Cyan-500
+const DEFAULT_PRIZES = [
+    { id: 1, name: "Termo", icon: "💧", color: "#06b6d4", stock: 35 },
+    { id: 2, name: "Gorras", icon: "🧢", color: "black", stock: 10 },
+    { id: 3, name: "Mantenimiento Full", icon: "🔧", color: "black", stock: 10 },
+    { id: 4, name: "Llaveros", icon: "🔑", color: "black", stock: 75 },
+    { id: 5, name: "Tshirt", icon: "👕", color: "#06b6d4", stock: 20 }
 ];
 
+// Custom hook for Web Audio API sounds
+const useSoundEffects = () => {
+    const playWinSound = () => {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            
+            const playNote = (freq, startTime, duration) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, startTime);
+                
+                gain.gain.setValueAtTime(0, startTime);
+                gain.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(startTime);
+                osc.stop(startTime + duration);
+            };
+
+            const now = ctx.currentTime;
+            playNote(523.25, now, 0.4);      // C5
+            playNote(659.25, now + 0.15, 0.4); // E5
+            playNote(783.99, now + 0.3, 0.4); // G5
+            playNote(1046.50, now + 0.45, 0.8); // C6
+        } catch (e) {
+            console.error("Audio error", e);
+        }
+    };
+
+    let raceAudioCtx = null;
+    let raceAudioInterval = null;
+
+    const startRaceSound = () => {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            if (!raceAudioCtx) raceAudioCtx = new AudioContext();
+            if (raceAudioCtx.state === 'suspended') raceAudioCtx.resume();
+            
+            let nextClickTime = raceAudioCtx.currentTime;
+            let rate = 0.15; // starting speed
+            
+            const scheduleNextClick = () => {
+                if (!raceAudioCtx) return; 
+                
+                while (nextClickTime < raceAudioCtx.currentTime + 0.1) {
+                    const osc = raceAudioCtx.createOscillator();
+                    const gain = raceAudioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, nextClickTime);
+                    osc.frequency.exponentialRampToValueAtTime(200, nextClickTime + 0.05);
+                    
+                    gain.gain.setValueAtTime(0, nextClickTime);
+                    gain.gain.linearRampToValueAtTime(0.2, nextClickTime + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.01, nextClickTime + 0.05);
+                    
+                    osc.connect(gain);
+                    gain.connect(raceAudioCtx.destination);
+                    
+                    osc.start(nextClickTime);
+                    osc.stop(nextClickTime + 0.05);
+                    
+                    nextClickTime += rate;
+                    rate = Math.max(0.04, rate * 0.96); // speed up progressively
+                }
+            };
+            
+            raceAudioInterval = setInterval(scheduleNextClick, 50);
+        } catch (e) {
+            console.error("Audio error", e);
+        }
+    };
+
+    const stopRaceSound = () => {
+        if (raceAudioInterval) {
+            clearInterval(raceAudioInterval);
+            raceAudioInterval = null;
+        }
+        if (raceAudioCtx) {
+            raceAudioCtx.close();
+            raceAudioCtx = null;
+        }
+    };
+
+    return { playWinSound, startRaceSound, stopRaceSound };
+};
+
 const Giveaway = () => {
+    const { playWinSound, startRaceSound, stopRaceSound } = useSoundEffects();
+    const [prizesList, setPrizesList] = useState(DEFAULT_PRIZES);
+    const [isLoadingStock, setIsLoadingStock] = useState(true);
+
+    const fetchStock = async () => {
+        setIsLoadingStock(true);
+        try {
+            const { data, error } = await supabase.from('giveaway_stock').select('*').order('id', { ascending: true });
+            if (error) {
+                console.error("Error fetching stock:", error);
+            } else if (data && data.length > 0) {
+                const mergedPrizes = DEFAULT_PRIZES.map(dp => {
+                    const dbPrize = data.find(p => p.id === dp.id);
+                    return dbPrize ? { ...dp, stock: dbPrize.stock, name: dbPrize.name } : dp;
+                }).filter(prize => prize.stock > 0);
+                setPrizesList(mergedPrizes);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsLoadingStock(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchStock();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        return () => stopRaceSound();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const [isRacing, setIsRacing] = useState(false);
     const [result, setResult] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
-    const [progresses, setProgresses] = useState([0, 0, 0, 0, 0]);
+    const [progresses, setProgresses] = useState([]);
     const [winnerIndex, setWinnerIndex] = useState(null);
 
+    const handleClaimReward = async () => {
+        if (!result) return;
+        const currentPrize = result;
+        
+        handleReset();
+        toast.success(`Procesando descuento para: ${currentPrize.name}...`);
+
+        try {
+            const { data } = await supabase.from('giveaway_stock').select('stock').eq('id', currentPrize.id).single();
+            const currentStock = data ? data.stock : currentPrize.stock;
+            const newStock = Math.max(0, currentStock - 1);
+            
+            const { error } = await supabase.from('giveaway_stock').upsert({ id: currentPrize.id, name: currentPrize.name, stock: newStock });
+            
+            if (error) {
+               toast.error("No se pudo actualizar la tabla giveaway_stock. Verifica que exista en Supabase.");
+            } else {
+               toast.success(`Se actualizó el stock. Quedan ${newStock} de ${currentPrize.name}.`);
+               fetchStock();
+            }
+        } catch (error) {
+            console.error("Error actualizando inventario:", error);
+        }
+    };
+
     const handleReset = () => {
+        stopRaceSound();
         setShowModal(false);
         setResult(null);
-        setProgresses([0, 0, 0, 0, 0]);
+        setProgresses(new Array(prizesList.length).fill(0));
         setWinnerIndex(null);
     };
 
     const startRace = () => {
         if (isRacing) return;
 
+        const totalStock = prizesList.reduce((acc, prize) => acc + prize.stock, 0);
+        if (totalStock <= 0) {
+            toast.error("Al parecer no queda más stock de premios.");
+            return;
+        }
+
+        startRaceSound();
         setIsRacing(true);
         setShowModal(false);
         setResult(null);
-        setProgresses([0, 0, 0, 0, 0]);
+        setProgresses(new Array(prizesList.length).fill(0));
 
-        const targetWinner = Math.floor(Math.random() * PRIZES.length);
+        let targetWinner = 0;
+        let randomValue = Math.floor(Math.random() * totalStock);
+        for (let i = 0; i < prizesList.length; i++) {
+            randomValue -= prizesList[i].stock;
+            if (randomValue < 0) {
+                targetWinner = i;
+                break;
+            }
+        }
         setWinnerIndex(targetWinner);
 
         let startTime = null;
         const raceDuration = 4000;
 
-        const profiles = PRIZES.map((_, i) => {
+        const profiles = prizesList.map((_, i) => {
             if (i === targetWinner) {
                 return { targetDuration: raceDuration, curve: Math.random() * 0.5 + 0.8 };
             } else {
@@ -68,8 +239,10 @@ const Giveaway = () => {
             setProgresses(newProgresses);
 
             if (winnerFinished) {
+                stopRaceSound();
                 setTimeout(() => {
-                    setResult(PRIZES[targetWinner]);
+                    playWinSound();
+                    setResult(prizesList[targetWinner]);
                     setIsRacing(false);
                     setShowModal(true);
                 }, 800);
@@ -116,7 +289,7 @@ const Giveaway = () => {
                 </div>
 
                 <div className="flex flex-col gap-3 md:gap-5 relative z-10 w-full pr-12 md:pr-24">
-                    {PRIZES.map((prize, i) => (
+                    {prizesList.map((prize, i) => (
                         <div key={i} className="flex relative items-center h-16 md:h-24 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden group">
 
                             <div className="absolute inset-0 bg-gradient-to-r from-gray-50/50 to-transparent pointer-events-none" />
@@ -160,11 +333,14 @@ const Giveaway = () => {
                 </div>
             </div>
 
+            <Toaster position="bottom-center" />
+
             {/* Premium Start Button */}
             {!isRacing && !result && (
                 <button
                     onClick={startRace}
-                    className="group relative flex items-center justify-center gap-4 bg-black text-white px-12 py-5 rounded-none hover:bg-cyan-600 font-black uppercase tracking-[0.2em] transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:shadow-[0_15px_40px_rgba(6,182,212,0.4)] overflow-hidden"
+                    disabled={isLoadingStock}
+                    className="group relative flex items-center justify-center gap-4 bg-black text-white px-12 py-5 rounded-none hover:bg-cyan-600 font-black uppercase tracking-[0.2em] transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:shadow-[0_15px_40px_rgba(6,182,212,0.4)] overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                     <div className="absolute inset-0 bg-white/20 translate-x-[-100%] skew-x-[-15deg] group-hover:animate-[shine_1s_forwards]" />
                     <FaFlagCheckered className="text-2xl" />
@@ -207,16 +383,16 @@ const Giveaway = () => {
 
                             <div className="flex flex-col gap-4">
                                 <button
-                                    onClick={handleReset}
-                                    className="w-full py-4 bg-black hover:bg-gray-800 text-white font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-md hover:shadow-lg"
+                                    onClick={handleClaimReward}
+                                    className="w-full py-4 bg-black hover:bg-gray-800 text-white font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-md hover:shadow-lg text-sm"
                                 >
-                                    RECLAMAR RECOMPENSA
+                                    RECLAMAR Y DESCONTAR (-1 {result.name})
                                 </button>
                                 <button
                                     onClick={handleReset}
                                     className="w-full py-3 text-gray-400 hover:text-black font-semibold uppercase tracking-[0.2em] transition-colors flex items-center justify-center gap-2 text-xs"
                                 >
-                                    <FaRedo className="text-xs" /> VOLVER A COMPETIR
+                                    <FaRedo className="text-xs" /> OMITIR Y VOLVER AL INICIO
                                 </button>
                             </div>
                         </motion.div>
