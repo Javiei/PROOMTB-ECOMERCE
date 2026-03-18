@@ -31,7 +31,10 @@ const AdminLayout = () => {
 
     const navItems = React.useMemo(() => {
         if (userRole === 'staff') {
-            return allNavItems.filter(item => item.path === '/admin/attendance');
+            return allNavItems.filter(item => 
+                item.path === '/admin/attendance' || 
+                item.path === '/admin/fotos'
+            );
         }
         return allNavItems;
     }, [userRole]);
