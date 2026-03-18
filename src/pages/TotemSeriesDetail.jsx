@@ -18,16 +18,13 @@ const seriesHeaderImages = {
     vantor: { image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2F33%2F03%2F3d%2F1749728337%2FVantor_MainHeader.png&w=1080&q=75" },
     trailray: { image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2F33%2F03%2F3d%2F1749728337%2FTrailray_MainHeader.png&w=1080&q=75" },
     airok: {
-        image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2Fe8%2F63%2F20%2F1746520528%2Fairok_bg.png&w=1080&q=75",
-        video: "https://player.vimeo.com/video/1172169652?background=1&autoplay=1&loop=1&byline=0&title=0&muted=1"
+        image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2Fe8%2F63%2F20%2F1746520528%2Fairok_bg.png&w=1080&q=75"
     },
     arid: {
-        image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2F39%2F4f%2F3f%2F1747034794%2FArid_hero.png&w=1080&q=75",
-        video: "https://player.vimeo.com/video/1172177666?background=1&autoplay=1&loop=1&byline=0&title=0&muted=1"
+        image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2F39%2F4f%2F3f%2F1747034794%2FArid_hero.png&w=1080&q=75"
     },
     arva: {
-        image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2F55%2F50%2Fd9%2F1750657745%2Fraymon-hero-02.png&w=1080&q=75",
-        video: "https://player.vimeo.com/video/1172357308?background=1&autoplay=1&loop=1&byline=0&title=0&muted=1"
+        image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2F55%2F50%2Fd9%2F1750657745%2Fraymon-hero-02.png&w=1080&q=75"
     },
     airray: { image: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?q=80&w=1920&auto=format&fit=crop" },
     hardray: { image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2Ff6%2F41%2F2b%2F1747034708%2FHardray_hero.png&w=1080&q=75" },
@@ -369,10 +366,6 @@ const TotemSeriesDetail = () => {
     const safeSerieName = serieName ? serieName.toLowerCase() : '';
     const seriesConfig = seriesHeaderImages[safeSerieName] || seriesHeaderImages.default;
     const headerImage = seriesConfig.image;
-    const headerVideo = seriesConfig.video;
-
-    // Manage intro video state
-    const [showIntroVideo, setShowIntroVideo] = useState(!!headerVideo);
 
     // Idle timer to reset to start screen after 60s of inactivity
     useEffect(() => {
@@ -490,31 +483,6 @@ const TotemSeriesDetail = () => {
 
     return (
         <div className="w-screen h-[1920px] max-h-screen flex flex-col bg-white font-sans select-none overflow-hidden relative animate-in fade-in duration-500">
-
-            {/* Intro Video Overlay */}
-            {showIntroVideo && headerVideo && (
-                <div
-                    className="fixed inset-0 z-50 bg-black flex items-center justify-center animate-in fade-in duration-500 cursor-pointer"
-                    onClick={() => setShowIntroVideo(false)}
-                    onTouchStart={() => setShowIntroVideo(false)}
-                >
-                    <iframe
-                        src={headerVideo}
-                        title="Series Intro Video"
-                        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                        style={{ height: '300vh', width: '300vw', top: '-100vh', left: '-100vw' }} // Force fill
-                        frameBorder="0"
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowFullScreen
-                    ></iframe>
-                    <div className="absolute inset-0 z-10"></div> {/* invisible layer to catch clicks over iframe */}
-                    <div className="absolute bottom-32 text-center animate-pulse z-20 w-full px-8 pointer-events-none">
-                        <p className="text-white text-4xl font-black uppercase tracking-widest drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
-                            TOCAR PARA VER CATÁLOGO
-                        </p>
-                    </div>
-                </div>
-            )}
 
             {/* Top Navigation Bar - Sticky */}
             <div className={`bg-black text-white shrink-0 shadow-xl z-20 pb-4 relative flex flex-col justify-between`}>
