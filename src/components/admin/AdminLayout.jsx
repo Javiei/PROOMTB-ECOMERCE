@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, Outlet, useLocation, useNavigate, useOutletContext, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Package, LogOut, Menu, X, Users, Wrench } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Menu, X, Users, Wrench, Camera } from 'lucide-react';
 
 import { useAuth } from '../../context/AuthContext';
 
@@ -26,6 +26,7 @@ const AdminLayout = () => {
         { path: '/admin/accessories', label: 'Accessories', icon: Package },
         { path: '/admin/attendance', label: 'Attendance', icon: Users },
         { path: '/admin/maintenance', label: 'Mantenimiento', icon: Wrench },
+        { path: '/admin/fotos', label: 'Fotos Actividad', icon: Camera },
     ];
 
     const navItems = React.useMemo(() => {

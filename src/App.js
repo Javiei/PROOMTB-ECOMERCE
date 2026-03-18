@@ -61,6 +61,8 @@ import UserProfile from './pages/UserProfile';
 import ScrollToTop from './components/common/ScrollToTop';
 import PageTitleUpdater from './components/common/PageTitleUpdater';
 import SearchResults from './pages/SearchResults';
+import PhotoUpload from './pages/PhotoUpload';
+import PhotoList from './pages/admin/PhotoList';
 
 // Move logic into a sub-component to use useLocation
 const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
@@ -112,6 +114,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/series/yanga-kids" element={<SeriesDetailYangaKids />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/gracias" element={<Success />} />
+          <Route path="/compartir-fotos" element={<PhotoUpload />} />
           <Route path="/confirmar-asistencia" element={<EventAttendance />} />
           <Route path="/agendar-mantenimiento" element={<MaintenanceBooking />} />
           <Route path="/sorteo" element={<Giveaway />} />
@@ -133,6 +136,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
               <Route path="accessories/edit/:id" element={<ProductForm type="accessories" />} />
               <Route path="attendance" element={<AttendanceList />} />
               <Route path="maintenance" element={<MaintenanceList />} />
+              <Route path="fotos" element={<PhotoList />} />
               <Route path="products" element={<ProductList />} />
             </Route>
           </Route>
