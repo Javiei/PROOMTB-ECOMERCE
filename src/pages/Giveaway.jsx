@@ -185,7 +185,7 @@ const Giveaway = () => {
     const startRace = () => {
         if (isRacing) return;
 
-        const totalStock = prizesList.reduce((acc, prize) => acc + prize.stock, 0);
+        const totalStock = prizesList.reduce((acc, prize) => acc + Number(prize.stock), 0);
         if (totalStock <= 0) {
             toast.error("Al parecer no queda más stock de premios.");
             return;
@@ -200,7 +200,7 @@ const Giveaway = () => {
         let targetWinner = 0;
         let randomValue = Math.floor(Math.random() * totalStock);
         for (let i = 0; i < prizesList.length; i++) {
-            randomValue -= prizesList[i].stock;
+            randomValue -= Number(prizesList[i].stock);
             if (randomValue < 0) {
                 targetWinner = i;
                 break;
