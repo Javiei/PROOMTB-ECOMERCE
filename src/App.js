@@ -41,6 +41,7 @@ import MaintenanceBooking from './pages/MaintenanceBooking';
 import Giveaway from './pages/Giveaway';
 import TotemCatalog from './pages/TotemCatalog';
 import TotemSeriesDetail from './pages/TotemSeriesDetail';
+import TuesdayRegistration from './pages/TuesdayRegistration';
 
 
 
@@ -51,6 +52,7 @@ import Dashboard from './pages/admin/Dashboard';
 import ProductList from './pages/admin/ProductList';
 import ProductForm from './components/admin/ProductForm';
 import AttendanceList from './pages/admin/AttendanceList';
+import TuesdayAttendanceList from './pages/admin/TuesdayAttendanceList';
 import MaintenanceList from './pages/admin/MaintenanceList';
 
 
@@ -120,6 +122,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/sorteo" element={<Giveaway />} />
           <Route path="/totem" element={<TotemCatalog />} />
           <Route path="/totem/series/:serieName" element={<TotemSeriesDetail />} />
+          <Route path="/registro-martes" element={<TuesdayRegistration />} />
 
 
 
@@ -135,6 +138,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
               <Route path="accessories/new" element={<ProductForm type="accessories" />} />
               <Route path="accessories/edit/:id" element={<ProductForm type="accessories" />} />
               <Route path="attendance" element={<AttendanceList />} />
+              <Route path="tuesday-attendance" element={<TuesdayAttendanceList />} />
               <Route path="maintenance" element={<MaintenanceList />} />
               <Route path="fotos" element={<PhotoList />} />
               <Route path="products" element={<ProductList />} />
