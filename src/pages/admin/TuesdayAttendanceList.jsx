@@ -47,17 +47,18 @@ const TuesdayAttendanceList = () => {
     };
 
     const exportToCSV = () => {
-        const headers = ['Nombre', 'Apellido', 'Cédula', 'Email', 'Fecha de Registro', 'Waiver Aceptado'];
-        const rows = registrations.map(r => [
-            r.first_name,
-            r.last_name,
+        const headers = ['Nombre', 'Apellido', 'Cédula', 'Email', 'Fecha de Registro', 'Total Asistencias', 'Waiver Aceptado'];
+        const rows = filteredRegistrations.map(r => [
+            `"${r.first_name}"`,
+            `"${r.last_name}"`,
             r.cedula,
-            r.email,
+            `"${r.email}"`,
             r.registration_date,
+            attendanceFrequency[r.cedula],
             r.waiver_accepted ? 'SÍ' : 'NO'
         ]);
 
-        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        const csvContent = "\uFEFF" + [headers, ...rows].map(e => e.join(",")).join("\n");
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);

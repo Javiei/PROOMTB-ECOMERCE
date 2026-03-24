@@ -8,7 +8,8 @@ const Dashboard = () => {
         totalProducts: 0,
         totalBikes: 0,
         totalAccessories: 0,
-        totalAttendance: 0
+        totalAttendance: 0,
+        totalTuesday: 0
     });
 
     const [loading, setLoading] = useState(true);
@@ -35,18 +36,21 @@ const Dashboard = () => {
 
             if (productsError) throw productsError;
 
-            // Fetch Attendance Count
-            const { count: attendanceCount, error: attendanceError } = await supabase
-                .from('event_attendance')
+            if (attendanceError) throw attendanceError;
+            
+            // Fetch Tuesday Attendance Count
+            const { count: tuesdayCount, error: tuesdayError } = await supabase
+                .from('tuesday_registrations')
                 .select('*', { count: 'exact', head: true });
 
-            if (attendanceError) throw attendanceError;
+            if (tuesdayError) throw tuesdayError;
 
             setStats({
                 totalProducts: (bikesCount || 0) + (accessoriesCount || 0),
                 totalBikes: bikesCount || 0,
                 totalAccessories: accessoriesCount || 0,
-                totalAttendance: attendanceCount || 0
+                totalAttendance: attendanceCount || 0,
+                totalTuesday: tuesdayCount || 0
             });
 
         } catch (error) {
@@ -151,6 +155,12 @@ const Dashboard = () => {
                     value={stats.totalAttendance}
                     icon={Users}
                     color="bg-blue-600"
+                />
+                <StatCard
+                    title="Martes de Ruta"
+                    value={stats.totalTuesday}
+                    icon={Bike}
+                    color="bg-green-600"
                 />
             </div>
 
