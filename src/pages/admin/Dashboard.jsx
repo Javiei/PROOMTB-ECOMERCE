@@ -36,6 +36,11 @@ const Dashboard = () => {
 
             if (productsError) throw productsError;
 
+            // Fetch Attendance Count
+            const { count: attendanceCount, error: attendanceError } = await supabase
+                .from('event_attendance')
+                .select('*', { count: 'exact', head: true });
+
             if (attendanceError) throw attendanceError;
             
             // Fetch Tuesday Attendance Count
