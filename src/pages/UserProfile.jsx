@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { LogOut, User, Mail, Shield, Wrench, Calendar, Clock, ChevronRight } from 'lucide-react';
+import { LogOut, User, Mail, Shield, Wrench, Calendar, Clock, ChevronRight, Bike, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const UserProfile = () => {
@@ -10,12 +10,32 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const [bookings, setBookings] = useState([]);
     const [loadingBookings, setLoadingBookings] = useState(true);
+    const [tuesdayCount, setTuesdayCount] = useState(0);
+    const [loadingTuesday, setLoadingTuesday] = useState(true);
 
     useEffect(() => {
         if (user) {
             fetchBookings();
+            fetchTuesdayCount();
         }
     }, [user]);
+
+    const fetchTuesdayCount = async () => {
+        try {
+            setLoadingTuesday(true);
+            const { count, error } = await supabase
+                .from('tuesday_registrations')
+                .select('*', { count: 'exact', head: true })
+                .eq('email', user.email);
+
+            if (error) throw error;
+            setTuesdayCount(count || 0);
+        } catch (error) {
+            console.error('Error fetching tuesday count:', error);
+        } finally {
+            setLoadingTuesday(false);
+        }
+    };
 
     const fetchBookings = async () => {
         try {
@@ -127,6 +147,51 @@ const UserProfile = () => {
                                 >
                                     Agendar primero ahora
                                 </Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Tuesday Rides Section */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                        <h2 className="text-lg font-bold uppercase tracking-wide flex items-center gap-2">
+                            <Bike size={18} className="text-gray-400" />
+                            Paseos Nocturnos
+                        </h2>
+                    </div>
+                    <div className="p-6">
+                        {loadingTuesday ? (
+                            <div className="flex justify-center py-4">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-xl border border-gray-100 relative overflow-hidden">
+                                <div className="text-center relative z-10">
+                                    <div className="flex justify-center mb-2">
+                                        <div className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center shadow-lg">
+                                            <span className="text-2xl font-black">{tuesdayCount}</span>
+                                        </div>
+                                    </div>
+                                    <h3 className="font-bold text-sm uppercase text-gray-800">Carreras Asistidas</h3>
+                                    {tuesdayCount >= 3 ? (
+                                        <p className="text-xs font-bold text-green-600 mt-2 flex items-center justify-center gap-1 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
+                                            <Award size={14} />
+                                            ¡Participando en la Gran Rifa!
+                                        </p>
+                                    ) : (
+                                        <p className="text-xs font-medium text-gray-500 mt-2">
+                                            Llevas {tuesdayCount} de 3 carreras registradas para participar en la rifa.
+                                        </p>
+                                    )}
+                                </div>
+                                {/* Decorative elements */}
+                                {tuesdayCount >= 3 && (
+                                    <>
+                                        <div className="absolute top-[-20%] left-[-10%] w-32 h-32 bg-green-100 rounded-full blur-3xl opacity-50"></div>
+                                        <div className="absolute bottom-[-20%] right-[-10%] w-32 h-32 bg-yellow-100 rounded-full blur-3xl opacity-50"></div>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
