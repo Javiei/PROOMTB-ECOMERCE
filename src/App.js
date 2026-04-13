@@ -35,12 +35,14 @@ import SeriesDetailArid from './pages/series-details/SeriesDetailArid';
 import SeriesDetailNayta from './pages/series-details/SeriesDetailNayta';
 import SeriesDetailNaytaKids from './pages/series-details/SeriesDetailNaytaKids';
 import SeriesDetailYangaKids from './pages/series-details/SeriesDetailYangaKids';
+import SeriesDetailTarok from './pages/series-details/SeriesDetailTarok';
 import Success from './pages/Success';
 import EventAttendance from './pages/EventAttendance';
 import MaintenanceBooking from './pages/MaintenanceBooking';
 import Giveaway from './pages/Giveaway';
 import TotemCatalog from './pages/TotemCatalog';
 import TotemSeriesDetail from './pages/TotemSeriesDetail';
+import SeriesDetailTarokTotem from './pages/series-details/SeriesDetailTarokTotem';
 import TuesdayRegistration from './pages/TuesdayRegistration';
 
 
@@ -114,6 +116,8 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/series/nayta" element={<SeriesDetailNayta />} />
           <Route path="/series/nayta-kids" element={<SeriesDetailNaytaKids />} />
           <Route path="/series/yanga-kids" element={<SeriesDetailYangaKids />} />
+          <Route path="/series/tarok" element={<SeriesDetailTarok />} />
+          <Route path="/tarok" element={<SeriesDetailTarok />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/gracias" element={<Success />} />
           <Route path="/compartir-fotos" element={<PhotoUpload />} />
@@ -121,6 +125,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/agendar-mantenimiento" element={<MaintenanceBooking />} />
           <Route path="/sorteo" element={<Giveaway />} />
           <Route path="/totem" element={<TotemCatalog />} />
+          <Route path="/totem/series/tarok" element={<SeriesDetailTarokTotem />} />
           <Route path="/totem/series/:serieName" element={<TotemSeriesDetail />} />
           <Route path="/registro-martes" element={<TuesdayRegistration />} />
 

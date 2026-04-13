@@ -10,48 +10,34 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // 1. Determinar qué recordatorio enviar según la fecha de hoy
-    // Nota: El servidor usa UTC, ajustamos a hora de RD (UTC-4)
-    const now = new Date(new Date().getTime() - (4 * 60 * 60 * 1000))
-    const dateString = now.toISOString().split('T')[0]
-    
-    let reminderType = '' // '1' para mañana, '2' para hoy
-    
-    if (dateString === '2026-03-17') {
-      reminderType = '1'
-    } else if (dateString === '2026-03-18') {
-      reminderType = '2'
-    } else {
-      return new Response(JSON.stringify({ message: "No hay recordatorios programados para hoy (" + dateString + ")" }), { status: 200 })
-    }
-
-    const reminderField = `reminder_${reminderType}_sent`
-    
-    // 2. Buscar personas que no hayan recibido el recordatorio correspondiente
-    const { data: attendees, error: fetchError } = await supabase
-      .from('event_attendance')
-      .select('id, name, email')
-      .eq('event_name', 'Gran Opening Raymon ProoMTB')
-      .eq(reminderField, false)
+    // 1. Buscar personas específicamente registradas en los martes (sin duplicados)
+    const { data: rawAttendees, error: fetchError } = await supabase
+      .from('tuesday_registrations')
+      .select('first_name, email')
 
     if (fetchError) throw fetchError
-    if (!attendees || attendees.length === 0) {
-      return new Response(JSON.stringify({ message: "Todos los recordatorios de hoy ya fueron enviados." }), { status: 200 })
+    if (!rawAttendees || rawAttendees.length === 0) {
+      return new Response(JSON.stringify({ message: "No hay registros de martes para enviar correos." }), { status: 200 })
     }
 
-    const isToday = reminderType === '2'
-    const subject = isToday 
-      ? '🔥 ¡Es HOY! El Gran Opening de Raymon ProoMTB te espera'
-      : '🎉 ¡Mañana es el gran día! Recordatorio Opening Raymon ProoMTB'
+    // Filtrar emails únicos (una persona podría haberse registrado varias veces en semanas diferentes)
+    const uniqueEmails = new Set()
+    const attendees = []
+    
+    for (const person of rawAttendees) {
+      if (person.email && !uniqueEmails.has(person.email)) {
+        uniqueEmails.add(person.email)
+        attendees.push(person)
+      }
+    }
 
-    const title = isToday ? '¡El día ha llegado!' : '¡Mañana es el gran día!'
-    const message = isToday
-      ? '¡El día ha llegado! Te esperamos hoy para celebrar nuestro Gran Opening. Será una tarde inolvidable llena de sorpresas y lo mejor del mundo del ciclismo.'
-      : 'Te recordamos que mañana es el Gran Opening de Raymon ProoMTB. No puedes faltar a este evento especial donde compartiremos nuestra pasión por las bicicletas.'
+    const subject = '⚠️ Corrección de Fecha: Paseos Nocturnos de los Martes'
+    const title = '¡Aviso Importante! Cambio de Fecha'
+    const message = 'Te pedimos sinceras disculpas por la confusión en nuestro correo anterior. Por un error interno, te indicamos que el paseo era mañana, pero en realidad nuestro próximo encuentro de los <b>Paseos Nocturnos de los Martes</b> será el <b>próximo martes 14 de Abril</b>.<br><br>Te esperamos con la misma energía y ganas de rodar la próxima semana. Recuerda traer tu bici lista, casco y luces.<br><br><b>P.D. 🎁</b> Que no se te olvide que al participar y registrar tu asistencia en <b>3 paseos</b>, estarás participando automáticamente en nuestra gran rifa de premios. 🏆'
 
     const results = []
 
-    // 3. Enviar correos e ir actualizando el estado
+    // 3. Enviar correos
     for (const attendee of attendees) {
       try {
         const res = await fetch('https://api.resend.com/emails', {
@@ -75,10 +61,10 @@ serve(async (req) => {
                   .content { padding: 40px; color: #333333; }
                   .footer { background-color: #f9f9f9; padding: 20px; text-align: center; color: #999999; font-size: 12px; }
                   h1 { color: #000000; font-size: 24px; font-weight: 900; text-transform: uppercase; margin-top: 0; letter-spacing: -1px; }
-                  .detail-card { background-color: #f8f8f8; border-radius: 12px; padding: 20px; margin: 20px 0; border: 1px solid #eeeeee; }
+                  .detail-card { background-color: #fff3cd; border-radius: 12px; padding: 20px; margin: 20px 0; border: 1px solid #ffeeba; }
                   .detail-item { margin-bottom: 10px; font-size: 14px; }
-                  .detail-label { font-weight: bold; text-transform: uppercase; color: #888888; font-size: 10px; letter-spacing: 1px; display: block; }
-                  .detail-value { font-size: 16px; color: #000000; font-weight: 600; }
+                  .detail-label { font-weight: bold; text-transform: uppercase; color: #856404; font-size: 10px; letter-spacing: 1px; display: block; }
+                  .detail-value { font-size: 16px; color: #856404; font-weight: 600; }
                   .button { display: inline-block; padding: 16px 32px; background-color: #000000; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 14px; margin-top: 20px; }
                   .logo { width: 180px; height: auto; margin-bottom: 10px; }
                 </style>
@@ -86,26 +72,26 @@ serve(async (req) => {
               <body>
                 <div class="container">
                   <div class="header">
-                    <img src="https://proomtb.com/static/media/proomtb_logo_white.fb740b536a7194b20c74.png" alt="ProoMTB Logo" class="logo">
-                    <p style="color: #666; margin: 5px 0 0 0; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Gran Opening</p>
+                    <img src="https://proomtb.com/static/media/LOGO%20PRO%20MTB%20AND%20ROAD%20VECTORES%20CORREGIDOS.pdf.0b103f2a86d22ea4fdd3.png" alt="ProoMTB Logo" class="logo">
+                    <p style="color: #666; margin: 5px 0 0 0; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">FE DE ERRATAS</p>
                   </div>
                   <div class="content">
-                    <h1>¡Hola, ${attendee.name.split(' ')[0]}!</h1>
+                    <h1>¡Hola, ${attendee.first_name.split(' ')[0]}!</h1>
                     <p><b>${title}</b></p>
                     <p>${message}</p>
                     
                     <div class="detail-card">
                       <div class="detail-item">
                         <span class="detail-label">Evento</span>
-                        <span class="detail-value">Gran Opening Raymon ProoMTB</span>
+                        <span class="detail-value">Paseos Nocturnos de los Martes</span>
                       </div>
                       <div class="detail-item">
-                        <span class="detail-label">Fecha</span>
-                        <span class="detail-value">Miércoles 18 de Marzo, 2026</span>
+                        <span class="detail-label">Nueva Fecha</span>
+                        <span class="detail-value">Martes 14 de Abril, 2026</span>
                       </div>
                       <div class="detail-item">
                         <span class="detail-label">Hora</span>
-                        <span class="detail-value">5:30 PM</span>
+                        <span class="detail-value">8:00 PM</span>
                       </div>
                       <div class="detail-item">
                         <span class="detail-label">Ubicación</span>
@@ -113,10 +99,10 @@ serve(async (req) => {
                       </div>
                     </div>
 
-                    <p>¡Contamos con tu presencia!</p>
+                    <p>Gracias por tu comprensión y ¡nos vemos pronto!</p>
                     
                     <div style="text-align: center;">
-                      <a href="https://maps.app.goo.gl/uvB7N2H1Yk28U93e9" class="button">Ver mapa</a>
+                      <a href="https://maps.app.goo.gl/FjJvKuGUtcvfWRZF9" class="button">Ver mapa</a>
                     </div>
                   </div>
                   <div class="footer">
@@ -130,11 +116,6 @@ serve(async (req) => {
         })
 
         if (res.ok) {
-          // Marcar como enviado inmediatamente
-          await supabase
-            .from('event_attendance')
-            .update({ [reminderField]: true })
-            .eq('id', attendee.id)
           results.push(`Enviado a ${attendee.email}`)
         }
       } catch (e) {
@@ -142,7 +123,7 @@ serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ message: "Proceso completado", enviados: results.length }), {
+    return new Response(JSON.stringify({ message: "Proceso completado", enviados: results.length, details: results }), {
       headers: { "Content-Type": "application/json" }
     })
 
@@ -150,3 +131,4 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: err.message }), { status: 500 })
   }
 })
+

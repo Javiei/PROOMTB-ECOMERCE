@@ -39,6 +39,7 @@ const seriesHeaderImages = {
     vamok: { image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2Fe8%2F63%2F20%2F1746520528%2Fairok_bg.png&w=1080&q=75" },
     yara: { image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2Fd4%2F0c%2Fc9%2F1747034740%2FYara_hero.png&w=1080&q=75" },
     zayn: { image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2F66%2Fc1%2Fcb%2F1747034828%2FZayn_hero.png&w=1080&q=75" },
+    tarok: { image: "https://rwbxersfwgmkixulhnxp.supabase.co/storage/v1/object/sign/bicicletas/Tarok/Ultra/Raymon_Tarok_Ultra_front.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iZjU5MzQwZS1mMGM0LTRkM2QtYmNiZi1kZjRlY2MyMWNkNTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJiaWNpY2xldGFzL1Rhcm9rL1VsdHJhL1JheW1vbl9UYXJva19VbHRyYV9mcm9udC5wbmciLCJpYXQiOjE3NzYwMjUxMzQsImV4cCI6ODgxNzU5Mzg3MzR9.xXvnDG3FUyXMxuKLXBS4MHtMswWVIA7Yl6Qt__Mvjm4" },
     default: { image: "https://www.raymon-bicycles.com/pim/media/592398/1000px/v2" }
 };
 
@@ -335,6 +336,26 @@ const seriesMarketingData = {
             image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2F09%2F0d%2Fae%2F1747288841%2FRaymon_Zayn_Detail_B232287.png&w=1080&q=75",
             imageRight: false
         }
+    ],
+    tarok: [
+        {
+            title: "THE NEW TAROK: \nUNLEASH THE POWER.",
+            text: [
+                "150 Nm of pure adrenaline. The new Tarok isn't just an e-bike; it's a technological marvel. Featuring the revolutionary DJI Avinox system, it delivers performance that was previously unthinkable.",
+                "Whether you're climbing the steepest peaks or flying through technical descents, the Tarok gives you the control and torque to dominate any terrain."
+            ],
+            image: "https://rwbxersfwgmkixulhnxp.supabase.co/storage/v1/object/sign/bicicletas/Tarok/Ultra/Raymon_Tarok_Ultra_front.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iZjU5MzQwZS1mMGM0LTRkM2QtYmNiZi1kZjRlY2MyMWNkNTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJiaWNpY2xldGFzL1Rhcm9rL1VsdHJhL1JheW1vbl9UYXJva19VbHRyYV9mcm9udC5wbmciLCJpYXQiOjE3NzYwMjUxMzQsImV4cCI6ODgxNzU5Mzg3MzR9.xXvnDG3FUyXMxuKLXBS4MHtMswWVIA7Yl6Qt__Mvjm4",
+            imageRight: true
+        },
+        {
+            title: "POWERED BY \nDJI AVINOX.",
+            text: [
+                "Innovation in every detail. The DJI Avinox drive system is a game-changer. Lightweight, powerful, and incredibly smart. With multiple riding modes and seamless integration, it adapts to your style in real-time.",
+                "20.4 KG of pure carbon and aluminum engineering, balanced to perfection for the ultimate trail experience."
+            ],
+            image: "https://rwbxersfwgmkixulhnxp.supabase.co/storage/v1/object/sign/bicicletas/Tarok/Ultra/Raymon_Tarok_Ultra_front.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iZjU5MzQwZS1mMGM0LTRkM2QtYmNiZi1kZjRlY2MyMWNkNTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJiaWNpY2xldGFzL1Rhcm9rL1VsdHJhL1JheW1vbl9UYXJva19VbHRyYV9mcm9udC5wbmciLCJpYXQiOjE3NzYwMjUxMzQsImV4cCI6ODgxNzU5Mzg3MzR9.xXvnDG3FUyXMxuKLXBS4MHtMswWVIA7Yl6Qt__Mvjm4",
+            imageRight: false
+        }
     ]
 };
 
@@ -482,31 +503,37 @@ const TotemSeriesDetail = () => {
     ] : [];
 
     return (
-        <div className="w-screen h-[1920px] max-h-screen flex flex-col bg-white font-sans select-none overflow-hidden relative animate-in fade-in duration-500">
+        <div className="w-screen h-[1920px] max-h-screen flex flex-col bg-zinc-950 font-sans select-none overflow-hidden relative animate-in fade-in duration-500">
+            
+            {/* Background Nebula Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[10%] right-[-10%] w-[60%] h-[60%] bg-purple-600/10 blur-[120px] rounded-full animate-pulse"></div>
+                <div className="absolute bottom-[10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/5 blur-[100px] rounded-full animate-pulse delay-1000"></div>
+            </div>
 
-            {/* Top Navigation Bar - Sticky */}
-            <div className={`bg-black text-white shrink-0 shadow-xl z-20 pb-4 relative flex flex-col justify-between`}>
+            {/* Top Navigation Bar - Sticky Glassmorphic */}
+            <div className={`bg-black/40 backdrop-blur-xl text-white shrink-0 shadow-2xl z-20 pb-4 relative flex flex-col justify-between border-b border-white/5`}>
                 {/* Background Media Header for Series */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
-                    <img src={headerImage} className="w-full h-full object-cover opacity-40 mix-blend-lighten" alt={serieName} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+                    <img src={headerImage} className="w-full h-full object-cover opacity-30 mix-blend-lighten" alt={serieName} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent"></div>
                 </div>
 
                 <div className={`p-8 flex items-center justify-between relative z-10`}>
-                    <button onClick={goBack} className="flex items-center text-zinc-300 hover:text-white transition-colors active:scale-95 bg-zinc-900/80 backdrop-blur-md px-6 py-4 rounded-full border border-white/10 shadow-lg">
+                    <button onClick={goBack} className="flex items-center text-zinc-300 hover:text-white transition-colors active:scale-95 bg-white/5 backdrop-blur-md px-6 py-4 rounded-full border border-white/10 shadow-lg">
                         <svg width="40" height="40" className="mr-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                         <span className="text-3xl font-bold uppercase tracking-widest">Catálogo</span>
                     </button>
 
-                    <div className={`absolute left-1/2 -translate-x-1/2 flex items-center gap-4 drop-shadow-2xl`}>
-                        <img src={raymonLogo} alt="Raymon" className="h-6 md:h-8 w-auto object-contain brightness-0 invert" />
-                        <div className="w-px h-8 bg-white/30" />
-                        <img src={proomtbLogo} alt="ProoMTB" className="h-8 md:h-12 w-auto object-contain" />
+                    <div className={`absolute left-1/2 -translate-x-1/2 flex items-center gap-6 drop-shadow-2xl opacity-80`}>
+                        <img src={raymonLogo} alt="Raymon" className="h-8 w-auto object-contain brightness-0 invert" />
+                        <div className="w-px h-10 bg-white/20" />
+                        <img src={proomtbLogo} alt="ProoMTB" className="h-12 w-auto object-contain" />
                     </div>
 
                     <div className="text-right">
-                        <p className="text-zinc-400 text-2xl tracking-widest uppercase font-bold">Serie</p>
-                        <p className={`text-white font-black uppercase italic drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] text-5xl mt-1`}>
+                        <p className="text-zinc-500 text-2xl tracking-widest uppercase font-black italic">Serie</p>
+                        <p className={`text-white font-black uppercase italic drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] text-5xl mt-1`}>
                             {serieName}
                         </p>
                     </div>
@@ -514,24 +541,24 @@ const TotemSeriesDetail = () => {
             </div>
 
             {/* Main Content Area - Vertical scroll */}
-            <div className="flex-1 overflow-y-auto no-scrollbar relative w-full pb-32">
+            <div className="flex-1 overflow-y-auto no-scrollbar relative w-full pb-48 z-10">
                 {bikes.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center px-12">
-                        <svg className="w-40 h-40 text-zinc-300 mb-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6M9 9l6 6" /></svg>
-                        <h3 className="text-4xl font-black text-zinc-400 uppercase tracking-tighter">No hay modelos disponibles</h3>
+                        <svg className="w-40 h-40 text-white/10 mb-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6M9 9l6 6" /></svg>
+                        <h3 className="text-5xl font-black text-white/20 uppercase tracking-tighter italic">No hay modelos disponibles</h3>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center w-full">
 
                         {/* 3D Carousel Section with Background Image */}
-                        <div className="w-full relative z-10 mt-12 mb-16 px-4">
+                        <div className="w-full relative z-10 mt-16 mb-24 px-8">
                             {/* Injected Background Image for the Carousel specifically */}
-                            <div className="absolute inset-0 z-[-1] rounded-[4rem] overflow-hidden mx-4">
-                                <img src={headerImage} className="w-full h-full object-cover opacity-70" alt={serieName} />
-                                <div className="absolute inset-0 bg-white/50 backdrop-blur-md"></div>
+                            <div className="absolute inset-0 z-[-1] rounded-[5rem] overflow-hidden mx-8 border border-white/5">
+                                <img src={headerImage} className="w-full h-full object-cover opacity-20" alt={serieName} />
+                                <div className="absolute inset-0 bg-black/40 backdrop-blur-3xl"></div>
                             </div>
 
-                            <div className="relative h-[650px] flex items-center justify-center pt-8 pb-16">
+                            <div className="relative h-[750px] flex items-center justify-center pt-8 pb-16">
                                 <Swiper
                                     effect={'coverflow'}
                                     grabCursor={true}
@@ -551,27 +578,27 @@ const TotemSeriesDetail = () => {
                                     className="w-full h-full"
                                 >
                                     {bikes.map((bike, index) => (
-                                        <SwiperSlide key={bike.id} className={`!w-[80vw] !h-full flex items-center justify-center transition-all duration-700 ${index === activeIndex ? 'scale-110 opacity-100 z-10' : 'scale-90 opacity-40 blur-[2px]'}`}>
-                                            <div className="relative w-full h-full flex flex-col items-center justify-center p-4" onClick={() => {
+                                        <SwiperSlide key={bike.id} className={`!w-[85vw] !h-full flex items-center justify-center transition-all duration-700 ${index === activeIndex ? 'scale-115 opacity-100 z-10' : 'scale-90 opacity-20 blur-[4px]'}`}>
+                                            <div className="relative w-full h-full flex flex-col items-center justify-center p-8" onClick={() => {
                                                 if (index === activeIndex) {
                                                     setSelectedProduct(bike);
-                                                    setSelectedColorIndex(0); // Reset color on new selection
-                                                    setIsModalOpen(true); // Open the modal
+                                                    setSelectedColorIndex(0);
+                                                    setIsModalOpen(true);
                                                 }
                                                 else swiperInstance?.slideTo(index);
                                             }}>
-                                                <div className="relative aspect-[16/10] w-full flex items-center justify-center">
+                                                <div className="relative aspect-[16/9] w-full flex items-center justify-center">
                                                     {bike.imagenes_urls?.length > 0 ? (
                                                         <img
-                                                            src={getOptimizedImageUrl(bike.imagenes_urls[0], 800)}
+                                                            src={getOptimizedImageUrl(bike.imagenes_urls[0], 1200)}
                                                             alt={bike.modelo}
-                                                            className="w-[120%] h-[120%] object-contain mix-blend-multiply drop-shadow-[0_20px_20px_rgba(0,0,0,0.5)] transition-opacity duration-300"
+                                                            className="w-[120%] h-[120%] object-contain drop-shadow-[0_40px_60px_rgba(0,0,0,0.8)] transition-opacity duration-300"
                                                             style={{ contentVisibility: index > 3 ? 'auto' : 'visible' }}
                                                             loading={index < 3 ? "eager" : "lazy"}
                                                             decoding="async"
                                                         />
                                                     ) : (
-                                                        <div className="text-zinc-300 font-black tracking-widest uppercase text-3xl">Sin Imagen</div>
+                                                        <div className="text-white/10 font-black tracking-widest uppercase text-4xl italic">SIN IMAGEN</div>
                                                     )}
                                                 </div>
                                             </div>
@@ -583,23 +610,26 @@ const TotemSeriesDetail = () => {
 
                         {/* Active Bike Info */}
                         {currentBike && (
-                            <div className="w-full px-12 flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-8 duration-500" key={currentBike.id}>
-                                <h2 className="text-7xl font-black uppercase tracking-tighter mb-6 text-black">
-                                    {currentBike.modelo}
-                                </h2>
-                                <div className="text-5xl font-black text-black mb-12 inline-block bg-zinc-100 px-10 py-5 rounded-full border border-zinc-200">
+                            <div className="w-full px-16 flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-12 duration-700" key={currentBike.id}>
+                                <div className="mb-4">
+                                    <span className="text-purple-400 text-3xl font-black uppercase tracking-[0.4em] italic mb-4 block">SERIE {serieName}</span>
+                                    <h2 className="text-[8rem] font-black uppercase tracking-tighter mb-8 text-white italic leading-none drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                                        {currentBike.modelo}
+                                    </h2>
+                                </div>
+                                <div className="text-6xl font-black text-white mb-16 inline-block bg-white/5 backdrop-blur-xl px-14 py-8 rounded-full border border-white/10 shadow-2xl italic tracking-tighter">
                                     {formatPrice(currentBike.precio_eur, 'bikes')}
                                 </div>
 
                                 {/* Mini Specs Grid */}
-                                <div className="grid grid-cols-4 gap-6 w-full max-w-5xl bg-zinc-50 rounded-[3rem] p-10 shadow-lg border border-zinc-100 mb-12">
+                                <div className="grid grid-cols-4 gap-12 w-full max-w-6xl bg-white/[0.03] backdrop-blur-2xl rounded-[4rem] p-12 shadow-2xl border border-white/5 mb-24">
                                     {miniSpecs.map((spec, idx) => (
-                                        <div key={idx} className="flex flex-col items-center text-center">
-                                            <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md mb-4 text-black">
-                                                <spec.icon className="w-10 h-10" />
+                                        <div key={idx} className="flex flex-col items-center text-center group">
+                                            <div className="w-24 h-24 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-inner mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500">
+                                                <spec.icon className="w-12 h-12" />
                                             </div>
-                                            <div className="text-lg text-zinc-500 uppercase tracking-widest font-bold mb-2">{spec.label}</div>
-                                            <div className="text-2xl font-black text-black leading-tight px-2">{spec.value}</div>
+                                            <div className="text-xl text-zinc-500 uppercase tracking-widest font-black mb-3">{spec.label}</div>
+                                            <div className="text-3xl font-black text-white leading-tight px-4 italic">{spec.value}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -609,29 +639,30 @@ const TotemSeriesDetail = () => {
                                     onClick={() => {
                                         setSelectedProduct(currentBike);
                                         setSelectedColorIndex(0);
-                                        setIsModalOpen(true); // Open the modal
+                                        setIsModalOpen(true);
                                     }}
-                                    className="bg-black text-white text-4xl font-black uppercase tracking-wider py-8 px-24 rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.3)] active:scale-95 transition-transform flex items-center justify-center w-full max-w-4xl"
+                                    className="bg-white text-black text-5xl font-black uppercase tracking-[0.2em] py-10 px-32 rounded-full shadow-[0_30px_60px_rgba(255,255,255,0.1)] active:scale-95 transition-all flex items-center justify-center w-full max-w-5xl group italic"
                                 >
                                     Ficha Técnica
+                                    <svg className="w-12 h-12 ml-8 transform group-hover:translate-x-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                                 </button>
                             </div>
                         )}
 
                         {/* Series Marketing Section */}
                         {serieName && seriesMarketingData[serieName.toLowerCase()] && (
-                            <div className="mt-24 pt-12 bg-white w-full border-t border-zinc-100 pb-16 rounded-[4rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] relative z-10">
+                            <div className="mt-32 pt-24 bg-gradient-to-b from-white/[0.02] to-transparent w-full border-t border-white/5 pb-32 rounded-[5rem] relative z-10">
                                 {seriesMarketingData[serieName.toLowerCase()].map((section, idx) => (
-                                    <div key={idx} className={`flex flex-col ${section.imageRight ? 'md:flex-row' : 'md:flex-row-reverse'} items-center p-16 max-w-[1400px] mx-auto gap-16 ${idx !== seriesMarketingData[serieName.toLowerCase()].length - 1 ? 'border-b border-zinc-100' : ''}`}>
+                                    <div key={idx} className={`flex flex-col ${section.imageRight ? 'md:flex-row' : 'md:flex-row-reverse'} items-center p-20 max-w-[1600px] mx-auto gap-24 ${idx !== seriesMarketingData[serieName.toLowerCase()].length - 1 ? 'border-b border-white/5' : ''}`}>
 
                                         {/* Text Block */}
-                                        <div className="flex-1 space-y-8 text-left px-8">
-                                            <h2 className="text-5xl lg:text-7xl font-black text-black uppercase leading-tight tracking-tighter whitespace-pre-line">
+                                        <div className="flex-1 space-y-12 text-left px-8">
+                                            <h2 className="text-7xl lg:text-[6rem] font-black text-white uppercase leading-[0.9] tracking-tighter whitespace-pre-line italic drop-shadow-2xl">
                                                 {section.title}
                                             </h2>
-                                            <div className="space-y-6 text-2xl text-zinc-600 leading-relaxed font-medium">
+                                            <div className="space-y-8 text-3xl text-zinc-400 leading-relaxed font-medium">
                                                 {section.text.map((paragraph, pIdx) => (
-                                                    <p key={pIdx} className={pIdx === section.text.length - 1 ? 'font-black text-black tracking-tight' : ''}>
+                                                    <p key={pIdx} className={pIdx === section.text.length - 1 ? 'font-black text-white tracking-tight italic border-l-4 border-purple-500 pl-8 py-2' : ''}>
                                                         {paragraph}
                                                     </p>
                                                 ))}
@@ -640,14 +671,15 @@ const TotemSeriesDetail = () => {
 
                                         {/* Image Block */}
                                         <div className="flex-1 w-full flex justify-center">
-                                            <div className="relative w-full max-w-[800px] aspect-[4/3] rounded-[3rem] overflow-hidden bg-zinc-100 shadow-xl">
+                                            <div className="relative w-full max-w-[900px] aspect-[4/3] rounded-[4rem] overflow-hidden bg-white/[0.02] shadow-[0_40px_80px_rgba(0,0,0,0.6)] border border-white/5">
                                                 <img
                                                     src={section.image}
                                                     alt="Marketing Detail"
-                                                    className="w-full h-full object-cover mix-blend-multiply"
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                                                     loading="lazy"
                                                     decoding="async"
                                                 />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/40 to-transparent"></div>
                                             </div>
                                         </div>
 
@@ -660,31 +692,32 @@ const TotemSeriesDetail = () => {
                 )}
             </div>
 
-            {/* Modal: Ficha Técnica Completa */}
+            {/* Modal: Ficha Técnica Completa - Dark Mode */}
             {isModalOpen && selectedProduct && (
-                <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in slide-in-from-bottom duration-500">
+                <div className="fixed inset-0 z-50 bg-zinc-950 flex flex-col animate-in slide-in-from-bottom-12 duration-700">
                     {/* Header Pinned */}
-                    <div className="flex items-center justify-between p-8 bg-white border-b border-zinc-100 shrink-0 z-30 shadow-sm relative">
+                    <div className="flex items-center justify-between p-10 bg-zinc-950/80 backdrop-blur-xl border-b border-white/5 shrink-0 z-30 shadow-2xl relative">
                         <button
                             onClick={() => setIsModalOpen(false)}
-                            className="bg-black text-white px-8 py-4 rounded-full text-2xl font-black uppercase tracking-widest flex items-center shadow-lg active:scale-95 transition-transform"
+                            className="bg-white text-black px-10 py-5 rounded-full text-2xl font-black uppercase tracking-widest flex items-center shadow-2xl active:scale-95 transition-transform"
                         >
-                            <svg width="32" height="32" className="mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                            Volver
+                            <svg width="36" height="36" className="mr-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                            Cerrar
                         </button>
-                        <h2 className="text-4xl font-black uppercase tracking-tighter text-black flex-1 text-center pr-32">
+                        <h2 className="text-5xl font-black uppercase tracking-tighter text-white flex-1 text-center pr-32 italic">
                             {selectedProduct.modelo}
                         </h2>
                     </div>
 
                     {/* Scrollable Modal Content */}
-                    <div className="flex-1 overflow-y-auto no-scrollbar pb-32">
+                    <div className="flex-1 overflow-y-auto no-scrollbar pb-48">
                         {/* Top Image Hero with Color Options */}
-                        <div className="w-full h-[35vh] bg-zinc-50 flex items-center justify-center relative border-b border-zinc-100">
+                        <div className="w-full h-[45vh] bg-white/[0.02] flex items-center justify-center relative border-b border-white/5 overflow-hidden">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-purple-600/10 via-transparent to-transparent"></div>
                             {selectedProduct.imagenes_urls?.length > 0 ? (
                                 <>
                                     {/* Main Product Images Swiper */}
-                                    <div className="w-full h-full pb-8 pt-12">
+                                    <div className="w-full h-full pb-12 pt-16">
                                         <Swiper
                                             grabCursor={true}
                                             slidesPerView={1}
@@ -699,11 +732,11 @@ const TotemSeriesDetail = () => {
                                             className="w-full h-full"
                                         >
                                             {selectedProduct.imagenes_urls.map((url, idx) => (
-                                                <SwiperSlide key={idx} className="flex items-center justify-center w-full h-full pb-6">
+                                                <SwiperSlide key={idx} className="flex items-center justify-center w-full h-full pb-8">
                                                     <img
-                                                        src={getOptimizedImageUrl(url, 1200)}
+                                                        src={getOptimizedImageUrl(url, 1400)}
                                                         alt={`${selectedProduct.modelo} vista ${idx + 1}`}
-                                                        className="w-[90%] h-[90%] max-w-[1200px] object-contain mix-blend-multiply drop-shadow-2xl transition-opacity duration-300"
+                                                        className="w-[95%] h-[95%] max-w-[1400px] object-contain drop-shadow-[0_60px_80px_rgba(0,0,0,0.9)] transition-all duration-700"
                                                         loading={idx === 0 ? "eager" : "lazy"}
                                                         decoding="async"
                                                     />
@@ -714,7 +747,7 @@ const TotemSeriesDetail = () => {
 
                                     {/* Color Selection Palette Overlay */}
                                     {selectedProduct.colores && selectedProduct.colores.length > 1 && (
-                                        <div className="absolute right-10 bottom-10 z-20 flex flex-col gap-4 bg-white/50 backdrop-blur-md p-4 rounded-full shadow-lg border border-white">
+                                        <div className="absolute right-12 bottom-12 z-20 flex flex-col gap-6 bg-white/5 backdrop-blur-3xl p-6 rounded-[3rem] shadow-2xl border border-white/10">
                                             {selectedProduct.colores.map((colorStr, idx) => {
                                                 return (
                                                     <button
@@ -728,9 +761,9 @@ const TotemSeriesDetail = () => {
                                                                 }
                                                             }
                                                         }}
-                                                        className={`w-16 h-16 rounded-full border-4 shadow-md transition-all ${selectedColorIndex === idx
-                                                            ? 'border-black scale-110 shadow-xl'
-                                                            : 'border-white opacity-60 active:scale-90'
+                                                        className={`w-20 h-20 rounded-full border-4 shadow-2xl transition-all ${selectedColorIndex === idx
+                                                            ? 'border-white scale-115 shadow-[0_0_30px_rgba(255,255,255,0.4)]'
+                                                            : 'border-white/10 opacity-40 active:scale-90 hover:opacity-80'
                                                             }`}
                                                         style={{
                                                             backgroundColor: colorStr.startsWith('#') ? colorStr : colorStr,
@@ -744,16 +777,16 @@ const TotemSeriesDetail = () => {
                                     )}
                                 </>
                             ) : (
-                                <div className="text-zinc-300 font-bold tracking-widest uppercase text-3xl">Sin Imagen</div>
+                                <div className="text-white/10 font-black tracking-widest uppercase text-4xl italic">Sin Imagen</div>
                             )}
                         </div>
 
                         {/* Specs Grid */}
-                        <div className="p-10 lg:p-16 max-w-5xl mx-auto">
-                            <h3 className="text-3xl font-black uppercase tracking-widest text-zinc-300 mb-10 border-b border-zinc-100 pb-4">
+                        <div className="p-16 lg:p-24 max-w-[1400px] mx-auto">
+                            <h3 className="text-4xl font-black uppercase tracking-[0.3em] text-zinc-600 mb-16 border-b border-white/5 pb-8 italic">
                                 Especificaciones Técnicas
                             </h3>
-                            <div className="grid grid-cols-2 gap-x-12 gap-y-10">
+                            <div className="grid grid-cols-2 gap-x-16 gap-y-12">
                                 {Object.entries({
                                     'Motor': selectedProduct.motor_modelo,
                                     'Batería': selectedProduct.bateria_wh ? `${selectedProduct.bateria_wh}Wh` : null,
@@ -764,22 +797,22 @@ const TotemSeriesDetail = () => {
                                     'Frenos': selectedProduct.frenos_modelo,
                                     'Tamaño de Rueda': selectedProduct.tamano_rueda
                                 }).map(([key, value]) => value && (
-                                    <div key={key} className="bg-zinc-50 p-6 rounded-3xl border border-zinc-100 flex flex-col">
-                                        <div className="text-zinc-400 font-bold uppercase tracking-widest mb-2 text-lg">{key}</div>
-                                        <div className="text-2xl font-black text-black leading-tight break-words">{value}</div>
+                                    <div key={key} className="bg-white/[0.02] p-10 rounded-[3rem] border border-white/5 flex flex-col group hover:bg-white/[0.04] transition-all">
+                                        <div className="text-purple-400 font-black uppercase tracking-widest mb-4 text-xl">{key}</div>
+                                        <div className="text-3xl font-black text-white leading-tight break-words italic group-hover:text-purple-100">{value}</div>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Sticky Call to action footer using existing layout */}
-                        <div className="bg-black p-10 text-white flex items-center justify-between absolute bottom-0 left-0 right-0 h-40 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] z-20">
-                            <div>
-                                <p className="text-zinc-400 font-bold uppercase tracking-widest text-2xl mb-2">Comprar en Tienda</p>
-                                <p className="text-4xl font-black">Escanea el código QR o acércate a un asesor</p>
+                        {/* Sticky Call to action footer - Darkified */}
+                        <div className="bg-zinc-950 p-12 text-white flex items-center justify-between sticky bottom-0 left-0 right-0 h-48 shadow-[0_-30px_60px_rgba(0,0,0,0.8)] z-20 border-t border-white/5">
+                            <div className="flex flex-col">
+                                <p className="text-zinc-500 font-black uppercase tracking-[0.3em] text-2xl mb-2">PROOMTB & ROAD</p>
+                                <p className="text-4xl font-black italic tracking-tighter">Escanea el código QR para comprar</p>
                             </div>
-                            <div className="w-28 h-28 bg-white rounded-3xl p-3 flex items-center justify-center">
-                                <svg className="w-full h-full text-black opacity-30" viewBox="0 0 24 24" fill="currentColor">
+                            <div className="w-32 h-32 bg-white rounded-[2rem] p-4 flex items-center justify-center shadow-white/5 shadow-2xl">
+                                <svg className="w-full h-full text-black opacity-40" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M3 3h8v8H3zm2 2v4h4V5zM13 3h8v8h-8zm2 2v4h4V5zM3 13h8v8H3zm2 2v4h4v-4zm13-2h-5v2h2v2h-2v2h2v-2h2v-2h1zm-5 4v2h2v-2zm4 2v2h2v-2zm-2-2h-2v2h2zm2-2h-2v2h2z" />
                                 </svg>
                             </div>

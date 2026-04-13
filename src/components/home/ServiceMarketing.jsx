@@ -119,11 +119,15 @@ const ServiceMarketing = () => {
                 {/* Optional: Second Visual Element for Desktop */}
                 <div className="hidden lg:block lg:w-1/2 relative">
                     <div className="relative aspect-square border-2 border-white/10 rounded-3xl p-12 overflow-hidden">
-                        <img
-                            src="https://bikebrothers.es/img/cms/bikebrothers_tienda_taller_bicicletas63.jpg"
-                            alt="Maintenance detail"
-                            className="w-full h-full object-cover rounded-2xl grayscale hover:grayscale-0 transition-all duration-700 scale-110 hover:scale-100"
-                        />
+                        <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-full object-cover rounded-2xl transition-all duration-700 hover:scale-105"
+                        >
+                            <source src="/videos/taller.mp4" type="video/mp4" />
+                        </video>
                         <div className="absolute bottom-16 right-16 bg-white p-8 rounded-2xl shadow-2xl">
                             <div className="text-black font-black text-4xl leading-tight">100%<br />EXPERTOS</div>
                         </div>
