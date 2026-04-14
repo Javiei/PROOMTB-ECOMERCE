@@ -31,9 +31,9 @@ serve(async (req) => {
       }
     }
 
-    const subject = '⚠️ Corrección de Fecha: Paseos Nocturnos de los Martes'
-    const title = '¡Aviso Importante! Cambio de Fecha'
-    const message = 'Te pedimos sinceras disculpas por la confusión en nuestro correo anterior. Por un error interno, te indicamos que el paseo era mañana, pero en realidad nuestro próximo encuentro de los <b>Paseos Nocturnos de los Martes</b> será el <b>próximo martes 14 de Abril</b>.<br><br>Te esperamos con la misma energía y ganas de rodar la próxima semana. Recuerda traer tu bici lista, casco y luces.<br><br><b>P.D. 🎁</b> Que no se te olvide que al participar y registrar tu asistencia en <b>3 paseos</b>, estarás participando automáticamente en nuestra gran rifa de premios. 🏆'
+    const subject = '¡Hoy hay Paseo Nocturno con Traviesos MTB! 🚴‍♂️🌙'
+    const title = '¡Nos vemos esta noche!'
+    const message = '¡Hoy es martes de Paseo Nocturno! Prepárate para una excelente ruta porque esta noche <b>tenemos la compañía especial de Traviesos MTB</b>.<br><br>Te esperamos con la misma energía y ganas de rodar. Recuerda traer tu bici lista, casco y luces.<br><br><b>P.D. 🎁</b> Que no se te olvide que al participar y registrar tu asistencia en <b>3 paseos</b>, estarás participando automáticamente en nuestra gran rifa de premios. 🏆'
 
     const results = []
 
@@ -73,7 +73,7 @@ serve(async (req) => {
                 <div class="container">
                   <div class="header">
                     <img src="https://proomtb.com/static/media/LOGO%20PRO%20MTB%20AND%20ROAD%20VECTORES%20CORREGIDOS.pdf.0b103f2a86d22ea4fdd3.png" alt="ProoMTB Logo" class="logo">
-                    <p style="color: #666; margin: 5px 0 0 0; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">FE DE ERRATAS</p>
+                    <p style="color: #666; margin: 5px 0 0 0; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">RECORDATORIO DE PASEO</p>
                   </div>
                   <div class="content">
                     <h1>¡Hola, ${attendee.first_name.split(' ')[0]}!</h1>
@@ -83,10 +83,10 @@ serve(async (req) => {
                     <div class="detail-card">
                       <div class="detail-item">
                         <span class="detail-label">Evento</span>
-                        <span class="detail-value">Paseos Nocturnos de los Martes</span>
+                        <span class="detail-value">Paseos Nocturnos de los Martes con Traviesos MTB</span>
                       </div>
                       <div class="detail-item">
-                        <span class="detail-label">Nueva Fecha</span>
+                        <span class="detail-label">Fecha</span>
                         <span class="detail-value">Martes 14 de Abril, 2026</span>
                       </div>
                       <div class="detail-item">

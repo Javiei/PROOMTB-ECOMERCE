@@ -6,6 +6,7 @@ const TuesdayAttendanceList = () => {
     const [registrations, setRegistrations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [filterDate, setFilterDate] = useState('');
 
     useEffect(() => {
         fetchRegistrations();
@@ -70,11 +71,15 @@ const TuesdayAttendanceList = () => {
         document.body.removeChild(link);
     };
 
-    const filteredRegistrations = registrations.filter(r =>
-        `${r.first_name} ${r.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        r.cedula.includes(searchTerm)
-    );
+    const uniqueDates = [...new Set(registrations.map(r => r.registration_date))].sort((a, b) => new Date(b) - new Date(a));
+
+    const filteredRegistrations = registrations.filter(r => {
+        const matchesSearch = `${r.first_name} ${r.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            r.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            r.cedula.includes(searchTerm);
+        const matchesDate = filterDate ? r.registration_date === filterDate : true;
+        return matchesSearch && matchesDate;
+    });
 
     // Group by cedula to see frequency
     const attendanceFrequency = registrations.reduce((acc, curr) => {
@@ -94,11 +99,22 @@ const TuesdayAttendanceList = () => {
                 <div>
                     <h2 className="text-2xl font-black uppercase tracking-tight">Registros Martes de Ruta</h2>
                     <p className="text-gray-500 text-sm font-medium">
-                        Total: <span className="text-black font-bold">{registrations.length} registros</span>
+                        Mostrando: <span className="text-black font-bold">{filteredRegistrations.length}</span> {filterDate ? 'registros en esta fecha' : 'registros en total'}
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                    <select
+                        value={filterDate}
+                        onChange={(e) => setFilterDate(e.target.value)}
+                        className="py-2.5 px-4 bg-white border border-gray-100 rounded-xl focus:ring-2 focus:ring-black transition-all text-sm font-medium"
+                    >
+                        <option value="">Todas las fechas</option>
+                        {uniqueDates.map(date => (
+                            <option key={date} value={date}>{date}</option>
+                        ))}
+                    </select>
+
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input
