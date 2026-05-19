@@ -129,7 +129,8 @@ const AnniversaryRegistration = () => {
         cedula: '',
         email: '',
         phone: '',
-        jersey_size: ''
+        jersey_size: '',
+        waiver_accepted: false
     });
     
     const [receiptFile, setReceiptFile] = useState(null);
@@ -142,10 +143,10 @@ const AnniversaryRegistration = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value
         }));
     };
 
@@ -176,6 +177,11 @@ const AnniversaryRegistration = () => {
 
         if (!receiptFile) {
             setError('Debes subir la foto de tu comprobante de pago.');
+            return;
+        }
+
+        if (!formData.waiver_accepted) {
+            setError('Debes aceptar el descargo de responsabilidad para registrarte.');
             return;
         }
 
@@ -430,6 +436,41 @@ const AnniversaryRegistration = () => {
                                     </div>
                                 </div>
 
+                                {/* Waiver Section */}
+                                <div className="mt-8 space-y-4">
+                                    <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 max-h-60 overflow-y-auto custom-scrollbar">
+                                        <h3 className="text-sm font-black uppercase mb-4 sticky top-0 bg-gray-50 py-1">DESCARGO DE RESPONSABILIDAD CIVIL O PENAL</h3>
+                                        <div className="text-[11px] text-gray-600 space-y-4 leading-relaxed font-medium text-justify uppercase">
+                                            <p>Por medio del presente documento, los abajo firmantes, quienes participamos voluntariamente en el evento 6to Aniversario organizado por PROO MTB, S.R.L., y su gerente Lic. Albel Corlione Luciano Fragoso; por medio del presente documento declaramos lo siguiente:</p>
+                                            <p>1. Reconocemos y aceptamos que la participación en actividades de ciclismo conlleva riesgos inherentes, incluyendo pero no limitándose a: caídas, colisiones, accidentes con vehículos motorizados, condiciones climáticas adversas, y otros peligros asociados con la práctica de este deporte.</p>
+                                            <p>2. Manifestamos que participamos por nuestra propia voluntad y riesgo, eximiendo a la tienda PROO MTB, S.R.L., y a su gerente Albel Luciano, así como a cualquier persona asociada a la organización del evento, de toda responsabilidad civil o penal por cualquier daño, lesión, pérdida, accidente, o consecuencia que pudiera surgir durante o después de la actividad.</p>
+                                            <p>3. Nos comprometemos a cumplir con los requisitos básicos de seguridad, tales como: 
+                                                a) Uso obligatorio de casco. 
+                                                b) Luces delanteras y traseras en condiciones de funcionamiento. 
+                                                c) Ropa y equipo de protección adecuado. 
+                                                d) Mantenernos dentro del grupo durante el recorrido, evitando conductas que pongan en riesgo nuestra integridad o la de los demás participantes.
+                                            </p>
+                                            <p>4. Declaramos que no ocultamos ninguna condición médica, física o psicológica que pudiera comprometer nuestra capacidad para participar en esta actividad, y en caso de padecer alguna, asumimos plenamente la responsabilidad de los riesgos que esto conlleve.</p>
+                                            <p>Por lo que a partir de la firma del presente acto, LE OTORGAMOS EL DESCARGO FORMAL, a la razón social PROO MTB, S.R.L., constituida de conformidad con las leyes de la República Dominicana, con su Registro Nacional de Contribuyente (RNC) No. 1-32-32671-7, con su domicilio social y establecido en la calle Eugenio Dechamps esquina Max Henriquez Ureña, Plaza Ysaclar No. 42, sector Los Prados, en esta ciudad de Santo Domingo de Guzmán, Distrito Nacional, Capital de la República Dominicana, debidamente representada para los fines del presente acto por su Gerente el señor Lic. Albel Corlione Luciano Fragoso.</p>
+                                        </div>
+                                    </div>
+
+                                    <label className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors group border border-transparent hover:border-black/5">
+                                        <div className="relative flex items-center h-5 mt-1">
+                                            <input
+                                                type="checkbox"
+                                                name="waiver_accepted"
+                                                checked={formData.waiver_accepted}
+                                                onChange={handleChange}
+                                                className="w-5 h-5 rounded border-gray-300 text-black focus:ring-black cursor-pointer"
+                                            />
+                                        </div>
+                                        <span className="text-xs font-bold text-gray-700 leading-tight">
+                                            Acepto los términos y condiciones del descargo de responsabilidad civil y penal. Declaro que la información proporcionada es verídica.
+                                        </span>
+                                    </label>
+                                </div>
+
                                 {error && (
                                     <p className="text-red-500 text-xs font-bold text-center bg-red-50 py-3 rounded-xl">
                                         {error}
@@ -486,6 +527,22 @@ const AnniversaryRegistration = () => {
                     </AnimatePresence>
                 </div>
             </motion.div>
+
+            <style jsx>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #e5e7eb;
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #d1d5db;
+                }
+            `}</style>
         </div>
     );
 };
