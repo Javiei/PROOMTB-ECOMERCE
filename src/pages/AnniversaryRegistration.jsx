@@ -280,7 +280,7 @@ const AnniversaryRegistration = () => {
                         
                         <div className="bg-white/10 rounded-2xl p-6 border border-white/5 backdrop-blur-sm mb-8">
                             <h3 className="text-sm font-black uppercase text-white mb-1">Costo de Inscripción</h3>
-                            <p className="text-3xl font-black text-[#00e5ff]">RD$ 3,500</p>
+                            <p className="text-3xl font-black text-[#00e5ff]">RD$ 3,800</p>
                             <p className="text-xs text-white/50 mt-2 font-medium">Incluye Jersey / Kit oficial del evento.</p>
                         </div>
 
