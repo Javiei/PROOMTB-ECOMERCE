@@ -1,6 +1,7 @@
 import React from 'react';
 import Hero from '../components/home/Hero';
 import TarokPromo from '../components/home/TarokPromo';
+import AnniversaryPromo from '../components/home/AnniversaryPromo';
 import JourneySection from '../components/home/JourneySection';
 import ServiceMarketing from '../components/home/ServiceMarketing';
 
@@ -9,6 +10,7 @@ const Home = () => {
         <main>
             <Hero />
             <TarokPromo />
+            <AnniversaryPromo />
             <JourneySection />
             <ServiceMarketing />
 

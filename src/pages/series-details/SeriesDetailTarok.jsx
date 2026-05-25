@@ -259,7 +259,7 @@ const SeriesDetailTarok = () => {
                                             {bike.modelo}
                                         </h4>
                                         <p className="text-sm md:text-base font-bold text-purple-400 tracking-wider">
-                                            {bike.precio_eur ? `${new Intl.NumberFormat('de-DE').format(Array.isArray(bike.precio_eur) ? bike.precio_eur[0] : bike.precio_eur)} €` : ''}
+                                            {formatPrice(bike.precio_eur, 'bikes')}
                                         </p>
                                     </div>
                                 </Link>
