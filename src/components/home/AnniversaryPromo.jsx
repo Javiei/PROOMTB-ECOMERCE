@@ -75,24 +75,16 @@ const AnniversaryPromo = () => {
                             {/* Event Kit Includes */}
                             <div className="bg-neutral-900/50 border border-white/5 rounded-2xl p-6 space-y-4 backdrop-blur-md max-w-xl">
                                 <h4 className="text-xs font-black uppercase text-white tracking-widest border-b border-white/5 pb-2">
-                                    ¿Qué incluye tu inscripción?
+                                    Planes de Inscripción
                                 </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                    <div className="flex items-center gap-2.5 text-xs text-gray-300">
-                                        <CheckCircle size={16} className="text-[#00e5ff] shrink-0" />
-                                        <span>Jersey Oficial del Evento</span>
+                                <div className="space-y-3">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-xs font-black text-[#00e5ff] uppercase tracking-wider">Plan Full (RD$ 2,950):</span>
+                                        <p className="text-xs text-gray-300 leading-relaxed">Incluye Jersey oficial del evento, kit oficial de regalos, boleto para rifa de bicicleta, soporte, hidratación y fotos.</p>
                                     </div>
-                                    <div className="flex items-center gap-2.5 text-xs text-gray-300">
-                                        <CheckCircle size={16} className="text-[#00e5ff] shrink-0" />
-                                        <span>Kit del Evento & Regalos</span>
-                                    </div>
-                                    <div className="flex items-center gap-2.5 text-xs text-gray-300">
-                                        <CheckCircle size={16} className="text-[#00e5ff] shrink-0" />
-                                        <span>Boleto para Rifa de Bicicleta</span>
-                                    </div>
-                                    <div className="flex items-center gap-2.5 text-xs text-gray-300">
-                                        <CheckCircle size={16} className="text-[#00e5ff] shrink-0" />
-                                        <span>Soporte, Hidratación & Fotos</span>
+                                    <div className="flex flex-col gap-1 border-t border-white/5 pt-2">
+                                        <span className="text-xs font-black text-gray-400 uppercase tracking-wider">Plan Básico (RD$ 1,500):</span>
+                                        <p className="text-xs text-gray-300 leading-relaxed">Incluye acceso a la ruta, boleto para rifa de bicicleta, soporte, hidratación y fotos oficiales del evento (sin Jersey).</p>
                                     </div>
                                 </div>
                             </div>
@@ -101,9 +93,15 @@ const AnniversaryPromo = () => {
                             <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-4">
                                 <div className="space-y-1">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Costo de Entrada</span>
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-3xl md:text-4xl font-black text-white">RD$ 2,950</span>
-                                        <span className="text-xs text-[#00e5ff] font-bold uppercase tracking-widest bg-[#00e5ff]/10 px-2 py-0.5 rounded">¡PRECIO ESPECIAL!</span>
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-2xl md:text-3xl font-black text-white">RD$ 2,950</span>
+                                            <span className="text-[10px] text-[#00e5ff] font-bold uppercase tracking-widest bg-[#00e5ff]/10 px-2 py-0.5 rounded">Full</span>
+                                        </div>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-xl md:text-2xl font-black text-gray-300">RD$ 1,500</span>
+                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">Básico</span>
+                                        </div>
                                     </div>
                                 </div>
 

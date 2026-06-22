@@ -67,6 +67,9 @@ serve(async (req) => {
     const title = `¡Felicidades, ${registration.first_name.split(' ')[0]}!`
     const message = 'Hemos recibido y validado exitosamente tu comprobante de pago. Tu inscripción para el gran evento de nuestro 6to aniversario está 100% confirmada.'
     
+    const planName = registration.registration_type === 'basico' ? 'Básico (RD$ 1,500 - Sin Jersey)' : 'Full (RD$ 2,950 - Con Jersey)';
+    const jerseyText = registration.registration_type === 'basico' ? 'No incluye (Plan Básico)' : registration.jersey_size;
+
     try {
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -113,7 +116,8 @@ serve(async (req) => {
                   </div>
 
                   <p><b>Datos de tu inscripción:</b><br/>
-                  Talla de Jersey: <b>${registration.jersey_size}</b><br/>
+                  Tipo de Plan: <b>${planName}</b><br/>
+                  Talla de Jersey: <b>${jerseyText}</b><br/>
                   Cédula: <b>${registration.cedula}</b></p>
 
                   <p>¡Prepárate para una ruta increíble! Nos vemos pronto con la mejor energía.</p>

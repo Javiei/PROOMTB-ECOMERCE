@@ -1,10 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import proomtbLogo from '../assets/LOGO PRO MTB AND ROAD VECTORES CORREGIDOS.pdf.png';
 import proomtbLogoWhite from '../assets/proomtb_logo_white.png';
 import flyerImage from '../assets/flyer-proomtb-1920x1080.jpg.jpeg';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, User, Mail, CreditCard, ArrowRight, Loader2, Bike, Calendar, Upload, Phone, Image as ImageIcon } from 'lucide-react';
+import { CheckCircle, User, Mail, CreditCard, ArrowRight, Loader2, Upload, Phone } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 const WelcomeSplash = ({ onEnter }) => {
@@ -130,6 +129,7 @@ const AnniversaryRegistration = () => {
         email: '',
         phone: '',
         jersey_size: '',
+        registration_type: 'full',
         waiver_accepted: false
     });
     
@@ -170,7 +170,7 @@ const AnniversaryRegistration = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!formData.jersey_size) {
+        if (formData.registration_type === 'full' && !formData.jersey_size) {
             setError('Por favor selecciona tu talla de jersey.');
             return;
         }
@@ -223,7 +223,8 @@ const AnniversaryRegistration = () => {
                     cedula: formData.cedula,
                     email: formData.email,
                     phone: formData.phone,
-                    jersey_size: formData.jersey_size,
+                    jersey_size: formData.registration_type === 'basico' ? 'N/A' : formData.jersey_size,
+                    registration_type: formData.registration_type,
                     receipt_url: publicUrl,
                     status: 'pending'
                 }]);
@@ -278,10 +279,23 @@ const AnniversaryRegistration = () => {
                             Proo MTB & Road
                         </p>
                         
-                        <div className="bg-white/10 rounded-2xl p-6 border border-white/5 backdrop-blur-sm mb-8">
-                            <h3 className="text-sm font-black uppercase text-white mb-1">Costo de Inscripción</h3>
-                            <p className="text-3xl font-black text-[#00e5ff]">RD$ 2,950</p>
-                            <p className="text-xs text-white/50 mt-2 font-medium">Incluye Jersey / Kit oficial del evento.</p>
+                        <div className="space-y-4 mb-8">
+                            <div className="bg-white/10 rounded-2xl p-5 border border-[#00e5ff]/20 backdrop-blur-sm">
+                                <div className="flex justify-between items-center">
+                                    <h3 className="text-xs font-black uppercase text-[#00e5ff]">Kit Full</h3>
+                                    <span className="text-[10px] font-black bg-[#00e5ff]/20 text-[#00e5ff] px-2 py-0.5 rounded uppercase tracking-wider">Jersey Incluido</span>
+                                </div>
+                                <p className="text-2xl font-black text-white mt-1">RD$ 2,950</p>
+                                <p className="text-[11px] text-white/60 mt-1 font-medium leading-snug">Incluye Jersey oficial del evento, kit completo y regalos.</p>
+                            </div>
+                            <div className="bg-white/5 rounded-2xl p-5 border border-white/5 backdrop-blur-sm">
+                                <div className="flex justify-between items-center">
+                                    <h3 className="text-xs font-black uppercase text-gray-400">Inscripción Básica</h3>
+                                    <span className="text-[10px] font-black bg-white/10 text-white/60 px-2 py-0.5 rounded uppercase tracking-wider">Sin Jersey</span>
+                                </div>
+                                <p className="text-2xl font-black text-white mt-1">RD$ 1,500</p>
+                                <p className="text-[11px] text-white/60 mt-1 font-medium leading-snug">Sólo inscripción al evento, soporte, fotos y rifa. No incluye Jersey.</p>
+                            </div>
                         </div>
 
                         <div className="space-y-6">
@@ -380,23 +394,69 @@ const AnniversaryRegistration = () => {
                                     </div>
                                     
                                     <div className="space-y-1.5 md:col-span-2">
-                                        <label className="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Talla de Jersey</label>
-                                        <select 
-                                            name="jersey_size" 
-                                            required 
-                                            value={formData.jersey_size} 
-                                            onChange={handleChange} 
-                                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-black text-sm font-medium cursor-pointer"
-                                        >
-                                            <option value="" disabled>Selecciona tu talla</option>
-                                            <option value="XS">XS - Extra Pequeño</option>
-                                            <option value="S">S - Pequeño</option>
-                                            <option value="M">M - Mediano</option>
-                                            <option value="L">L - Grande</option>
-                                            <option value="XL">XL - Extra Grande</option>
-                                            <option value="XXL">XXL</option>
-                                        </select>
+                                        <label className="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Tipo de Inscripción</label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <label className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.registration_type === 'full' ? 'border-black bg-gray-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-black uppercase">Kit Full</span>
+                                                    <input
+                                                        type="radio"
+                                                        name="registration_type"
+                                                        value="full"
+                                                        checked={formData.registration_type === 'full'}
+                                                        onChange={handleChange}
+                                                        className="text-black focus:ring-black"
+                                                    />
+                                                </div>
+                                                <span className="text-lg font-black text-black mt-1">RD$ 2,950</span>
+                                                <span className="text-xs text-gray-500 mt-1 leading-snug">Incluye Jersey oficial del evento y kit oficial.</span>
+                                            </label>
+                                            <label className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.registration_type === 'basico' ? 'border-black bg-gray-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-sm font-black uppercase">Básico</span>
+                                                    <input
+                                                        type="radio"
+                                                        name="registration_type"
+                                                        value="basico"
+                                                        checked={formData.registration_type === 'basico'}
+                                                        onChange={handleChange}
+                                                        className="text-black focus:ring-black"
+                                                    />
+                                                </div>
+                                                <span className="text-lg font-black text-black mt-1">RD$ 1,500</span>
+                                                <span className="text-xs text-gray-500 mt-1 leading-snug">Sólo inscripción al evento. No incluye Jersey.</span>
+                                            </label>
+                                        </div>
                                     </div>
+
+                                    <AnimatePresence>
+                                        {formData.registration_type === 'full' && (
+                                            <motion.div 
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: 'auto' }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="space-y-1.5 md:col-span-2 overflow-hidden"
+                                            >
+                                                <label className="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Talla de Jersey</label>
+                                                <select 
+                                                    name="jersey_size" 
+                                                    required={formData.registration_type === 'full'} 
+                                                    value={formData.jersey_size} 
+                                                    onChange={handleChange} 
+                                                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-black text-sm font-medium cursor-pointer"
+                                                >
+                                                    <option value="" disabled>Selecciona tu talla</option>
+                                                    <option value="XS">XS - Extra Pequeño</option>
+                                                    <option value="S">S - Pequeño</option>
+                                                    <option value="M">M - Mediano</option>
+                                                    <option value="L">L - Grande</option>
+                                                    <option value="XL">XL - Extra Grande</option>
+                                                    <option value="XXL">XXL</option>
+                                                </select>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
 
                                 {/* File Upload */}

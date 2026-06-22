@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
-import { Search, ExternalLink, Check, X, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Search, Check, X, Loader2, Image as ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const AnniversaryList = () => {
@@ -83,6 +83,7 @@ const AnniversaryList = () => {
         reg.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.cedula?.includes(searchTerm) ||
         reg.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.registration_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.special_code?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -124,6 +125,7 @@ const AnniversaryList = () => {
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-black uppercase tracking-wider text-gray-500">Participante</th>
                                 <th className="px-6 py-3 text-left text-xs font-black uppercase tracking-wider text-gray-500">Contacto</th>
+                                <th className="px-6 py-3 text-left text-xs font-black uppercase tracking-wider text-gray-500">Plan</th>
                                 <th className="px-6 py-3 text-left text-xs font-black uppercase tracking-wider text-gray-500">Talla</th>
                                 <th className="px-6 py-3 text-left text-xs font-black uppercase tracking-wider text-gray-500">Comprobante</th>
                                 <th className="px-6 py-3 text-left text-xs font-black uppercase tracking-wider text-gray-500">Estado / Código</th>
@@ -154,6 +156,15 @@ const AnniversaryList = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm text-gray-900">{reg.email}</div>
                                             <div className="text-xs text-gray-500">{reg.phone}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`px-2.5 py-1 font-black text-xs rounded border ${
+                                                reg.registration_type === 'basico' 
+                                                    ? 'bg-neutral-150 text-neutral-700 border-neutral-300' 
+                                                    : 'bg-cyan-50 text-cyan-800 border-cyan-200'
+                                            }`}>
+                                                {reg.registration_type === 'basico' ? 'BÁSICO' : 'FULL'}
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className="px-2.5 py-1 bg-gray-100 text-black font-black text-xs rounded border border-gray-200">

@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS public.anniversary_registrations (
     email text NOT NULL,
     phone text NOT NULL,
     jersey_size text NOT NULL,
+    registration_type text DEFAULT 'full'::text NOT NULL,
     receipt_url text NOT NULL,
     status text DEFAULT 'pending'::text NOT NULL,
     special_code text

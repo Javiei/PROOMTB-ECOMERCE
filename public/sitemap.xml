@@ -186,6 +186,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://proomtb.com/series/tarok</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://proomtb.com/product/yanga-24</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -331,7 +336,17 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://proomtb.com/product/tarok-ultimate</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://proomtb.com/product/vamok-pro</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/tarok-ultra</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -342,6 +357,11 @@
   </url>
   <url>
     <loc>https://proomtb.com/product/vamok-comp</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/tarok-pro</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -357,6 +377,11 @@
   </url>
   <url>
     <loc>https://proomtb.com/product/arva-ultra</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://proomtb.com/product/tarok-comp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
