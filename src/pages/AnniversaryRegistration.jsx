@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, User, Mail, CreditCard, ArrowRight, Loader2, Upload, Phone } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
-const WelcomeSplash = ({ onEnter }) => {
+const WelcomeSplash = ({ onEnter, isGuest }) => {
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -77,7 +77,7 @@ const WelcomeSplash = ({ onEnter }) => {
                     className="group relative px-12 py-4 mt-8 bg-[#00e5ff] text-black font-black uppercase tracking-widest rounded-full overflow-hidden transition-all hover:bg-[#00cce6]"
                 >
                     <span className="relative z-10 flex items-center gap-3 font-black">
-                        Inscribirme Ahora <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                        {isGuest ? 'Registrarme como Invitado' : 'Inscribirme Ahora'} <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                     </span>
                 </motion.button>
             </div>
@@ -119,7 +119,7 @@ const FlyerSplash = ({ onEnter }) => {
     );
 };
 
-const AnniversaryRegistration = () => {
+const AnniversaryRegistration = ({ isGuest = false }) => {
     const [showFlyer, setShowFlyer] = useState(true);
     const [showSplash, setShowSplash] = useState(false);
     const [formData, setFormData] = useState({
@@ -128,8 +128,8 @@ const AnniversaryRegistration = () => {
         cedula: '',
         email: '',
         phone: '',
-        jersey_size: '',
-        registration_type: 'full',
+        jersey_size: isGuest ? 'N/A' : '',
+        registration_type: isGuest ? 'invitado' : 'full',
         waiver_accepted: false
     });
     
@@ -170,12 +170,12 @@ const AnniversaryRegistration = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (formData.registration_type === 'full' && !formData.jersey_size) {
+        if (!isGuest && formData.registration_type === 'full' && !formData.jersey_size) {
             setError('Por favor selecciona tu talla de jersey.');
             return;
         }
 
-        if (!receiptFile) {
+        if (!isGuest && !receiptFile) {
             setError('Debes subir la foto de tu comprobante de pago.');
             return;
         }
@@ -190,29 +190,35 @@ const AnniversaryRegistration = () => {
         setUploadProgress(10);
 
         try {
-            // 1. Upload Receipt Image
-            const fileExt = receiptFile.name.split('.').pop();
-            const fileName = `receipt_${Date.now()}_${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
-            
-            setUploadProgress(30);
-            
-            const { error: uploadError } = await supabase.storage
-                .from('activity_photos') // using existing bucket
-                .upload(`anniversary/${fileName}`, receiptFile, {
-                    cacheControl: '3600',
-                    upsert: false
-                });
+            let publicUrl = 'invitado';
 
-            if (uploadError) throw uploadError;
-            
-            setUploadProgress(70);
+            if (!isGuest && receiptFile) {
+                // 1. Upload Receipt Image
+                const fileExt = receiptFile.name.split('.').pop();
+                const fileName = `receipt_${Date.now()}_${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
+                
+                setUploadProgress(30);
+                
+                const { error: uploadError } = await supabase.storage
+                    .from('activity_photos') // using existing bucket
+                    .upload(`anniversary/${fileName}`, receiptFile, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
 
-            // 2. Get Public URL
-            const { data: publicUrlData } = supabase.storage
-                .from('activity_photos')
-                .getPublicUrl(`anniversary/${fileName}`);
+                if (uploadError) throw uploadError;
+                
+                setUploadProgress(70);
 
-            const publicUrl = publicUrlData.publicUrl;
+                // 2. Get Public URL
+                const { data: publicUrlData } = supabase.storage
+                    .from('activity_photos')
+                    .getPublicUrl(`anniversary/${fileName}`);
+
+                publicUrl = publicUrlData.publicUrl;
+            }
+
+            setUploadProgress(85);
 
             // 3. Save to Database
             const { error: insertError } = await supabase
@@ -223,8 +229,8 @@ const AnniversaryRegistration = () => {
                     cedula: formData.cedula,
                     email: formData.email,
                     phone: formData.phone,
-                    jersey_size: formData.registration_type === 'basico' ? 'N/A' : formData.jersey_size,
-                    registration_type: formData.registration_type,
+                    jersey_size: isGuest ? 'N/A' : (formData.registration_type === 'basico' ? 'N/A' : formData.jersey_size),
+                    registration_type: isGuest ? 'invitado' : formData.registration_type,
                     receipt_url: publicUrl,
                     status: 'pending'
                 }]);
@@ -255,7 +261,7 @@ const AnniversaryRegistration = () => {
 
             <AnimatePresence>
                 {showSplash && (
-                    <WelcomeSplash onEnter={() => setShowSplash(false)} />
+                    <WelcomeSplash onEnter={() => setShowSplash(false)} isGuest={isGuest} />
                 )}
             </AnimatePresence>
 
@@ -279,53 +285,83 @@ const AnniversaryRegistration = () => {
                             Proo MTB & Road
                         </p>
                         
-                        <div className="space-y-4 mb-8">
-                            <div className="bg-white/10 rounded-2xl p-5 border border-[#00e5ff]/20 backdrop-blur-sm">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="text-xs font-black uppercase text-[#00e5ff]">Kit Full</h3>
-                                    <span className="text-[10px] font-black bg-[#00e5ff]/20 text-[#00e5ff] px-2 py-0.5 rounded uppercase tracking-wider">Jersey Incluido</span>
+                        {isGuest ? (
+                            <div className="space-y-6 mt-6">
+                                <div className="bg-[#00e5ff]/10 rounded-2xl p-6 border-2 border-[#00e5ff] backdrop-blur-sm">
+                                    <h3 className="text-sm font-black uppercase text-[#00e5ff] tracking-wider mb-2">Pase de Invitado Especial</h3>
+                                    <p className="text-xs text-white/80 leading-relaxed font-medium">
+                                        Este enlace es exclusivo para invitados de honor del 6to Aniversario de ProoMTB.
+                                    </p>
                                 </div>
-                                <p className="text-2xl font-black text-white mt-1">RD$ 2,950</p>
-                                <p className="text-[11px] text-white/60 mt-1 font-medium leading-snug">Incluye Jersey oficial del evento, kit completo y regalos.</p>
-                            </div>
-                            <div className="bg-white/5 rounded-2xl p-5 border border-white/5 backdrop-blur-sm">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="text-xs font-black uppercase text-gray-400">Inscripción Básica</h3>
-                                    <span className="text-[10px] font-black bg-white/10 text-white/60 px-2 py-0.5 rounded uppercase tracking-wider">Sin Jersey</span>
+                                
+                                <div className="bg-white/5 rounded-2xl p-5 border border-white/5 backdrop-blur-sm space-y-3">
+                                    <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest border-b border-white/10 pb-1">Beneficios</h4>
+                                    <ul className="text-xs text-white/70 space-y-2 font-medium list-disc list-inside">
+                                        <li>Acceso completo al evento</li>
+                                        <li>Participación en rifas y dinámicas</li>
+                                        <li>Asistencia mecánica en ruta</li>
+                                        <li>Fotografías oficiales</li>
+                                    </ul>
                                 </div>
-                                <p className="text-2xl font-black text-white mt-1">RD$ 1,500</p>
-                                <p className="text-[11px] text-white/60 mt-1 font-medium leading-snug">Sólo inscripción al evento, soporte, fotos y rifa. No incluye Jersey.</p>
+                                
+                                <div className="bg-white/5 rounded-2xl p-5 border border-white/5 backdrop-blur-sm">
+                                    <h4 className="text-xs font-black uppercase text-gray-400 tracking-widest mb-1">Nota</h4>
+                                    <p className="text-[11px] text-white/50 leading-normal font-medium">
+                                        Esta modalidad de registro no incluye Jersey del evento ni requiere pago de inscripción.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <>
+                                <div className="space-y-4 mb-8">
+                                    <div className="bg-white/10 rounded-2xl p-5 border border-[#00e5ff]/20 backdrop-blur-sm">
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="text-xs font-black uppercase text-[#00e5ff]">Kit Full</h3>
+                                            <span className="text-[10px] font-black bg-[#00e5ff]/20 text-[#00e5ff] px-2 py-0.5 rounded uppercase tracking-wider">Jersey Incluido</span>
+                                        </div>
+                                        <p className="text-2xl font-black text-white mt-1">RD$ 2,950</p>
+                                        <p className="text-[11px] text-white/60 mt-1 font-medium leading-snug">Incluye Jersey oficial del evento, kit completo y regalos.</p>
+                                    </div>
+                                    <div className="bg-white/5 rounded-2xl p-5 border border-white/5 backdrop-blur-sm">
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="text-xs font-black uppercase text-gray-400">Inscripción Básica</h3>
+                                            <span className="text-[10px] font-black bg-white/10 text-white/60 px-2 py-0.5 rounded uppercase tracking-wider">Sin Jersey</span>
+                                        </div>
+                                        <p className="text-2xl font-black text-white mt-1">RD$ 1,500</p>
+                                        <p className="text-[11px] text-white/60 mt-1 font-medium leading-snug">Sólo inscripción al evento, soporte, fotos y rifa. No incluye Jersey.</p>
+                                    </div>
+                                </div>
 
-                        <div className="space-y-6">
-                            <h3 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest border-b border-white/10 pb-2">
-                                Cuentas Bancarias
-                            </h3>
-                            
-                            <div className="space-y-4">
-                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                                    <p className="text-xs font-bold text-white uppercase">Banco Popular</p>
-                                    <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">823658349</p>
-                                    <p className="text-[10px] text-white/60 uppercase mt-1">PROO MTB SRL (Corriente)</p>
+                                <div className="space-y-6">
+                                    <h3 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest border-b border-white/10 pb-2">
+                                        Cuentas Bancarias
+                                    </h3>
+                                    
+                                    <div className="space-y-4">
+                                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                            <p className="text-xs font-bold text-white uppercase">Banco Popular</p>
+                                            <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">823658349</p>
+                                            <p className="text-[10px] text-white/60 uppercase mt-1">PROO MTB SRL (Corriente)</p>
+                                        </div>
+                                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                            <p className="text-xs font-bold text-white uppercase">Banreservas</p>
+                                            <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">9609123095</p>
+                                            <p className="text-[10px] text-white/60 uppercase mt-1">PROO MTB SRL (Ahorro)</p>
+                                        </div>
+                                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                            <p className="text-xs font-bold text-white uppercase">Banco Santa Cruz</p>
+                                            <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">11312100000638</p>
+                                            <p className="text-[10px] text-white/60 uppercase mt-1">PROO MTB SRL (Ahorro)</p>
+                                        </div>
+                                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                            <p className="text-xs font-bold text-white uppercase">Banco BHD</p>
+                                            <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">12831830011</p>
+                                            <p className="text-[10px] text-white/60 uppercase mt-1">Albel Luciano (Ahorros)</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                                    <p className="text-xs font-bold text-white uppercase">Banreservas</p>
-                                    <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">9609123095</p>
-                                    <p className="text-[10px] text-white/60 uppercase mt-1">PROO MTB SRL (Ahorro)</p>
-                                </div>
-                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                                    <p className="text-xs font-bold text-white uppercase">Banco Santa Cruz</p>
-                                    <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">11312100000638</p>
-                                    <p className="text-[10px] text-white/60 uppercase mt-1">PROO MTB SRL (Ahorro)</p>
-                                </div>
-                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                                    <p className="text-xs font-bold text-white uppercase">Banco BHD</p>
-                                    <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">12831830011</p>
-                                    <p className="text-[10px] text-white/60 uppercase mt-1">Albel Luciano (Ahorros)</p>
-                                </div>
-                            </div>
-                        </div>
+                            </>
+                        )}
                     </div>
                 </div>
 
@@ -393,108 +429,114 @@ const AnniversaryRegistration = () => {
                                         </div>
                                     </div>
                                     
-                                    <div className="space-y-1.5 md:col-span-2">
-                                        <label className="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Tipo de Inscripción</label>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <label className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.registration_type === 'full' ? 'border-black bg-gray-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-sm font-black uppercase">Kit Full</span>
-                                                    <input
-                                                        type="radio"
-                                                        name="registration_type"
-                                                        value="full"
-                                                        checked={formData.registration_type === 'full'}
-                                                        onChange={handleChange}
-                                                        className="text-black focus:ring-black"
-                                                    />
+                                    {!isGuest && (
+                                        <>
+                                            <div className="space-y-1.5 md:col-span-2">
+                                                <label className="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Tipo de Inscripción</label>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <label className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.registration_type === 'full' ? 'border-black bg-gray-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-sm font-black uppercase">Kit Full</span>
+                                                            <input
+                                                                type="radio"
+                                                                name="registration_type"
+                                                                value="full"
+                                                                checked={formData.registration_type === 'full'}
+                                                                onChange={handleChange}
+                                                                className="text-black focus:ring-black"
+                                                            />
+                                                        </div>
+                                                        <span className="text-lg font-black text-black mt-1">RD$ 2,950</span>
+                                                        <span className="text-xs text-gray-500 mt-1 leading-snug">Incluye Jersey oficial del evento y kit oficial.</span>
+                                                    </label>
+                                                    <label className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.registration_type === 'basico' ? 'border-black bg-gray-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-sm font-black uppercase">Básico</span>
+                                                            <input
+                                                                type="radio"
+                                                                name="registration_type"
+                                                                value="basico"
+                                                                checked={formData.registration_type === 'basico'}
+                                                                onChange={handleChange}
+                                                                className="text-black focus:ring-black"
+                                                            />
+                                                        </div>
+                                                        <span className="text-lg font-black text-black mt-1">RD$ 1,500</span>
+                                                        <span className="text-xs text-gray-500 mt-1 leading-snug">Sólo inscripción al evento. No incluye Jersey.</span>
+                                                    </label>
                                                 </div>
-                                                <span className="text-lg font-black text-black mt-1">RD$ 2,950</span>
-                                                <span className="text-xs text-gray-500 mt-1 leading-snug">Incluye Jersey oficial del evento y kit oficial.</span>
-                                            </label>
-                                            <label className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.registration_type === 'basico' ? 'border-black bg-gray-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-sm font-black uppercase">Básico</span>
-                                                    <input
-                                                        type="radio"
-                                                        name="registration_type"
-                                                        value="basico"
-                                                        checked={formData.registration_type === 'basico'}
-                                                        onChange={handleChange}
-                                                        className="text-black focus:ring-black"
-                                                    />
-                                                </div>
-                                                <span className="text-lg font-black text-black mt-1">RD$ 1,500</span>
-                                                <span className="text-xs text-gray-500 mt-1 leading-snug">Sólo inscripción al evento. No incluye Jersey.</span>
-                                            </label>
-                                        </div>
-                                    </div>
+                                            </div>
 
-                                    <AnimatePresence>
-                                        {formData.registration_type === 'full' && (
-                                            <motion.div 
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                transition={{ duration: 0.2 }}
-                                                className="space-y-1.5 md:col-span-2 overflow-hidden"
-                                            >
-                                                <label className="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Talla de Jersey</label>
-                                                <select 
-                                                    name="jersey_size" 
-                                                    required={formData.registration_type === 'full'} 
-                                                    value={formData.jersey_size} 
-                                                    onChange={handleChange} 
-                                                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-black text-sm font-medium cursor-pointer"
-                                                >
-                                                    <option value="" disabled>Selecciona tu talla</option>
-                                                    <option value="XS">XS - Extra Pequeño</option>
-                                                    <option value="S">S - Pequeño</option>
-                                                    <option value="M">M - Mediano</option>
-                                                    <option value="L">L - Grande</option>
-                                                    <option value="XL">XL - Extra Grande</option>
-                                                    <option value="XXL">XXL</option>
-                                                </select>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                                            <AnimatePresence>
+                                                {formData.registration_type === 'full' && (
+                                                    <motion.div 
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        transition={{ duration: 0.2 }}
+                                                        className="space-y-1.5 md:col-span-2 overflow-hidden"
+                                                    >
+                                                        <label className="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-widest">Talla de Jersey</label>
+                                                        <select 
+                                                            name="jersey_size" 
+                                                            required={formData.registration_type === 'full'} 
+                                                            value={formData.jersey_size} 
+                                                            onChange={handleChange} 
+                                                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-black text-sm font-medium cursor-pointer"
+                                                        >
+                                                            <option value="" disabled>Selecciona tu talla</option>
+                                                            <option value="XS">XS - Extra Pequeño</option>
+                                                            <option value="S">S - Pequeño</option>
+                                                            <option value="M">M - Mediano</option>
+                                                            <option value="L">L - Grande</option>
+                                                            <option value="XL">XL - Extra Grande</option>
+                                                            <option value="XXL">XXL</option>
+                                                        </select>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </>
+                                    )}
                                 </div>
 
                                 {/* File Upload */}
-                                <div className="mt-8 pt-6 border-t border-gray-100">
-                                    <h3 className="text-sm font-black uppercase mb-4">Comprobante de Transferencia</h3>
-                                    <div 
-                                        onClick={triggerFileInput}
-                                        className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${receiptPreview ? 'border-green-300 bg-green-50' : 'border-gray-300 bg-gray-50 hover:bg-gray-100'}`}
-                                    >
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            onChange={handleFileChange}
-                                            accept="image/*"
-                                            className="hidden"
-                                        />
-                                        
-                                        {receiptPreview ? (
-                                            <div className="flex flex-col items-center">
-                                                <div className="relative w-32 h-32 rounded-xl overflow-hidden shadow-md mb-3">
-                                                    <img src={receiptPreview} alt="Comprobante" className="w-full h-full object-cover" />
-                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                                                        <span className="text-white text-xs font-bold uppercase">Cambiar</span>
+                                {!isGuest && (
+                                    <div className="mt-8 pt-6 border-t border-gray-100">
+                                        <h3 className="text-sm font-black uppercase mb-4">Comprobante de Transferencia</h3>
+                                        <div 
+                                            onClick={triggerFileInput}
+                                            className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${receiptPreview ? 'border-green-300 bg-green-50' : 'border-gray-300 bg-gray-50 hover:bg-gray-100'}`}
+                                        >
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                onChange={handleFileChange}
+                                                accept="image/*"
+                                                className="hidden"
+                                            />
+                                            
+                                            {receiptPreview ? (
+                                                <div className="flex flex-col items-center">
+                                                    <div className="relative w-32 h-32 rounded-xl overflow-hidden shadow-md mb-3">
+                                                        <img src={receiptPreview} alt="Comprobante" className="w-full h-full object-cover" />
+                                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                            <span className="text-white text-xs font-bold uppercase">Cambiar</span>
+                                                        </div>
                                                     </div>
+                                                    <span className="text-green-600 font-bold text-sm flex items-center gap-1"><CheckCircle size={16}/> Comprobante adjuntado</span>
                                                 </div>
-                                                <span className="text-green-600 font-bold text-sm flex items-center gap-1"><CheckCircle size={16}/> Comprobante adjuntado</span>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-col items-center py-4">
-                                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
-                                                    <Upload className="text-gray-400" size={24} />
+                                            ) : (
+                                                <div className="flex flex-col items-center py-4">
+                                                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
+                                                        <Upload className="text-gray-400" size={24} />
+                                                    </div>
+                                                    <p className="text-sm font-bold text-gray-700">Toca para subir la foto del recibo</p>
+                                                    <p className="text-xs text-gray-500 mt-1">Solo imágenes (JPG, PNG)</p>
                                                 </div>
-                                                <p className="text-sm font-bold text-gray-700">Toca para subir la foto del recibo</p>
-                                                <p className="text-xs text-gray-500 mt-1">Solo imágenes (JPG, PNG)</p>
-                                            </div>
-                                        )}
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
                                 {/* Waiver Section */}
                                 <div className="mt-8 space-y-4">
@@ -564,15 +606,23 @@ const AnniversaryRegistration = () => {
                                 <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-6">
                                     <CheckCircle size={40} />
                                 </div>
-                                <h2 className="text-3xl font-black uppercase tracking-tight text-black mb-2">¡Inscripción Recibida!</h2>
+                                <h2 className="text-3xl font-black uppercase tracking-tight text-black mb-2">
+                                    {isGuest ? '¡Registro Recibido!' : '¡Inscripción Recibida!'}
+                                </h2>
                                 <p className="text-gray-500 font-medium text-sm max-w-md mx-auto leading-relaxed">
-                                    Hemos recibido tus datos y tu comprobante de pago. Nuestro equipo validará la información pronto.
+                                    {isGuest 
+                                        ? 'Hemos recibido tus datos de registro como Invitado Especial.' 
+                                        : 'Hemos recibido tus datos y tu comprobante de pago. Nuestro equipo validará la información pronto.'
+                                    }
                                 </p>
                                 
                                 <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 mt-8 max-w-sm w-full">
                                     <h4 className="text-xs font-black uppercase text-gray-400 mb-2 tracking-widest">¿Qué Sigue?</h4>
                                     <p className="text-sm text-gray-700 font-medium">
-                                        Una vez aprobado, recibirás un correo electrónico oficial con tu código especial <span className="font-mono bg-cyan-100 text-cyan-800 px-1 rounded">PRO-XXX</span> para la rifa y la bicicleta.
+                                        {isGuest 
+                                            ? <>Una vez aprobado, recibirás un correo electrónico oficial con tu código especial <span className="font-mono bg-cyan-100 text-cyan-800 px-1 rounded">PRO-XXX</span> para la rifa y acceso al evento.</>
+                                            : <>Una vez aprobado, recibirás un correo electrónico oficial con tu código especial <span className="font-mono bg-cyan-100 text-cyan-800 px-1 rounded">PRO-XXX</span> para la rifa y la bicicleta.</>
+                                        }
                                     </p>
                                 </div>
                                 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
-import { Search, Check, X, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Search, Check, X, Loader2, Image as ImageIcon, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const AnniversaryList = () => {
@@ -8,6 +8,79 @@ const AnniversaryList = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [processingId, setProcessingId] = useState(null);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [modalLoading, setModalLoading] = useState(false);
+    const [autoApprove, setAutoApprove] = useState(true);
+    const [newGuest, setNewGuest] = useState({
+        first_name: '',
+        last_name: '',
+        cedula: '',
+        email: '',
+        phone: ''
+    });
+
+    const handleAddGuest = async (e) => {
+        e.preventDefault();
+        if (!newGuest.first_name || !newGuest.last_name || !newGuest.cedula || !newGuest.email || !newGuest.phone) {
+            toast.error('Por favor, completa todos los campos.');
+            return;
+        }
+
+        setModalLoading(true);
+        try {
+            // 1. Insert Guest into anniversary_registrations
+            const { data, error } = await supabase
+                .from('anniversary_registrations')
+                .insert([{
+                    first_name: newGuest.first_name,
+                    last_name: newGuest.last_name,
+                    cedula: newGuest.cedula,
+                    email: newGuest.email,
+                    phone: newGuest.phone,
+                    jersey_size: 'N/A',
+                    registration_type: 'invitado',
+                    receipt_url: 'invitado',
+                    status: 'pending' // Insert as pending to allow standard approval sequence
+                }])
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            toast.success('Invitado registrado exitosamente.');
+            
+            // 2. Auto-approve if selected
+            if (autoApprove && data?.id) {
+                toast.loading('Generando código y enviando correo de confirmación...', { id: 'approval-toast' });
+                const { data: approvalData, error: approvalError } = await supabase.functions.invoke('anniversary-approval', {
+                    body: { registrationId: data.id }
+                });
+
+                if (approvalError) {
+                    console.error('Approval Error:', approvalError);
+                    toast.error('Invitado creado pero falló la aprobación automática.', { id: 'approval-toast' });
+                } else {
+                    toast.success(`Invitado aprobado. Código: ${approvalData?.code}`, { id: 'approval-toast' });
+                }
+            }
+
+            // Reset Form and State
+            setNewGuest({
+                first_name: '',
+                last_name: '',
+                cedula: '',
+                email: '',
+                phone: ''
+            });
+            setShowAddModal(false);
+            fetchRegistrations();
+        } catch (err) {
+            console.error('Error adding guest:', err);
+            toast.error('Error al registrar al invitado.');
+        } finally {
+            setModalLoading(false);
+        }
+    };
 
     const fetchRegistrations = async () => {
         try {
@@ -106,15 +179,24 @@ const AnniversaryList = () => {
                     <p className="text-sm text-gray-500 mt-1">Valida los pagos y genera los códigos de participación.</p>
                 </div>
                 
-                <div className="relative w-full sm:w-auto">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                    <input
-                        type="text"
-                        placeholder="Buscar por nombre, cédula o código..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full sm:w-80 pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-black"
-                    />
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    <button
+                        onClick={() => setShowAddModal(true)}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-black text-white text-sm font-bold uppercase rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
+                    >
+                        <Plus size={16} /> Agregar Invitado
+                    </button>
+                    
+                    <div className="relative w-full sm:w-auto">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre, cédula o código..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full sm:w-80 pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-black"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -159,11 +241,13 @@ const AnniversaryList = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2.5 py-1 font-black text-xs rounded border ${
-                                                reg.registration_type === 'basico' 
-                                                    ? 'bg-neutral-150 text-neutral-700 border-neutral-300' 
-                                                    : 'bg-cyan-50 text-cyan-800 border-cyan-200'
+                                                reg.registration_type === 'invitado'
+                                                    ? 'bg-purple-50 text-purple-800 border-purple-200'
+                                                    : reg.registration_type === 'basico' 
+                                                        ? 'bg-neutral-150 text-neutral-700 border-neutral-300' 
+                                                        : 'bg-cyan-50 text-cyan-800 border-cyan-200'
                                             }`}>
-                                                {reg.registration_type === 'basico' ? 'BÁSICO' : 'FULL'}
+                                                {reg.registration_type === 'invitado' ? 'INVITADO' : reg.registration_type === 'basico' ? 'BÁSICO' : 'FULL'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
@@ -172,7 +256,7 @@ const AnniversaryList = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            {reg.receipt_url ? (
+                                            {reg.receipt_url && reg.receipt_url !== 'invitado' && reg.receipt_url !== 'N/A' ? (
                                                 <a 
                                                     href={reg.receipt_url} 
                                                     target="_blank" 
@@ -181,6 +265,8 @@ const AnniversaryList = () => {
                                                 >
                                                     <ImageIcon size={14} /> Ver Recibo
                                                 </a>
+                                            ) : reg.registration_type === 'invitado' ? (
+                                                <span className="text-xs text-purple-600 font-bold bg-purple-50 px-2 py-1 rounded">No requiere pago</span>
                                             ) : (
                                                 <span className="text-xs text-red-500 font-bold">Sin comprobante</span>
                                             )}
@@ -224,6 +310,112 @@ const AnniversaryList = () => {
                     </table>
                 </div>
             </div>
+
+            {/* Modal para Agregar Invitado */}
+            {showAddModal && (
+                <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden border border-gray-150">
+                        <div className="bg-gray-50 px-6 py-4 border-b border-gray-150 flex justify-between items-center">
+                            <h3 className="text-lg font-black uppercase text-gray-900">Agregar Invitado Especial</h3>
+                            <button 
+                                onClick={() => setShowAddModal(false)}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleAddGuest} className="p-6 space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Nombre</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={newGuest.first_name}
+                                        onChange={(e) => setNewGuest(prev => ({ ...prev, first_name: e.target.value }))}
+                                        placeholder="Juan"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Apellido</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={newGuest.last_name}
+                                        onChange={(e) => setNewGuest(prev => ({ ...prev, last_name: e.target.value }))}
+                                        placeholder="Pérez"
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Cédula</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={newGuest.cedula}
+                                    onChange={(e) => setNewGuest(prev => ({ ...prev, cedula: e.target.value }))}
+                                    placeholder="000-0000000-0"
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Correo Electrónico</label>
+                                <input
+                                    type="email"
+                                    required
+                                    value={newGuest.email}
+                                    onChange={(e) => setNewGuest(prev => ({ ...prev, email: e.target.value }))}
+                                    placeholder="correo@ejemplo.com"
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Teléfono / WhatsApp</label>
+                                <input
+                                    type="tel"
+                                    required
+                                    value={newGuest.phone}
+                                    onChange={(e) => setNewGuest(prev => ({ ...prev, phone: e.target.value }))}
+                                    placeholder="809-000-0000"
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black"
+                                />
+                            </div>
+
+                            <label className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer border border-gray-100 hover:bg-gray-100 transition-colors mt-2">
+                                <input
+                                    type="checkbox"
+                                    checked={autoApprove}
+                                    onChange={(e) => setAutoApprove(e.target.checked)}
+                                    className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer mt-0.5"
+                                />
+                                <div className="text-xs">
+                                    <span className="font-bold text-gray-800 block">Aprobar automáticamente</span>
+                                    <span className="text-gray-500">Asigna código PRO-XXX y envía correo al guardar.</span>
+                                </div>
+                            </label>
+
+                            <div className="flex gap-3 mt-6 pt-4 border-t border-gray-100">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAddModal(false)}
+                                    className="flex-1 px-4 py-2 border border-gray-200 text-gray-700 text-sm font-bold uppercase rounded-lg hover:bg-gray-50 transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={modalLoading}
+                                    className="flex-1 px-4 py-2 bg-black text-white text-sm font-bold uppercase rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {modalLoading ? <Loader2 size={16} className="animate-spin" /> : 'Guardar'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

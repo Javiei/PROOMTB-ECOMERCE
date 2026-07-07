@@ -131,6 +131,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/totem/series/:serieName" element={<TotemSeriesDetail />} />
           <Route path="/registro-martes" element={<TuesdayRegistration />} />
           <Route path="/registro-aniversario" element={<AnniversaryRegistration />} />
+          <Route path="/registro-aniversario-invitado" element={<AnniversaryRegistration isGuest={true} />} />
 
 
 

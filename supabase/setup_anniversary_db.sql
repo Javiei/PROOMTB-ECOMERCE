@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS public.anniversary_registrations (
     cedula text NOT NULL,
     email text NOT NULL,
     phone text NOT NULL,
-    jersey_size text NOT NULL,
+    jersey_size text,
     registration_type text DEFAULT 'full'::text NOT NULL,
-    receipt_url text NOT NULL,
+    receipt_url text,
     status text DEFAULT 'pending'::text NOT NULL,
     special_code text
 );

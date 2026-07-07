@@ -63,12 +63,23 @@ serve(async (req) => {
     if (updateError) throw updateError
 
     // 4. Enviar correo usando Resend
-    const subject = '¡Tu inscripción al 6to Aniversario está confirmada! 🎉'
-    const title = `¡Felicidades, ${registration.first_name.split(' ')[0]}!`
-    const message = 'Hemos recibido y validado exitosamente tu comprobante de pago. Tu inscripción para el gran evento de nuestro 6to aniversario está 100% confirmada.'
+    const isGuest = registration.registration_type === 'invitado';
+    const subject = isGuest 
+      ? '¡Tu registro como Invitado al 6to Aniversario está confirmado! 🎉'
+      : '¡Tu inscripción al 6to Aniversario está confirmada! 🎉';
+    const title = `¡Felicidades, ${registration.first_name.split(' ')[0]}!`;
+    const message = isGuest
+      ? 'Tu registro como Invitado Especial para el gran evento de nuestro 6to aniversario está 100% confirmado.'
+      : 'Hemos recibido y validado exitosamente tu comprobante de pago. Tu inscripción para el gran evento de nuestro 6to aniversario está 100% confirmada.';
     
-    const planName = registration.registration_type === 'basico' ? 'Básico (RD$ 1,500 - Sin Jersey)' : 'Full (RD$ 2,950 - Con Jersey)';
-    const jerseyText = registration.registration_type === 'basico' ? 'No incluye (Plan Básico)' : registration.jersey_size;
+    const planName = isGuest
+      ? 'Invitado (Gratuito - Sin Jersey)'
+      : registration.registration_type === 'basico' 
+        ? 'Básico (RD$ 1,500 - Sin Jersey)' 
+        : 'Full (RD$ 2,950 - Con Jersey)';
+    const jerseyText = (isGuest || registration.registration_type === 'basico') 
+      ? 'No incluye' 
+      : (registration.jersey_size || 'N/A');
 
     try {
       const res = await fetch('https://api.resend.com/emails', {
