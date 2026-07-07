@@ -39,7 +39,7 @@ const AnniversaryList = () => {
                     phone: newGuest.phone,
                     jersey_size: 'N/A',
                     registration_type: 'invitado',
-                    receipt_url: 'admin-added',
+                    receipt_url: 'invitado',
                     status: 'pending' // Insert as pending to allow standard approval sequence
                 }])
                 .select()
@@ -243,11 +243,13 @@ const AnniversaryList = () => {
                                             <span className={`px-2.5 py-1 font-black text-xs rounded border ${
                                                 reg.registration_type === 'invitado'
                                                     ? 'bg-purple-50 text-purple-800 border-purple-200'
-                                                    : reg.registration_type === 'basico' 
-                                                        ? 'bg-neutral-150 text-neutral-700 border-neutral-300' 
-                                                        : 'bg-cyan-50 text-cyan-800 border-cyan-200'
+                                                    : reg.registration_type === 'acompanante'
+                                                        ? 'bg-orange-50 text-orange-800 border-orange-200'
+                                                        : reg.registration_type === 'basico' 
+                                                            ? 'bg-neutral-150 text-neutral-700 border-neutral-300' 
+                                                            : 'bg-cyan-50 text-cyan-800 border-cyan-200'
                                             }`}>
-                                                {reg.registration_type === 'invitado' ? 'INVITADO' : reg.registration_type === 'basico' ? 'BÁSICO' : 'FULL'}
+                                                {reg.registration_type === 'invitado' ? 'INVITADO' : reg.registration_type === 'acompanante' ? 'ACOMPAÑANTE' : reg.registration_type === 'basico' ? 'BÁSICO' : 'FULL'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
@@ -256,7 +258,7 @@ const AnniversaryList = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            {reg.receipt_url && reg.receipt_url !== 'invitado' && reg.receipt_url !== 'N/A' && reg.receipt_url !== 'admin-added' ? (
+                                            {reg.receipt_url && reg.receipt_url !== 'invitado' && reg.receipt_url !== 'N/A' ? (
                                                 <a 
                                                     href={reg.receipt_url} 
                                                     target="_blank" 
@@ -265,8 +267,8 @@ const AnniversaryList = () => {
                                                 >
                                                     <ImageIcon size={14} /> Ver Recibo
                                                 </a>
-                                            ) : reg.receipt_url === 'admin-added' ? (
-                                                <span className="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Agregado por Admin</span>
+                                            ) : reg.registration_type === 'invitado' ? (
+                                                <span className="text-xs text-purple-600 font-bold bg-purple-50 px-2 py-1 rounded">No requiere pago</span>
                                             ) : (
                                                 <span className="text-xs text-red-500 font-bold">Sin comprobante</span>
                                             )}

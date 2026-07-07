@@ -42,17 +42,23 @@ serve(async (req) => {
       return new Response(JSON.stringify({ message: "El registro ya está aprobado", code: registration.special_code }), { status: 200, headers })
     }
 
-    // 2. Generar el código especial PRO-XXX
-    // Buscar cuántos aprobados hay para asignar el número
-    const { count, error: countError } = await supabase
-      .from('anniversary_registrations')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'approved')
+    // 2. Generar el código especial PRO-XXX si no es un acompañante
+    const isAcompanante = registration.registration_type === 'acompanante';
+    let specialCode = null;
 
-    if (countError) throw countError
+    if (!isAcompanante) {
+      // Buscar cuántos aprobados hay para asignar el número (excluyendo los que no tienen código)
+      const { count, error: countError } = await supabase
+        .from('anniversary_registrations')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'approved')
+        .not('special_code', 'is', null)
 
-    const nextNumber = (count || 0) + 1
-    const specialCode = `PRO-${nextNumber.toString().padStart(3, '0')}`
+      if (countError) throw countError
+
+      const nextNumber = (count || 0) + 1
+      specialCode = `PRO-${nextNumber.toString().padStart(3, '0')}`
+    }
 
     // 3. Actualizar la base de datos
     const { error: updateError } = await supabase
@@ -66,16 +72,24 @@ serve(async (req) => {
     const isGuest = registration.registration_type === 'invitado';
     const subject = isGuest 
       ? '¡Tu registro como Invitado al 6to Aniversario está confirmado! 🎉'
-      : '¡Tu inscripción al 6to Aniversario está confirmada! 🎉';
+      : isAcompanante
+        ? '¡Tu registro de Acompañante al 6to Aniversario está confirmado! 🎉'
+        : '¡Tu inscripción al 6to Aniversario está confirmada! 🎉';
     const title = `¡Felicidades, ${registration.first_name.split(' ')[0]}!`;
-    const message = 'Hemos recibido y validado exitosamente tu comprobante de pago. Tu inscripción para el gran evento de nuestro 6to aniversario está 100% confirmada.';
+    const message = isGuest
+      ? 'Tu registro como Invitado Especial para el gran evento de nuestro 6to aniversario está 100% confirmado.'
+      : isAcompanante
+        ? 'Hemos recibido y validado exitosamente tu comprobante de pago. Tu registro como Acompañante para el gran evento de nuestro 6to aniversario está 100% confirmado.'
+        : 'Hemos recibido y validado exitosamente tu comprobante de pago. Tu inscripción para el gran evento de nuestro 6to aniversario está 100% confirmada.';
     
     const planName = isGuest
-      ? 'Invitado (RD$ 1,000 - Sin Jersey)'
-      : registration.registration_type === 'basico' 
-        ? 'Básico (RD$ 1,500 - Sin Jersey)' 
-        : 'Full (RD$ 2,950 - Con Jersey)';
-    const jerseyText = (isGuest || registration.registration_type === 'basico') 
+      ? 'Invitado (Gratuito - Sin Jersey)'
+      : isAcompanante
+        ? 'Acompañante / Invitado (RD$ 1,000 - Sin Jersey)'
+        : registration.registration_type === 'basico' 
+          ? 'Básico (RD$ 1,500 - Sin Jersey)' 
+          : 'Full (RD$ 2,950 - Con Jersey)';
+    const jerseyText = (isGuest || isAcompanante || registration.registration_type === 'basico') 
       ? 'No incluye' 
       : (registration.jersey_size || 'N/A');
 
@@ -118,11 +132,21 @@ serve(async (req) => {
                   <h1>${title}</h1>
                   <p>${message}</p>
                   
-                  <div class="detail-card">
-                    <span class="code-title">Tu código de participación oficial</span>
-                    <span class="code-value">${specialCode}</span>
-                    <p style="font-size: 12px; color: #666; margin-top: 15px;">Guarda este código. Con él participarás en la gran rifa y es válido para la bicicleta.</p>
-                  </div>
+                  ${isAcompanante 
+                    ? `
+                      <div class="detail-card" style="background-color: #f9f9f9; border: 2px solid #ddd; border-radius: 12px; padding: 25px; margin: 20px 0; text-align: center;">
+                        <span class="code-title" style="font-weight: bold; text-transform: uppercase; color: #666; font-size: 12px; letter-spacing: 2px; display: block; margin-bottom: 5px;">Pase de Acompañante</span>
+                        <p style="font-size: 14px; color: #555; font-weight: bold; margin: 10px 0 0 0;">Esta modalidad de registro no participa en la rifa de la bicicleta ni requiere código especial.</p>
+                      </div>
+                    `
+                    : `
+                      <div class="detail-card">
+                        <span class="code-title">Tu código de participación oficial</span>
+                        <span class="code-value">${specialCode}</span>
+                        <p style="font-size: 12px; color: #666; margin-top: 15px;">Guarda este código. Con él participarás en la gran rifa y es válido para la bicicleta.</p>
+                      </div>
+                    `
+                  }
 
                   <p><b>Datos de tu inscripción:</b><br/>
                   Tipo de Plan: <b>${planName}</b><br/>
