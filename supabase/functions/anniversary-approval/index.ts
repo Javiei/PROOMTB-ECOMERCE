@@ -68,12 +68,10 @@ serve(async (req) => {
       ? '¡Tu registro como Invitado al 6to Aniversario está confirmado! 🎉'
       : '¡Tu inscripción al 6to Aniversario está confirmada! 🎉';
     const title = `¡Felicidades, ${registration.first_name.split(' ')[0]}!`;
-    const message = isGuest
-      ? 'Tu registro como Invitado Especial para el gran evento de nuestro 6to aniversario está 100% confirmado.'
-      : 'Hemos recibido y validado exitosamente tu comprobante de pago. Tu inscripción para el gran evento de nuestro 6to aniversario está 100% confirmada.';
+    const message = 'Hemos recibido y validado exitosamente tu comprobante de pago. Tu inscripción para el gran evento de nuestro 6to aniversario está 100% confirmada.';
     
     const planName = isGuest
-      ? 'Invitado (Gratuito - Sin Jersey)'
+      ? 'Invitado (RD$ 1,000 - Sin Jersey)'
       : registration.registration_type === 'basico' 
         ? 'Básico (RD$ 1,500 - Sin Jersey)' 
         : 'Full (RD$ 2,950 - Con Jersey)';

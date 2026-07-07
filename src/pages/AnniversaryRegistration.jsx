@@ -175,7 +175,7 @@ const AnniversaryRegistration = ({ isGuest = false }) => {
             return;
         }
 
-        if (!isGuest && !receiptFile) {
+        if (!receiptFile) {
             setError('Debes subir la foto de tu comprobante de pago.');
             return;
         }
@@ -190,33 +190,29 @@ const AnniversaryRegistration = ({ isGuest = false }) => {
         setUploadProgress(10);
 
         try {
-            let publicUrl = 'invitado';
+            // 1. Upload Receipt Image
+            const fileExt = receiptFile.name.split('.').pop();
+            const fileName = `receipt_${Date.now()}_${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
+            
+            setUploadProgress(30);
+            
+            const { error: uploadError } = await supabase.storage
+                .from('activity_photos') // using existing bucket
+                .upload(`anniversary/${fileName}`, receiptFile, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
 
-            if (!isGuest && receiptFile) {
-                // 1. Upload Receipt Image
-                const fileExt = receiptFile.name.split('.').pop();
-                const fileName = `receipt_${Date.now()}_${Math.random().toString(36).substring(2, 10)}.${fileExt}`;
-                
-                setUploadProgress(30);
-                
-                const { error: uploadError } = await supabase.storage
-                    .from('activity_photos') // using existing bucket
-                    .upload(`anniversary/${fileName}`, receiptFile, {
-                        cacheControl: '3600',
-                        upsert: false
-                    });
+            if (uploadError) throw uploadError;
+            
+            setUploadProgress(70);
 
-                if (uploadError) throw uploadError;
-                
-                setUploadProgress(70);
+            // 2. Get Public URL
+            const { data: publicUrlData } = supabase.storage
+                .from('activity_photos')
+                .getPublicUrl(`anniversary/${fileName}`);
 
-                // 2. Get Public URL
-                const { data: publicUrlData } = supabase.storage
-                    .from('activity_photos')
-                    .getPublicUrl(`anniversary/${fileName}`);
-
-                publicUrl = publicUrlData.publicUrl;
-            }
+            const publicUrl = publicUrlData.publicUrl;
 
             setUploadProgress(85);
 
@@ -288,27 +284,41 @@ const AnniversaryRegistration = ({ isGuest = false }) => {
                         {isGuest ? (
                             <div className="space-y-6 mt-6">
                                 <div className="bg-[#00e5ff]/10 rounded-2xl p-6 border-2 border-[#00e5ff] backdrop-blur-sm">
-                                    <h3 className="text-sm font-black uppercase text-[#00e5ff] tracking-wider mb-2">Pase de Invitado Especial</h3>
-                                    <p className="text-xs text-white/80 leading-relaxed font-medium">
-                                        Este enlace es exclusivo para invitados de honor del 6to Aniversario de ProoMTB.
-                                    </p>
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="text-xs font-black uppercase text-[#00e5ff]">Pase de Invitado</h3>
+                                        <span className="text-[10px] font-black bg-[#00e5ff]/20 text-[#00e5ff] px-2 py-0.5 rounded uppercase tracking-wider">Sin Jersey</span>
+                                    </div>
+                                    <p className="text-2xl font-black text-white mt-1">RD$ 1,000</p>
+                                    <p className="text-[11px] text-white/60 mt-1 font-medium leading-snug">Incluye acceso completo al evento, soporte en ruta, fotos y rifas. No incluye Jersey.</p>
                                 </div>
                                 
-                                <div className="bg-white/5 rounded-2xl p-5 border border-white/5 backdrop-blur-sm space-y-3">
-                                    <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest border-b border-white/10 pb-1">Beneficios</h4>
-                                    <ul className="text-xs text-white/70 space-y-2 font-medium list-disc list-inside">
-                                        <li>Acceso completo al evento</li>
-                                        <li>Participación en rifas y dinámicas</li>
-                                        <li>Asistencia mecánica en ruta</li>
-                                        <li>Fotografías oficiales</li>
-                                    </ul>
-                                </div>
-                                
-                                <div className="bg-white/5 rounded-2xl p-5 border border-white/5 backdrop-blur-sm">
-                                    <h4 className="text-xs font-black uppercase text-gray-400 tracking-widest mb-1">Nota</h4>
-                                    <p className="text-[11px] text-white/50 leading-normal font-medium">
-                                        Esta modalidad de registro no incluye Jersey del evento ni requiere pago de inscripción.
-                                    </p>
+                                <div className="space-y-6">
+                                    <h3 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest border-b border-white/10 pb-2">
+                                        Cuentas Bancarias
+                                    </h3>
+                                    
+                                    <div className="space-y-4">
+                                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                            <p className="text-xs font-bold text-white uppercase">Banco Popular</p>
+                                            <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">823658349</p>
+                                            <p className="text-[10px] text-white/60 uppercase mt-1">PROO MTB SRL (Corriente)</p>
+                                        </div>
+                                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                            <p className="text-xs font-bold text-white uppercase">Banreservas</p>
+                                            <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">9609123095</p>
+                                            <p className="text-[10px] text-white/60 uppercase mt-1">PROO MTB SRL (Ahorro)</p>
+                                        </div>
+                                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                            <p className="text-xs font-bold text-white uppercase">Banco Santa Cruz</p>
+                                            <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">11312100000638</p>
+                                            <p className="text-[10px] text-white/60 uppercase mt-1">PROO MTB SRL (Ahorro)</p>
+                                        </div>
+                                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                            <p className="text-xs font-bold text-white uppercase">Banco BHD</p>
+                                            <p className="text-lg font-black text-[#00e5ff] font-mono mt-1">12831830011</p>
+                                            <p className="text-[10px] text-white/60 uppercase mt-1">Albel Luciano (Ahorros)</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         ) : (
@@ -500,43 +510,41 @@ const AnniversaryRegistration = ({ isGuest = false }) => {
                                 </div>
 
                                 {/* File Upload */}
-                                {!isGuest && (
-                                    <div className="mt-8 pt-6 border-t border-gray-100">
-                                        <h3 className="text-sm font-black uppercase mb-4">Comprobante de Transferencia</h3>
-                                        <div 
-                                            onClick={triggerFileInput}
-                                            className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${receiptPreview ? 'border-green-300 bg-green-50' : 'border-gray-300 bg-gray-50 hover:bg-gray-100'}`}
-                                        >
-                                            <input
-                                                type="file"
-                                                ref={fileInputRef}
-                                                onChange={handleFileChange}
-                                                accept="image/*"
-                                                className="hidden"
-                                            />
-                                            
-                                            {receiptPreview ? (
-                                                <div className="flex flex-col items-center">
-                                                    <div className="relative w-32 h-32 rounded-xl overflow-hidden shadow-md mb-3">
-                                                        <img src={receiptPreview} alt="Comprobante" className="w-full h-full object-cover" />
-                                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                                                            <span className="text-white text-xs font-bold uppercase">Cambiar</span>
-                                                        </div>
+                                <div className="mt-8 pt-6 border-t border-gray-100">
+                                    <h3 className="text-sm font-black uppercase mb-4">Comprobante de Transferencia</h3>
+                                    <div 
+                                        onClick={triggerFileInput}
+                                        className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${receiptPreview ? 'border-green-300 bg-green-50' : 'border-gray-300 bg-gray-50 hover:bg-gray-100'}`}
+                                    >
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handleFileChange}
+                                            accept="image/*"
+                                            className="hidden"
+                                        />
+                                        
+                                        {receiptPreview ? (
+                                            <div className="flex flex-col items-center">
+                                                <div className="relative w-32 h-32 rounded-xl overflow-hidden shadow-md mb-3">
+                                                    <img src={receiptPreview} alt="Comprobante" className="w-full h-full object-cover" />
+                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                        <span className="text-white text-xs font-bold uppercase">Cambiar</span>
                                                     </div>
-                                                    <span className="text-green-600 font-bold text-sm flex items-center gap-1"><CheckCircle size={16}/> Comprobante adjuntado</span>
                                                 </div>
-                                            ) : (
-                                                <div className="flex flex-col items-center py-4">
-                                                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
-                                                        <Upload className="text-gray-400" size={24} />
-                                                    </div>
-                                                    <p className="text-sm font-bold text-gray-700">Toca para subir la foto del recibo</p>
-                                                    <p className="text-xs text-gray-500 mt-1">Solo imágenes (JPG, PNG)</p>
+                                                <span className="text-green-600 font-bold text-sm flex items-center gap-1"><CheckCircle size={16}/> Comprobante adjuntado</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center py-4">
+                                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
+                                                    <Upload className="text-gray-400" size={24} />
                                                 </div>
-                                            )}
-                                        </div>
+                                                <p className="text-sm font-bold text-gray-700">Toca para subir la foto del recibo</p>
+                                                <p className="text-xs text-gray-500 mt-1">Solo imágenes (JPG, PNG)</p>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
 
                                 {/* Waiver Section */}
                                 <div className="mt-8 space-y-4">

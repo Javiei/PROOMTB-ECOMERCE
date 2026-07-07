@@ -39,7 +39,7 @@ const AnniversaryList = () => {
                     phone: newGuest.phone,
                     jersey_size: 'N/A',
                     registration_type: 'invitado',
-                    receipt_url: 'invitado',
+                    receipt_url: 'admin-added',
                     status: 'pending' // Insert as pending to allow standard approval sequence
                 }])
                 .select()
@@ -256,7 +256,7 @@ const AnniversaryList = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            {reg.receipt_url && reg.receipt_url !== 'invitado' && reg.receipt_url !== 'N/A' ? (
+                                            {reg.receipt_url && reg.receipt_url !== 'invitado' && reg.receipt_url !== 'N/A' && reg.receipt_url !== 'admin-added' ? (
                                                 <a 
                                                     href={reg.receipt_url} 
                                                     target="_blank" 
@@ -265,8 +265,8 @@ const AnniversaryList = () => {
                                                 >
                                                     <ImageIcon size={14} /> Ver Recibo
                                                 </a>
-                                            ) : reg.registration_type === 'invitado' ? (
-                                                <span className="text-xs text-purple-600 font-bold bg-purple-50 px-2 py-1 rounded">No requiere pago</span>
+                                            ) : reg.receipt_url === 'admin-added' ? (
+                                                <span className="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded">Agregado por Admin</span>
                                             ) : (
                                                 <span className="text-xs text-red-500 font-bold">Sin comprobante</span>
                                             )}
