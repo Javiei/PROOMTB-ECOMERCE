@@ -21,7 +21,7 @@ serve(async (req) => {
 
     const reqBody = await req.json().catch(() => ({}))
     const { 
-      customSubject = '🚴‍♂️🔥 ¡Llegó el momento! Inscríbete al 6to Aniversario ProoMTB y gana increíbles premios',
+      customSubject = '🚴‍♂️🔥 ¡Gana una Bicicleta Raymond 0 km! Inscríbete al 6to Aniversario ProoMTB',
       testEmail = null
     } = reqBody
 
@@ -82,6 +82,7 @@ serve(async (req) => {
 
     const results = []
     const anniversaryRegUrl = 'https://proomtb.com/registro-aniversario'
+    const whatsappRegUrl = 'https://wa.me/message/6SFG6MXJ6HDUK1'
 
     for (const recipient of recipients) {
       try {
@@ -112,9 +113,10 @@ serve(async (req) => {
                   .highlight-box { background-color: #f8fafc; border-left: 4px solid #00e5ff; border-radius: 12px; padding: 22px; margin: 25px 0; border: 1px solid #e2e8f0; border-left-width: 4px; border-left-color: #00e5ff; }
                   .feature-item { margin-bottom: 14px; display: flex; align-items: flex-start; }
                   .feature-icon { font-size: 18px; margin-right: 12px; line-height: 1.4; }
-                  .button-cta { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 18px 30px; background-color: #000000; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; margin-top: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+                  .button-cta { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 18px 25px; background-color: #000000; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+                  .button-whatsapp { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 18px 25px; background-color: #25D366; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; margin-top: 12px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25); }
                   .footer { background-color: #f9fafb; padding: 25px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #f3f4f6; }
-                  .prize-badge { background-color: #fef08a; color: #854d0e; font-weight: bold; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+                  .prize-badge { background-color: #fef08a; color: #854d0e; font-weight: bold; padding: 3px 8px; border-radius: 4px; font-size: 13px; }
                 </style>
               </head>
               <body>
@@ -129,7 +131,7 @@ serve(async (req) => {
                     
                     <p>Sabemos lo mucho que disfrutas nuestros paseos y la emoción sobre pedales. Por eso, <b>¡queremos que seas parte fundamental de nuestra mayor fiesta del año!</b> 🎉</p>
                     
-                    <p>Celebramos el <b>6to Aniversario ProoMTB & ROAD</b> y hemos preparado una experiencia inolvidable para toda la comunidad ciclista.</p>
+                    <p>Celebramos el <b>6to Aniversario ProoMTB & ROAD</b> y hemos preparado una experiencia inolvidable con sorpresas y premios increíbles para todos.</p>
 
                     <div class="highlight-box">
                       <h3 style="color: #111827; margin-top: 0; font-size: 17px; text-transform: uppercase; font-weight: 900;">🔥 ¿QUÉ TE ESPERA EN EL ANIVERSARIO?</h3>
@@ -141,7 +143,7 @@ serve(async (req) => {
                       
                       <div class="feature-item">
                         <span class="feature-icon">🏆</span>
-                        <div><b>Gran Rifa Oficial:</b> Participas automáticamente por una <span class="prize-badge">BICICLETA CERO KM</span>, accesorios de alta gama y sorpresas exclusivas.</div>
+                        <div><b>Gran Rifa Oficial:</b> Participas automáticamente por una <span class="prize-badge">BICICLETA RAYMOND 0 KM</span>, además de accesorios de alta gama, cascos, indumentaria y varios premios más.</div>
                       </div>
 
                       <div class="feature-item">
@@ -156,16 +158,20 @@ serve(async (req) => {
                     </div>
 
                     <p style="text-align: center; font-size: 15px; font-weight: bold; color: #111827;">
-                      ⚡ ¡Los cupos son limitados y las inscripciones se están agotando rápidamente!
+                      ⚡ ¡Los cupos son limitados y las inscripciones se están agotando rápidamente! Elije tu opción preferida para inscribirte:
                     </p>
 
                     <a href="${anniversaryRegUrl}" class="button-cta">
-                      👉 INSCRIBIRME AHORA AL ANIVERSARIO
+                      👉 INSCRIBIRME EN LA WEB
+                    </a>
+
+                    <a href="${whatsappRegUrl}" class="button-whatsapp">
+                      💬 INSCRIBIRME POR WHATSAPP
                     </a>
                   </div>
 
                   <div class="footer">
-                    <p>Si tienes alguna duda, contáctanos a través de nuestras redes o WhatsApp oficial.</p>
+                    <p>¿Tienes alguna duda o prefieres asistencia personalizada? <a href="${whatsappRegUrl}" style="color: #25D366; font-weight: bold; text-decoration: none;">Escríbenos por WhatsApp haciendo clic aquí</a>.</p>
                     <p>© 2026 PROOMTB & ROAD. Todos los derechos reservados.</p>
                   </div>
                 </div>

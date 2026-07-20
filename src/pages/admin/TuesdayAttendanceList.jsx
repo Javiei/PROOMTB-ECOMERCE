@@ -11,7 +11,7 @@ const TuesdayAttendanceList = () => {
 
     // Modal para Envío Masivo del Aniversario
     const [showEmailModal, setShowEmailModal] = useState(false);
-    const [emailSubject, setEmailSubject] = useState('🚴‍♂️🔥 ¡Llegó el momento! Inscríbete al 6to Aniversario ProoMTB y gana increíbles premios');
+    const [emailSubject, setEmailSubject] = useState('🚴‍♂️🔥 ¡Gana una Bicicleta Raymond 0 km! Inscríbete al 6to Aniversario ProoMTB');
     const [testEmail, setTestEmail] = useState('');
     const [sending, setSending] = useState(false);
 
