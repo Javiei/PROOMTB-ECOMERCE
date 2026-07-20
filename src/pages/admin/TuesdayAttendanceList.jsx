@@ -128,7 +128,12 @@ const TuesdayAttendanceList = () => {
             }
         } catch (err) {
             console.error('Error enviando correos:', err);
-            toast.error(`Error al enviar: ${err.message || 'Error en la Edge Function'}`, { id: toastId });
+            const isFetchError = err.message?.includes('Failed to send') || err.name === 'FunctionsFetchError';
+            if (isFetchError) {
+                toast.error('La Edge Function "anniversary-invitation" aún no está desplegada en Supabase. Por favor despliégala con Supabase CLI.', { id: toastId, duration: 8000 });
+            } else {
+                toast.error(`Error al enviar: ${err.message || 'Error en la Edge Function'}`, { id: toastId });
+            }
         } finally {
             setSending(false);
         }
@@ -297,17 +302,18 @@ const TuesdayAttendanceList = () => {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Enlace del Video (YouTube, Vimeo, MP4, Reel, Drive...)</label>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">URL del Video (MP4 directo o YouTube)</label>
                                 <div className="relative">
                                     <Video className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500" size={18} />
                                     <input
                                         type="url"
                                         value={videoUrl}
                                         onChange={(e) => setVideoUrl(e.target.value)}
-                                        placeholder="https://www.youtube.com/watch?v=..."
+                                        placeholder="https://tuservidor.com/video.mp4 o https://youtube.com/..."
                                         className="w-full bg-neutral-800 border border-neutral-700 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-cyan-500 font-medium"
                                     />
                                 </div>
+                                <p className="text-[11px] text-neutral-400 mt-1">💡 Para reproducción 100% nativa dentro de Gmail/Apple Mail sin salir del correo, utiliza un enlace a un archivo <b>.mp4</b>.</p>
                             </div>
 
                             <div>
@@ -321,16 +327,21 @@ const TuesdayAttendanceList = () => {
                                 />
                             </div>
 
-                            {/* Vista Previa del Video Card */}
+                            {/* Vista Previa del Video Card Modo Claro */}
                             <div className="bg-neutral-800/50 border border-neutral-700/60 rounded-2xl p-4 space-y-3">
                                 <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-                                    <Play size={14} /> Vista previa de la tarjeta interactiva de video en el correo:
+                                    <Play size={14} /> Vista previa del reproductor nativo (Modo Claro):
                                 </span>
-                                <div className="relative rounded-xl overflow-hidden border border-cyan-500/40 shadow-lg group">
-                                    <img src={videoThumbnail} alt="Portada" className="w-full h-44 object-cover" />
-                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                        <div className="w-14 h-14 bg-cyan-400 rounded-full flex items-center justify-center shadow-lg shadow-cyan-400/50">
-                                            <div className="w-0 h-0 border-y-8 border-y-transparent border-l-[14px] border-l-black ml-1"></div>
+                                <div className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm text-black">
+                                    <div className="bg-black rounded-lg p-2 text-center">
+                                        <p className="text-cyan-400 text-[10px] font-black uppercase tracking-wider mb-2">🎬 REPRODUCIR VIDEO DEL EVENTO</p>
+                                        <div className="relative rounded-lg overflow-hidden border border-neutral-800">
+                                            <img src={videoThumbnail} alt="Portada" className="w-full h-36 object-cover" />
+                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                                <div className="w-12 h-12 bg-cyan-400 rounded-full flex items-center justify-center shadow-lg">
+                                                    <div className="w-0 h-0 border-y-6 border-y-transparent border-l-[12px] border-l-black ml-0.5"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
