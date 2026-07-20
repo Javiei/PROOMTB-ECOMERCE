@@ -21,8 +21,6 @@ serve(async (req) => {
 
     const reqBody = await req.json().catch(() => ({}))
     const { 
-      videoUrl = '', 
-      videoThumbnail = 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80',
       customSubject = '🚴‍♂️🔥 ¡Llegó el momento! Inscríbete al 6to Aniversario ProoMTB y gana increíbles premios',
       testEmail = null
     } = reqBody
@@ -114,7 +112,6 @@ serve(async (req) => {
                   .highlight-box { background-color: #f8fafc; border-left: 4px solid #00e5ff; border-radius: 12px; padding: 22px; margin: 25px 0; border: 1px solid #e2e8f0; border-left-width: 4px; border-left-color: #00e5ff; }
                   .feature-item { margin-bottom: 14px; display: flex; align-items: flex-start; }
                   .feature-icon { font-size: 18px; margin-right: 12px; line-height: 1.4; }
-                  .video-card { background-color: #000000; border-radius: 14px; padding: 12px; margin: 25px 0; border: 1px solid #111827; text-align: center; }
                   .button-cta { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 18px 30px; background-color: #000000; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; margin-top: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
                   .footer { background-color: #f9fafb; padding: 25px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #f3f4f6; }
                   .prize-badge { background-color: #fef08a; color: #854d0e; font-weight: bold; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
@@ -133,19 +130,6 @@ serve(async (req) => {
                     <p>Sabemos lo mucho que disfrutas nuestros paseos y la emoción sobre pedales. Por eso, <b>¡queremos que seas parte fundamental de nuestra mayor fiesta del año!</b> 🎉</p>
                     
                     <p>Celebramos el <b>6to Aniversario ProoMTB & ROAD</b> y hemos preparado una experiencia inolvidable para toda la comunidad ciclista.</p>
-
-                    ${videoUrl ? `
-                    <!-- REPRODUCTOR DE VIDEO REPRODUCIBLE NATIVAMENTE -->
-                    <div class="video-card">
-                      <p style="color: #00e5ff; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 10px 0;">🎬 REPRODUCIR VIDEO DEL EVENTO</p>
-                      <video controls poster="${videoThumbnail}" style="width: 100%; max-width: 100%; height: auto; border-radius: 10px; display: block;" playsinline preload="metadata">
-                        <source src="${videoUrl}" type="video/mp4" />
-                        <source src="${videoUrl}" type="video/webm" />
-                        <!-- Reproducción interactiva para clientes que soportan iFrames/HTML5 -->
-                        <iframe src="${videoUrl}" style="width: 100%; height: 260px; border: 0; border-radius: 10px;" allowfullscreen></iframe>
-                      </video>
-                    </div>
-                    ` : ''}
 
                     <div class="highlight-box">
                       <h3 style="color: #111827; margin-top: 0; font-size: 17px; text-transform: uppercase; font-weight: 900;">🔥 ¿QUÉ TE ESPERA EN EL ANIVERSARIO?</h3>

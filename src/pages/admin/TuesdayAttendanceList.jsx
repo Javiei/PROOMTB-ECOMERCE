@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
-import { Users, Mail, CreditCard, Calendar, Search, Download, Trash2, Loader2, CheckCircle, Award, Send, Video, Play, Sparkles, X, CheckCircle2 } from 'lucide-react';
+import { Users, Mail, CreditCard, Calendar, Search, Download, Trash2, Loader2, CheckCircle, Award, Send, Sparkles, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const TuesdayAttendanceList = () => {
@@ -12,8 +12,6 @@ const TuesdayAttendanceList = () => {
     // Modal para Envío Masivo del Aniversario
     const [showEmailModal, setShowEmailModal] = useState(false);
     const [emailSubject, setEmailSubject] = useState('🚴‍♂️🔥 ¡Llegó el momento! Inscríbete al 6to Aniversario ProoMTB y gana increíbles premios');
-    const [videoUrl, setVideoUrl] = useState('https://www.youtube.com/');
-    const [videoThumbnail, setVideoThumbnail] = useState('https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80');
     const [testEmail, setTestEmail] = useState('');
     const [sending, setSending] = useState(false);
 
@@ -111,8 +109,6 @@ const TuesdayAttendanceList = () => {
         try {
             const { data, error } = await supabase.functions.invoke('anniversary-invitation', {
                 body: {
-                    videoUrl,
-                    videoThumbnail,
                     customSubject: emailSubject,
                     testEmail: isTest ? testEmail : null
                 }
@@ -161,7 +157,7 @@ const TuesdayAttendanceList = () => {
                         className="py-2.5 px-4 bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-cyan-500/20"
                     >
                         <Sparkles size={16} />
-                        <span>Invitar al Aniversario (Correo + Video)</span>
+                        <span>Invitar al Aniversario (Correo)</span>
                     </button>
 
                     <select
@@ -299,52 +295,6 @@ const TuesdayAttendanceList = () => {
                                     onChange={(e) => setEmailSubject(e.target.value)}
                                     className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 font-medium"
                                 />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">URL del Video (MP4 directo o YouTube)</label>
-                                <div className="relative">
-                                    <Video className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500" size={18} />
-                                    <input
-                                        type="url"
-                                        value={videoUrl}
-                                        onChange={(e) => setVideoUrl(e.target.value)}
-                                        placeholder="https://tuservidor.com/video.mp4 o https://youtube.com/..."
-                                        className="w-full bg-neutral-800 border border-neutral-700 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-cyan-500 font-medium"
-                                    />
-                                </div>
-                                <p className="text-[11px] text-neutral-400 mt-1">💡 Para reproducción 100% nativa dentro de Gmail/Apple Mail sin salir del correo, utiliza un enlace a un archivo <b>.mp4</b>.</p>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">URL Portada / Miniatura del Video (Imagen HD)</label>
-                                <input
-                                    type="url"
-                                    value={videoThumbnail}
-                                    onChange={(e) => setVideoThumbnail(e.target.value)}
-                                    placeholder="https://..."
-                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 font-medium"
-                                />
-                            </div>
-
-                            {/* Vista Previa del Video Card Modo Claro */}
-                            <div className="bg-neutral-800/50 border border-neutral-700/60 rounded-2xl p-4 space-y-3">
-                                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-                                    <Play size={14} /> Vista previa del reproductor nativo (Modo Claro):
-                                </span>
-                                <div className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm text-black">
-                                    <div className="bg-black rounded-lg p-2 text-center">
-                                        <p className="text-cyan-400 text-[10px] font-black uppercase tracking-wider mb-2">🎬 REPRODUCIR VIDEO DEL EVENTO</p>
-                                        <div className="relative rounded-lg overflow-hidden border border-neutral-800">
-                                            <img src={videoThumbnail} alt="Portada" className="w-full h-36 object-cover" />
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                                <div className="w-12 h-12 bg-cyan-400 rounded-full flex items-center justify-center shadow-lg">
-                                                    <div className="w-0 h-0 border-y-6 border-y-transparent border-l-[12px] border-l-black ml-0.5"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
                             {/* Prueba de Envío */}
