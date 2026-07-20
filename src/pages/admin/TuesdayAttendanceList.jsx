@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
-import { Users, Mail, CreditCard, Calendar, Search, Download, Trash2, Loader2, CheckCircle, Award } from 'lucide-react';
+import { Users, Mail, CreditCard, Calendar, Search, Download, Trash2, Loader2, CheckCircle, Award, Send, Video, Play, Sparkles, X, CheckCircle2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const TuesdayAttendanceList = () => {
     const [registrations, setRegistrations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterDate, setFilterDate] = useState('');
+
+    // Modal para Envío Masivo del Aniversario
+    const [showEmailModal, setShowEmailModal] = useState(false);
+    const [emailSubject, setEmailSubject] = useState('🚴‍♂️🔥 ¡Llegó el momento! Inscríbete al 6to Aniversario ProoMTB y gana increíbles premios');
+    const [videoUrl, setVideoUrl] = useState('https://www.youtube.com/');
+    const [videoThumbnail, setVideoThumbnail] = useState('https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80');
+    const [testEmail, setTestEmail] = useState('');
+    const [sending, setSending] = useState(false);
 
     useEffect(() => {
         fetchRegistrations();
@@ -87,6 +96,44 @@ const TuesdayAttendanceList = () => {
         return acc;
     }, {});
 
+    const handleSendAnniversaryEmails = async (isTest = false) => {
+        if (isTest && !testEmail) {
+            toast.error('Por favor ingresa un correo de prueba.');
+            return;
+        }
+        if (!isTest && !window.confirm('¿Estás seguro de enviar este correo masivo a TODOS los usuarios registrados en los paseos?')) {
+            return;
+        }
+
+        setSending(true);
+        const toastId = toast.loading(isTest ? `Enviando prueba a ${testEmail}...` : 'Enviando invitaciones del Aniversario...');
+
+        try {
+            const { data, error } = await supabase.functions.invoke('anniversary-invitation', {
+                body: {
+                    videoUrl,
+                    videoThumbnail,
+                    customSubject: emailSubject,
+                    testEmail: isTest ? testEmail : null
+                }
+            });
+
+            if (error) throw error;
+
+            if (isTest) {
+                toast.success('¡Correo de prueba enviado con éxito! 📩', { id: toastId });
+            } else {
+                toast.success(`¡Proceso completado! Enviados: ${data?.enviados || 0} de ${data?.totalDestinatarios || 0} usuarios. 🎉`, { id: toastId, duration: 6000 });
+                setShowEmailModal(false);
+            }
+        } catch (err) {
+            console.error('Error enviando correos:', err);
+            toast.error(`Error al enviar: ${err.message || 'Error en la Edge Function'}`, { id: toastId });
+        } finally {
+            setSending(false);
+        }
+    };
+
     if (loading) return (
         <div className="flex items-center justify-center min-h-[400px]">
             <Loader2 className="animate-spin text-gray-400" size={40} />
@@ -104,6 +151,14 @@ const TuesdayAttendanceList = () => {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
+                    <button
+                        onClick={() => setShowEmailModal(true)}
+                        className="py-2.5 px-4 bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-cyan-500/20"
+                    >
+                        <Sparkles size={16} />
+                        <span>Invitar al Aniversario (Correo + Video)</span>
+                    </button>
+
                     <select
                         value={filterDate}
                         onChange={(e) => setFilterDate(e.target.value)}
@@ -207,6 +262,121 @@ const TuesdayAttendanceList = () => {
                     </table>
                 </div>
             </div>
+
+            {/* Modal de Correo Masivo Aniversario */}
+            {showEmailModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 text-white space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/30 text-cyan-400">
+                                    <Sparkles size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black uppercase tracking-tight text-white">Enviar Invitación Aniversario</h3>
+                                    <p className="text-xs text-neutral-400 font-medium">Envío masivo a todos los registrados en los paseos con video y rifas</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowEmailModal(false)}
+                                className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-xl transition-all"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4 text-sm">
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Asunto del Correo</label>
+                                <input
+                                    type="text"
+                                    value={emailSubject}
+                                    onChange={(e) => setEmailSubject(e.target.value)}
+                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 font-medium"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Enlace del Video (YouTube, Vimeo, MP4, Reel, Drive...)</label>
+                                <div className="relative">
+                                    <Video className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500" size={18} />
+                                    <input
+                                        type="url"
+                                        value={videoUrl}
+                                        onChange={(e) => setVideoUrl(e.target.value)}
+                                        placeholder="https://www.youtube.com/watch?v=..."
+                                        className="w-full bg-neutral-800 border border-neutral-700 rounded-xl pl-11 pr-4 py-3 text-white focus:outline-none focus:border-cyan-500 font-medium"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">URL Portada / Miniatura del Video (Imagen HD)</label>
+                                <input
+                                    type="url"
+                                    value={videoThumbnail}
+                                    onChange={(e) => setVideoThumbnail(e.target.value)}
+                                    placeholder="https://..."
+                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 font-medium"
+                                />
+                            </div>
+
+                            {/* Vista Previa del Video Card */}
+                            <div className="bg-neutral-800/50 border border-neutral-700/60 rounded-2xl p-4 space-y-3">
+                                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                                    <Play size={14} /> Vista previa de la tarjeta interactiva de video en el correo:
+                                </span>
+                                <div className="relative rounded-xl overflow-hidden border border-cyan-500/40 shadow-lg group">
+                                    <img src={videoThumbnail} alt="Portada" className="w-full h-44 object-cover" />
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                        <div className="w-14 h-14 bg-cyan-400 rounded-full flex items-center justify-center shadow-lg shadow-cyan-400/50">
+                                            <div className="w-0 h-0 border-y-8 border-y-transparent border-l-[14px] border-l-black ml-1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Prueba de Envío */}
+                            <div className="pt-2 border-t border-neutral-800">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Probar Envío a tu Correo</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="email"
+                                        value={testEmail}
+                                        onChange={(e) => setTestEmail(e.target.value)}
+                                        placeholder="tu-correo@ejemplo.com"
+                                        className="flex-1 bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 text-sm"
+                                    />
+                                    <button
+                                        onClick={() => handleSendAnniversaryEmails(true)}
+                                        disabled={sending}
+                                        className="bg-neutral-700 hover:bg-neutral-600 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                                    >
+                                        Enviar Prueba
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+                            <button
+                                onClick={() => setShowEmailModal(false)}
+                                className="px-5 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-xs uppercase tracking-wider transition-all"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={() => handleSendAnniversaryEmails(false)}
+                                disabled={sending}
+                                className="px-6 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-cyan-400/30 flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {sending ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
+                                <span>Enviar Masivo a Todos</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
