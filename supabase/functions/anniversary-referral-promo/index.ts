@@ -21,7 +21,7 @@ serve(async (req) => {
 
     const reqBody = await req.json().catch(() => ({}))
     const { 
-      customSubject = '🎁 ¡Invita a un amigo al Aniversario y gana un 10% de DESCUENTO en toda la tienda! 🚲🔥',
+      customSubject = null,
       testEmail = null
     } = reqBody
 
@@ -65,6 +65,9 @@ serve(async (req) => {
     const whatsappRegUrl = 'https://wa.me/message/6SFG6MXJ6HDUK1'
 
     for (const recipient of recipients) {
+      // Asunto personal no detectado como correo masivo comercial por Gmail para entrar en Principal
+      const finalSubject = customSubject || `${recipient.first_name}, te tenemos un regalo especial del 6to Aniversario`
+
       try {
         const res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -73,88 +76,97 @@ serve(async (req) => {
             'Authorization': `Bearer ${RESEND_API_KEY}`
           },
           body: JSON.stringify({
-            from: 'Raymon ProoMTB <eventos@proomtb.com>',
+            from: 'Raymon Soto <eventos@proomtb.com>',
             to: [recipient.email],
-            subject: customSubject,
+            subject: finalSubject,
             html: `
               <!DOCTYPE html>
-              <html>
+              <html lang="es">
               <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta name="color-scheme" content="light dark">
+                <meta name="supported-color-schemes" content="light dark">
                 <style>
-                  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; color: #1f2937; }
-                  .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; }
-                  .header { background-color: #000000; padding: 35px 20px; text-align: center; }
-                  .logo { width: 170px; height: auto; margin-bottom: 12px; }
+                  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+                  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; color: #111827; }
+                  .container { max-width: 580px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+                  .header { background-color: #000000; padding: 30px 20px; text-align: center; }
+                  .logo { width: 160px; height: auto; margin-bottom: 10px; }
                   .badge { background-color: #00e5ff; color: #000000; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; padding: 5px 14px; border-radius: 50px; display: inline-block; }
                   .content { padding: 35px 30px; color: #374151; font-size: 15px; line-height: 1.6; }
-                  h1 { color: #111827; font-size: 24px; font-weight: 900; text-transform: uppercase; margin-top: 10px; margin-bottom: 15px; letter-spacing: -0.5px; }
-                  .promo-banner { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); color: #ffffff; border-radius: 14px; padding: 25px 20px; text-align: center; margin: 25px 0; border: 2px solid #00e5ff; box-shadow: 0 6px 18px rgba(0,229,255,0.25); }
-                  .promo-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #00e5ff; margin-bottom: 8px; display: block; }
-                  .promo-discount { font-size: 38px; font-weight: 900; color: #ffffff; margin: 5px 0; letter-spacing: -1px; }
-                  .promo-sub { font-size: 15px; color: #e5e7eb; font-weight: bold; }
-                  .highlight-box { background-color: #f8fafc; border-left: 4px solid #00e5ff; border-radius: 12px; padding: 22px; margin: 25px 0; border: 1px solid #e2e8f0; border-left-width: 4px; border-left-color: #00e5ff; }
-                  .step-item { margin-bottom: 14px; display: flex; align-items: flex-start; }
-                  .step-number { background-color: #000000; color: #00e5ff; font-weight: 900; font-size: 14px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; }
-                  .button-whatsapp { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 18px 25px; background-color: #25D366; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; margin-top: 25px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
-                  .footer { background-color: #f9fafb; padding: 25px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #f3f4f6; }
-                  .prize-badge { background-color: #fef08a; color: #854d0e; font-weight: bold; padding: 3px 8px; border-radius: 4px; font-size: 13px; }
+                  h1 { color: #111827; font-size: 22px; font-weight: 900; margin-top: 5px; margin-bottom: 15px; }
+                  .gift-box { background-color: #000000; color: #ffffff; border-radius: 14px; padding: 22px; text-align: center; margin: 22px 0; border: 2px solid #00e5ff; }
+                  .gift-title { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #00e5ff; display: block; margin-bottom: 6px; }
+                  .gift-value { font-size: 32px; font-weight: 900; color: #ffffff; margin: 4px 0; }
+                  .gift-sub { font-size: 14px; color: #e5e7eb; font-weight: 600; }
+                  .step-card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin: 20px 0; }
+                  .step-item { margin-bottom: 12px; display: flex; align-items: flex-start; font-size: 14px; color: #1f2937; }
+                  .step-num { background-color: #00e5ff; color: #000000; font-weight: 900; font-size: 13px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; flex-shrink: 0; }
+                  .button-whatsapp { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 16px 25px; background-color: #25D366; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; margin-top: 22px; }
+                  .footer { background-color: #f9fafb; padding: 22px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #f3f4f6; }
+                  .prize-badge { background-color: #fef08a; color: #854d0e; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+                  
+                  /* Adaptabilidad estricta a Modo Oscuro en Gmail / iOS Mail */
+                  @media (prefers-color-scheme: dark) {
+                    body { background-color: #121212 !important; color: #e5e7eb !important; }
+                    .container { background-color: #1e1e1e !important; border-color: #2e2e2e !important; }
+                    .content { color: #d1d5db !important; }
+                    h1 { color: #ffffff !important; }
+                    .step-card { background-color: #262626 !important; border-color: #383838 !important; }
+                    .step-item { color: #e5e7eb !important; }
+                    .footer { background-color: #181818 !important; border-color: #2a2a2a !important; color: #9ca3af !important; }
+                  }
                 </style>
               </head>
               <body>
                 <div class="container">
                   <div class="header">
                     <img src="https://proomtb.com/static/media/LOGO%20PRO%20MTB%20AND%20ROAD%20VECTORES%20CORREGIDOS.pdf.0b103f2a86d22ea4fdd3.png" alt="ProoMTB Logo" class="logo"><br/>
-                    <span class="badge">PROMO EXCLUSIVA PARA INSCRITOS</span>
+                    <span class="badge">6TO ANIVERSARIO PROOMTB</span>
                   </div>
                   
                   <div class="content">
-                    <h1>¡Hola, ${recipient.first_name}! 🚴‍♂️🔥</h1>
+                    <h1>¡Hola, ${recipient.first_name}! 👋</h1>
                     
-                    <p>¡Gracias por asegurar tu lugar en el <b>6to Aniversario ProoMTB & ROAD</b>! Estamos preparando un evento legendario y queremos celebrarlo a lo grande junto a tus amigos y compañeros de rodada.</p>
+                    <p>Espero que estés muy bien. Te escribimos para agradecerte por confirmar tu presencia en nuestro <b>6to Aniversario ProoMTB & ROAD</b>.</p>
                     
-                    <!-- PROMO BANNER -->
-                    <div class="promo-banner">
-                      <span class="promo-title">🎁 PROGRAMA DE REFERIDOS ANIVERSARIO</span>
-                      <div class="promo-discount">10% DE DESCUENTO</div>
-                      <div class="promo-sub">¡EN TODA NUESTRA TIENDA PARA TI! 🚲🛍️</div>
+                    <p>Como ya estás inscrito, queremos darte una sorpresa especial por ser parte de la comunidad:</p>
+
+                    <div class="gift-box">
+                      <span class="gift-title">REGALO EXCLUSIVO DE ANIVERSARIO</span>
+                      <div class="gift-value">10% DE DESCUENTO</div>
+                      <div class="gift-sub">¡En toda la tienda al invitar a un amigo! 🚲✨</div>
                     </div>
 
-                    <p><b>¿Cómo funciona?</b> ¡Es muy fácil!</p>
-
-                    <div class="highlight-box">
-                      <h3 style="color: #111827; margin-top: 0; font-size: 17px; text-transform: uppercase; font-weight: 900;">Pasos para ganar tu 10% de descuento:</h3>
+                    <div class="step-card">
+                      <p style="margin-top:0; font-weight:bold; color:#111827; font-size:14px;">¿Cómo puedes usarlo?</p>
                       
                       <div class="step-item">
-                        <div class="step-number">1</div>
-                        <div><b>Invita a un amigo:</b> Invita a tus amigos, familiares o grupo de ciclismo a inscribirse.</div>
+                        <div class="step-num">1</div>
+                        <div>Invita a un amigo, familiar o compañero ciclista a inscribirse al Aniversario.</div>
                       </div>
                       
                       <div class="step-item">
-                        <div class="step-number">2</div>
-                        <div><b>Tu amigo se inscribe por WhatsApp:</b> Al inscribirse por WhatsApp, tu amigo sólo debe indicar tu nombre o cédula.</div>
+                        <div class="step-num">2</div>
+                        <div>Al inscribirse por WhatsApp, tu amigo menciona tu nombre o cédula.</div>
                       </div>
 
                       <div class="step-item">
-                        <div class="step-number">3</div>
-                        <div><b>¡Recibes tu 10% de descuento!</b> Te activamos inmediatamente un 10% OFF en toda nuestra tienda de bicicletas, componentes y accesorios.</div>
+                        <div class="step-num">3</div>
+                        <div>¡Listo! Te activamos un <b>10% de descuento en toda la tienda</b> para tu próxima compra de bici, repuestos o accesorios.</div>
                       </div>
                     </div>
 
-                    <p>Recuerda que con su inscripción, tu amigo también participa automáticamente en la gran rifa de la <span class="prize-badge">BICICLETA RAYMOND 0 KM</span>, accesorios de alta gama y todas las sorpresas del evento. 🏆</p>
-
-                    <p style="text-align: center; font-size: 15px; font-weight: bold; color: #111827; margin-top: 25px;">
-                      ⚡ ¡Haz clic en el botón e invita a tus amigos por WhatsApp ahora!
-                    </p>
+                    <p>Tu amigo también estará participando automáticamente por la gran <span class="prize-badge">BICICLETA RAYMOND 0 KM</span>, accesorios de alta gama y todas las sorpresas que tenemos listas. 🏆</p>
 
                     <a href="${whatsappRegUrl}" class="button-whatsapp">
-                      💬 INSCRIBIRSE POR WHATSAPP
+                      💬 INSCRIBIRSE POR WHATSAPP AQUÍ
                     </a>
                   </div>
 
                   <div class="footer">
-                    <p>¿Tienes alguna consulta sobre tus inscritos o tu descuento? <a href="${whatsappRegUrl}" style="color: #25D366; font-weight: bold; text-decoration: none;">Habla con nosotros por WhatsApp</a>.</p>
+                    <p>Raymon Soto & Equipo ProoMTB & ROAD</p>
                     <p>© 2026 PROOMTB & ROAD. Todos los derechos reservados.</p>
                   </div>
                 </div>

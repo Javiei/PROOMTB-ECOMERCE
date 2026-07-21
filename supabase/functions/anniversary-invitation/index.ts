@@ -21,7 +21,7 @@ serve(async (req) => {
 
     const reqBody = await req.json().catch(() => ({}))
     const { 
-      customSubject = '🚴‍♂️🔥 ¡Gana una Bicicleta Raymond 0 km! Inscríbete al 6to Aniversario ProoMTB',
+      customSubject = null,
       testEmail = null
     } = reqBody
 
@@ -84,6 +84,8 @@ serve(async (req) => {
     const whatsappRegUrl = 'https://wa.me/message/6SFG6MXJ6HDUK1'
 
     for (const recipient of recipients) {
+      const finalSubject = customSubject || `${recipient.first_name}, tu invitación oficial al 6to Aniversario ProoMTB`
+
       try {
         const res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
@@ -92,29 +94,43 @@ serve(async (req) => {
             'Authorization': `Bearer ${RESEND_API_KEY}`
           },
           body: JSON.stringify({
-            from: 'Raymon ProoMTB <eventos@proomtb.com>',
+            from: 'Raymon Soto <eventos@proomtb.com>',
             to: [recipient.email],
-            subject: customSubject,
+            subject: finalSubject,
             html: `
               <!DOCTYPE html>
-              <html>
+              <html lang="es">
               <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta name="color-scheme" content="light dark">
+                <meta name="supported-color-schemes" content="light dark">
                 <style>
-                  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; color: #1f2937; }
-                  .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; }
-                  .header { background-color: #000000; padding: 35px 20px; text-align: center; }
-                  .logo { width: 170px; height: auto; margin-bottom: 12px; }
+                  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+                  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; color: #111827; }
+                  .container { max-width: 580px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+                  .header { background-color: #000000; padding: 30px 20px; text-align: center; }
+                  .logo { width: 160px; height: auto; margin-bottom: 10px; }
                   .badge { background-color: #00e5ff; color: #000000; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; padding: 5px 14px; border-radius: 50px; display: inline-block; }
                   .content { padding: 35px 30px; color: #374151; font-size: 15px; line-height: 1.6; }
-                  h1 { color: #111827; font-size: 24px; font-weight: 900; text-transform: uppercase; margin-top: 10px; margin-bottom: 15px; letter-spacing: -0.5px; }
-                  .highlight-box { background-color: #f8fafc; border-left: 4px solid #00e5ff; border-radius: 12px; padding: 22px; margin: 25px 0; border: 1px solid #e2e8f0; border-left-width: 4px; border-left-color: #00e5ff; }
-                  .feature-item { margin-bottom: 14px; display: flex; align-items: flex-start; }
-                  .feature-icon { font-size: 18px; margin-right: 12px; line-height: 1.4; }
-                  .button-whatsapp { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 18px 25px; background-color: #25D366; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; margin-top: 25px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
-                  .footer { background-color: #f9fafb; padding: 25px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #f3f4f6; }
-                  .prize-badge { background-color: #fef08a; color: #854d0e; font-weight: bold; padding: 3px 8px; border-radius: 4px; font-size: 13px; }
+                  h1 { color: #111827; font-size: 22px; font-weight: 900; margin-top: 5px; margin-bottom: 15px; }
+                  .card-box { background-color: #f8fafc; border-left: 4px solid #00e5ff; border-radius: 12px; padding: 20px; margin: 22px 0; border: 1px solid #e2e8f0; border-left-width: 4px; border-left-color: #00e5ff; }
+                  .feature-item { margin-bottom: 12px; display: flex; align-items: flex-start; font-size: 14px; color: #1f2937; }
+                  .feature-icon { font-size: 18px; margin-right: 10px; line-height: 1.4; }
+                  .button-whatsapp { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 16px 25px; background-color: #25D366; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; margin-top: 22px; }
+                  .footer { background-color: #f9fafb; padding: 22px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #f3f4f6; }
+                  .prize-badge { background-color: #fef08a; color: #854d0e; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+                  
+                  /* Adaptabilidad estricta a Modo Oscuro en Gmail / iOS Mail */
+                  @media (prefers-color-scheme: dark) {
+                    body { background-color: #121212 !important; color: #e5e7eb !important; }
+                    .container { background-color: #1e1e1e !important; border-color: #2e2e2e !important; }
+                    .content { color: #d1d5db !important; }
+                    h1 { color: #ffffff !important; }
+                    .card-box { background-color: #262626 !important; border-color: #383838 !important; }
+                    .feature-item { color: #e5e7eb !important; }
+                    .footer { background-color: #181818 !important; border-color: #2a2a2a !important; color: #9ca3af !important; }
+                  }
                 </style>
               </head>
               <body>
@@ -125,47 +141,43 @@ serve(async (req) => {
                   </div>
                   
                   <div class="content">
-                    <h1>¡Hola, ${recipient.first_name}! 🚴‍♂️🔥</h1>
+                    <h1>¡Hola, ${recipient.first_name}! 👋</h1>
                     
-                    <p>Sabemos lo mucho que disfrutas nuestros paseos y la emoción sobre pedales. Por eso, <b>¡queremos que seas parte fundamental de nuestra mayor fiesta del año!</b> 🎉</p>
+                    <p>Sabemos lo mucho que disfrutas nuestros paseos de los martes y la emoción sobre pedales. Por eso, queremos invitarte personalmente a nuestro <b>6to Aniversario ProoMTB & ROAD</b>.</p>
                     
-                    <p>Celebramos el <b>6to Aniversario ProoMTB & ROAD</b> y hemos preparado una experiencia inolvidable con sorpresas y premios increíbles para todos.</p>
-
-                    <div class="highlight-box">
-                      <h3 style="color: #111827; margin-top: 0; font-size: 17px; text-transform: uppercase; font-weight: 900;">🔥 ¿QUÉ TE ESPERA EN EL ANIVERSARIO?</h3>
+                    <div class="card-box">
+                      <p style="margin-top:0; font-weight:bold; color:#111827; font-size:14px; text-transform:uppercase;">¿Qué te espera en el Aniversario?</p>
                       
                       <div class="feature-item">
                         <span class="feature-icon">🚴‍♂️</span>
-                        <div><b>Ruta Especial de Aniversario:</b> Recorrido épico adaptado para disfrutar con la mejor compañía y asistencia.</div>
+                        <div><b>Ruta Especial de Aniversario:</b> Recorrido adaptado con asistencia completa y la mejor compañía.</div>
                       </div>
                       
                       <div class="feature-item">
                         <span class="feature-icon">🏆</span>
-                        <div><b>Gran Rifa Oficial:</b> Participas automáticamente por una <span class="prize-badge">BICICLETA RAYMOND 0 KM</span>, además de accesorios de alta gama, cascos, indumentaria y varios premios más.</div>
+                        <div><b>Gran Rifa Oficial:</b> Participas automáticamente por una <span class="prize-badge">BICICLETA RAYMOND 0 KM</span>, accesorios de alta gama, cascos y sorpresas en vivo.</div>
                       </div>
 
                       <div class="feature-item">
                         <span class="feature-icon">👕</span>
-                        <div><b>Kit Oficial con Jersey:</b> Edición limitada conmemorativa del 6to Aniversario ProoMTB.</div>
+                        <div><b>Kit Oficial con Jersey:</b> Edición conmemorativa del 6to Aniversario.</div>
                       </div>
 
                       <div class="feature-item">
                         <span class="feature-icon">🎉</span>
-                        <div><b>Fiesta & Compartir:</b> Comida, hidratación, música y el mejor ambiente ciclista de la República Dominicana.</div>
+                        <div><b>Fiesta & Compartir:</b> Comida, música, hidratación y el mejor ambiente ciclista.</div>
                       </div>
                     </div>
 
-                    <p style="text-align: center; font-size: 15px; font-weight: bold; color: #111827;">
-                      ⚡ ¡Los cupos son limitados y las inscripciones se están agotando rápidamente! Haz clic para inscribirte por WhatsApp:
-                    </p>
+                    <p>Los cupos son limitados. Haz clic a continuación para asegurar tu inscripción directamente por WhatsApp:</p>
 
                     <a href="${whatsappRegUrl}" class="button-whatsapp">
-                      💬 INSCRIBIRSE POR WHATSAPP
+                      💬 INSCRIBIRSE POR WHATSAPP AQUÍ
                     </a>
                   </div>
 
                   <div class="footer">
-                    <p>¿Tienes alguna duda o prefieres asistencia personalizada? <a href="${whatsappRegUrl}" style="color: #25D366; font-weight: bold; text-decoration: none;">Habla con nosotros por WhatsApp haciendo clic aquí</a>.</p>
+                    <p>Raymon Soto & Equipo ProoMTB & ROAD</p>
                     <p>© 2026 PROOMTB & ROAD. Todos los derechos reservados.</p>
                   </div>
                 </div>
