@@ -509,8 +509,9 @@ const AnniversaryList = () => {
                             <div className="p-4 bg-neutral-800/60 border border-neutral-700/80 rounded-2xl space-y-2">
                                 <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 block">🎁 Beneficios incluidos en la plantilla:</span>
                                 <ul className="text-xs text-neutral-300 space-y-1.5 list-disc pl-4">
-                                    <li><b>Incentivo:</b> 10% de descuento en toda la tienda al referir 1 amigo que se inscriba.</li>
-                                    <li><b>Botones directos:</b> Registro Web + WhatsApp directo (<code className="text-cyan-300">https://wa.me/message/6SFG6MXJ6HDUK1</code>).</li>
+                                    <li><b>Incentivo principal:</b> 🛠️ Mantenimiento Básico GRATIS (válido hasta el 15 de agosto).</li>
+                                    <li><b>Incentivo secundario:</b> 🛍️ 10% de descuento adicional en toda la tienda.</li>
+                                    <li><b>Enlace exclusivo:</b> Botón directo de WhatsApp (<code className="text-cyan-300">https://wa.me/message/6SFG6MXJ6HDUK1</code>).</li>
                                     <li><b>Mención especial:</b> Rifa de la Bicicleta Raymond 0 km + cascos + accesorios.</li>
                                 </ul>
                             </div>

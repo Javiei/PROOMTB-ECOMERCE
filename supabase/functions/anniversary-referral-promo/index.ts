@@ -65,8 +65,8 @@ serve(async (req) => {
     const whatsappRegUrl = 'https://wa.me/message/6SFG6MXJ6HDUK1'
 
     for (const recipient of recipients) {
-      // Asunto personal no detectado como correo masivo comercial por Gmail para entrar en Principal
-      const finalSubject = customSubject || `${recipient.first_name}, te tenemos un regalo especial del 6to Aniversario`
+      // Asunto conversacional personal para entrar en Principal
+      const finalSubject = customSubject || `${recipient.first_name}, tu Mantenimiento Básico Gratis del 6to Aniversario`
 
       try {
         const res = await fetch('https://api.resend.com/emails', {
@@ -96,10 +96,11 @@ serve(async (req) => {
                   .badge { background-color: #00e5ff; color: #000000; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; padding: 5px 14px; border-radius: 50px; display: inline-block; }
                   .content { padding: 35px 30px; color: #374151; font-size: 15px; line-height: 1.6; }
                   h1 { color: #111827; font-size: 22px; font-weight: 900; margin-top: 5px; margin-bottom: 15px; }
-                  .gift-box { background-color: #000000; color: #ffffff; border-radius: 14px; padding: 22px; text-align: center; margin: 22px 0; border: 2px solid #00e5ff; }
+                  .gift-box { background-color: #000000; color: #ffffff; border-radius: 14px; padding: 25px 20px; text-align: center; margin: 22px 0; border: 2px solid #00e5ff; }
                   .gift-title { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #00e5ff; display: block; margin-bottom: 6px; }
-                  .gift-value { font-size: 32px; font-weight: 900; color: #ffffff; margin: 4px 0; }
-                  .gift-sub { font-size: 14px; color: #e5e7eb; font-weight: 600; }
+                  .gift-value { font-size: 26px; font-weight: 900; color: #ffffff; margin: 4px 0; letter-spacing: -0.5px; text-transform: uppercase; }
+                  .gift-validity { background-color: #00e5ff; color: #000000; font-size: 12px; font-weight: 900; padding: 4px 12px; border-radius: 50px; display: inline-block; margin: 8px 0; text-transform: uppercase; letter-spacing: 1px; }
+                  .gift-sub { font-size: 14px; color: #e5e7eb; font-weight: 600; margin-top: 4px; }
                   .step-card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin: 20px 0; }
                   .step-item { margin-bottom: 12px; display: flex; align-items: flex-start; font-size: 14px; color: #1f2937; }
                   .step-num { background-color: #00e5ff; color: #000000; font-weight: 900; font-size: 13px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; flex-shrink: 0; }
@@ -131,16 +132,17 @@ serve(async (req) => {
                     
                     <p>Espero que estés muy bien. Te escribimos para agradecerte por confirmar tu presencia en nuestro <b>6to Aniversario ProoMTB & ROAD</b>.</p>
                     
-                    <p>Como ya estás inscrito, queremos darte una sorpresa especial por ser parte de la comunidad:</p>
+                    <p>Como ya estás inscrito, queremos darte este beneficio especial por ser parte de la comunidad:</p>
 
                     <div class="gift-box">
-                      <span class="gift-title">REGALO EXCLUSIVO DE ANIVERSARIO</span>
-                      <div class="gift-value">10% DE DESCUENTO</div>
-                      <div class="gift-sub">¡En toda la tienda al invitar a un amigo! 🚲✨</div>
+                      <span class="gift-title">BENEFICIO EXCLUSIVO DE ANIVERSARIO</span>
+                      <div class="gift-value">🛠️ MANTENIMIENTO BÁSICO GRATIS</div>
+                      <div class="gift-validity">VÁLIDO HASTA EL 15 DE AGOSTO</div>
+                      <div class="gift-sub">+ 10% DE DESCUENTO EN TODA LA TIENDA 🚲✨</div>
                     </div>
 
                     <div class="step-card">
-                      <p style="margin-top:0; font-weight:bold; color:#111827; font-size:14px;">¿Cómo puedes usarlo?</p>
+                      <p style="margin-top:0; font-weight:bold; color:#111827; font-size:14px;">¿Cómo obtienes tu Mantenimiento Gratis?</p>
                       
                       <div class="step-item">
                         <div class="step-num">1</div>
@@ -154,11 +156,11 @@ serve(async (req) => {
 
                       <div class="step-item">
                         <div class="step-num">3</div>
-                        <div>¡Listo! Te activamos un <b>10% de descuento en toda la tienda</b> para tu próxima compra de bici, repuestos o accesorios.</div>
+                        <div>¡Listo! Te otorgamos tu <b>Mantenimiento Básico GRATIS (válido hasta el 15 de Agosto)</b> + un <b>10% de descuento en toda la tienda</b> para tu próxima compra de bici o accesorios.</div>
                       </div>
                     </div>
 
-                    <p>Tu amigo también estará participando automáticamente por la gran <span class="prize-badge">BICICLETA RAYMOND 0 KM</span>, accesorios de alta gama y todas las sorpresas que tenemos listas. 🏆</p>
+                    <p>Tu amigo también estará participando automáticamente por la gran <span class="prize-badge">BICICLETA RAYMOND 0 KM</span>, accesorios de alta gama y todas las sorpresas del evento. 🏆</p>
 
                     <a href="${whatsappRegUrl}" class="button-whatsapp">
                       💬 INSCRIBIRSE POR WHATSAPP AQUÍ
