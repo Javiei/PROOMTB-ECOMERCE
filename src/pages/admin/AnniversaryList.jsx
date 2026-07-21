@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
-import { Search, Check, X, Loader2, Image as ImageIcon, Plus } from 'lucide-react';
+import { Search, Check, X, Loader2, Image as ImageIcon, Plus, Sparkles, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const AnniversaryList = () => {
@@ -18,6 +18,53 @@ const AnniversaryList = () => {
         email: '',
         phone: ''
     });
+
+    // Modal para Promoción de Referidos (10% Dcto)
+    const [showPromoModal, setShowPromoModal] = useState(false);
+    const [promoSubject, setPromoSubject] = useState('🎁 ¡Invita a un amigo al Aniversario y gana un 10% de DESCUENTO en toda la tienda! 🚲🔥');
+    const [testPromoEmail, setTestPromoEmail] = useState('');
+    const [promoSending, setPromoSending] = useState(false);
+
+    const handleSendPromoEmails = async (isTest = false) => {
+        if (isTest && !testPromoEmail) {
+            toast.error('Por favor ingresa un correo de prueba.');
+            return;
+        }
+        if (!isTest && !window.confirm('¿Estás seguro de enviar este correo de promoción de referidos a TODOS los inscritos en el Aniversario?')) {
+            return;
+        }
+
+        setPromoSending(true);
+        const toastId = toast.loading(isTest ? `Enviando prueba a ${testPromoEmail}...` : 'Enviando invitación de referidos...');
+
+        try {
+            const { data, error } = await supabase.functions.invoke('anniversary-referral-promo', {
+                body: {
+                    customSubject: promoSubject,
+                    testEmail: isTest ? testPromoEmail : null
+                }
+            });
+
+            if (error) throw error;
+
+            if (isTest) {
+                toast.success('¡Correo de prueba de referidos enviado con éxito! 📩', { id: toastId });
+            } else {
+                toast.success(`¡Proceso completado! Enviados: ${data?.enviados || 0} de ${data?.totalDestinatarios || 0} inscritos. 🎉`, { id: toastId, duration: 6000 });
+                setShowPromoModal(false);
+            }
+        } catch (err) {
+            console.error('Error enviando correo promo:', err);
+            const isFetchError = err.message?.includes('Failed to send') || err.name === 'FunctionsFetchError';
+            if (isFetchError) {
+                toast.error('La Edge Function "anniversary-referral-promo" aún no está desplegada en Supabase. Por favor despliégala con Supabase CLI.', { id: toastId, duration: 8000 });
+            } else {
+                toast.error(`Error al enviar: ${err.message || 'Error en la Edge Function'}`, { id: toastId });
+            }
+        } finally {
+            setPromoSending(false);
+        }
+    };
 
     const handleAddGuest = async (e) => {
         e.preventDefault();
@@ -180,6 +227,13 @@ const AnniversaryList = () => {
                 </div>
                 
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                    <button
+                        onClick={() => setShowPromoModal(true)}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-cyan-500 text-black text-sm font-black uppercase rounded-lg hover:bg-cyan-400 transition-colors shadow-md shadow-cyan-500/20"
+                    >
+                        <Sparkles size={16} /> Promo Referidos (10% Dcto)
+                    </button>
+
                     <button
                         onClick={() => setShowAddModal(true)}
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-black text-white text-sm font-bold uppercase rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
@@ -415,6 +469,90 @@ const AnniversaryList = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para Promoción de Referidos (10% Dcto) */}
+            {showPromoModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 text-white space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-cyan-500/10 rounded-2xl border border-cyan-500/30 text-cyan-400">
+                                    <Sparkles size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black uppercase tracking-tight text-white">Enviar Promo Referidos</h3>
+                                    <p className="text-xs text-neutral-400 font-medium">Invita a los ya inscritos a referir amigos a cambio de un 10% de descuento en la tienda</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowPromoModal(false)}
+                                className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-xl transition-all"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4 text-sm">
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Asunto del Correo</label>
+                                <input
+                                    type="text"
+                                    value={promoSubject}
+                                    onChange={(e) => setPromoSubject(e.target.value)}
+                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 font-medium"
+                                />
+                            </div>
+
+                            <div className="p-4 bg-neutral-800/60 border border-neutral-700/80 rounded-2xl space-y-2">
+                                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 block">🎁 Beneficios incluidos en la plantilla:</span>
+                                <ul className="text-xs text-neutral-300 space-y-1.5 list-disc pl-4">
+                                    <li><b>Incentivo:</b> 10% de descuento en toda la tienda al referir 1 amigo que se inscriba.</li>
+                                    <li><b>Botones directos:</b> Registro Web + WhatsApp directo (<code className="text-cyan-300">https://wa.me/message/6SFG6MXJ6HDUK1</code>).</li>
+                                    <li><b>Mención especial:</b> Rifa de la Bicicleta Raymond 0 km + cascos + accesorios.</li>
+                                </ul>
+                            </div>
+
+                            {/* Prueba de Envío */}
+                            <div className="pt-2 border-t border-neutral-800">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Probar Envío a tu Correo</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="email"
+                                        value={testPromoEmail}
+                                        onChange={(e) => setTestPromoEmail(e.target.value)}
+                                        placeholder="tu-correo@ejemplo.com"
+                                        className="flex-1 bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500 text-sm"
+                                    />
+                                    <button
+                                        onClick={() => handleSendPromoEmails(true)}
+                                        disabled={promoSending}
+                                        className="bg-neutral-700 hover:bg-neutral-600 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                                    >
+                                        Enviar Prueba
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+                            <button
+                                onClick={() => setShowPromoModal(false)}
+                                className="px-5 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-xs uppercase tracking-wider transition-all"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={() => handleSendPromoEmails(false)}
+                                disabled={promoSending}
+                                className="px-6 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-cyan-400/30 flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {promoSending ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
+                                <span>Enviar Promo a Todos los Inscritos</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
