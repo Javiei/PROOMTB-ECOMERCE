@@ -339,7 +339,7 @@ const SeriesDetailTarokTotem = () => {
                                             {bike.modelo}
                                         </h4>
                                         <p className="text-sm md:text-base font-bold text-purple-400 tracking-wider">
-                                            {formatPrice(bike.precio_eur, 'bikes')}
+                                            {formatPrice(bike.precio_eur, 'bikes', 23)}
                                         </p>
                                         <div className="mt-4 text-[10px] font-bold text-white/40 uppercase tracking-widest flex items-center gap-2 group-hover:text-white transition-colors">
                                             Toca para ver detalles <ChevronRight className="w-3 h-3" />

@@ -25,6 +25,18 @@ const AnniversaryList = () => {
     const [testPromoEmail, setTestPromoEmail] = useState('');
     const [promoSending, setPromoSending] = useState(false);
 
+    // Modal para Cuenta Regresiva de Aniversario (6 Días Faltantes)
+    const [showCountdownModal, setShowCountdownModal] = useState(false);
+    const [countdownSubject, setCountdownSubject] = useState('🚨 ¡Solo faltan 6 días para el 6to Aniversario ProoMTB! 🚴‍♂️🎉');
+    const [testCountdownEmail, setTestCountdownEmail] = useState('');
+    const [countdownSending, setCountdownSending] = useState(false);
+
+    // Modal para Entrega de Kits de Aniversario
+    const [showKitsModal, setShowKitsModal] = useState(false);
+    const [kitsSubject, setKitsSubject] = useState('👕 ¡Busca tu Kit! Mañana inicia la entrega de kits del 6to Aniversario ProoMTB');
+    const [testKitsEmail, setTestKitsEmail] = useState('');
+    const [kitsSending, setKitsSending] = useState(false);
+
     const handleSendPromoEmails = async (isTest = false) => {
         if (isTest && !testPromoEmail) {
             toast.error('Por favor ingresa un correo de prueba.');
@@ -63,6 +75,88 @@ const AnniversaryList = () => {
             }
         } finally {
             setPromoSending(false);
+        }
+    };
+
+    const handleSendCountdownEmails = async (isTest = false) => {
+        if (isTest && !testCountdownEmail) {
+            toast.error('Por favor ingresa un correo de prueba.');
+            return;
+        }
+        if (!isTest && !window.confirm('¿Estás seguro de enviar este correo de cuenta regresiva a TODOS los inscritos en el Aniversario?')) {
+            return;
+        }
+
+        setCountdownSending(true);
+        const toastId = toast.loading(isTest ? `Enviando prueba a ${testCountdownEmail}...` : 'Enviando correos de cuenta regresiva...');
+
+        try {
+            const { data, error } = await supabase.functions.invoke('anniversary-countdown', {
+                body: {
+                    customSubject: countdownSubject,
+                    testEmail: isTest ? testCountdownEmail : null
+                }
+            });
+
+            if (error) throw error;
+
+            if (isTest) {
+                toast.success('¡Correo de prueba de cuenta regresiva enviado con éxito! 📩', { id: toastId });
+            } else {
+                toast.success(`¡Proceso completado! Enviados: ${data?.enviados || 0} de ${data?.totalDestinatarios || 0} inscritos. 🎉`, { id: toastId, duration: 6000 });
+                setShowCountdownModal(false);
+            }
+        } catch (err) {
+            console.error('Error enviando correo cuenta regresiva:', err);
+            const isFetchError = err.message?.includes('Failed to send') || err.name === 'FunctionsFetchError';
+            if (isFetchError) {
+                toast.error('La Edge Function "anniversary-countdown" aún no está desplegada en Supabase. Por favor despliégala con Supabase CLI.', { id: toastId, duration: 8000 });
+            } else {
+                toast.error(`Error al enviar: ${err.message || 'Error en la Edge Function'}`, { id: toastId });
+            }
+        } finally {
+            setCountdownSending(false);
+        }
+    };
+
+    const handleSendKitsEmails = async (isTest = false) => {
+        if (isTest && !testKitsEmail) {
+            toast.error('Por favor ingresa un correo de prueba.');
+            return;
+        }
+        if (!isTest && !window.confirm('¿Estás seguro de enviar este correo de entrega de kits a TODOS los inscritos en el Aniversario?')) {
+            return;
+        }
+
+        setKitsSending(true);
+        const toastId = toast.loading(isTest ? `Enviando prueba a ${testKitsEmail}...` : 'Enviando aviso de entrega de kits...');
+
+        try {
+            const { data, error } = await supabase.functions.invoke('anniversary-kits-delivery', {
+                body: {
+                    customSubject: kitsSubject,
+                    testEmail: isTest ? testKitsEmail : null
+                }
+            });
+
+            if (error) throw error;
+
+            if (isTest) {
+                toast.success('¡Correo de prueba de entrega de kits enviado con éxito! 📩', { id: toastId });
+            } else {
+                toast.success(`¡Proceso completado! Enviados: ${data?.enviados || 0} de ${data?.totalDestinatarios || 0} inscritos. 🎉`, { id: toastId, duration: 6000 });
+                setShowKitsModal(false);
+            }
+        } catch (err) {
+            console.error('Error enviando correo de kits:', err);
+            const isFetchError = err.message?.includes('Failed to send') || err.name === 'FunctionsFetchError';
+            if (isFetchError) {
+                toast.error('La Edge Function "anniversary-kits-delivery" aún no está desplegada en Supabase. Por favor despliégala con Supabase CLI.', { id: toastId, duration: 8000 });
+            } else {
+                toast.error(`Error al enviar: ${err.message || 'Error en la Edge Function'}`, { id: toastId });
+            }
+        } finally {
+            setKitsSending(false);
         }
     };
 
@@ -228,10 +322,24 @@ const AnniversaryList = () => {
                 
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                     <button
+                        onClick={() => setShowCountdownModal(true)}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-yellow-500 text-black text-sm font-black uppercase rounded-lg hover:bg-yellow-400 transition-colors shadow-md shadow-yellow-500/20"
+                    >
+                        <Send size={16} /> Recordatorio (6 Días)
+                    </button>
+
+                    <button
                         onClick={() => setShowPromoModal(true)}
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-cyan-500 text-black text-sm font-black uppercase rounded-lg hover:bg-cyan-400 transition-colors shadow-md shadow-cyan-500/20"
                     >
                         <Sparkles size={16} /> Promo Referidos (10% Dcto)
+                    </button>
+
+                    <button
+                        onClick={() => setShowKitsModal(true)}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white text-sm font-black uppercase rounded-lg hover:bg-purple-500 transition-colors shadow-md shadow-purple-600/20"
+                    >
+                        👕 Notificar Kits
                     </button>
 
                     <button
@@ -552,6 +660,174 @@ const AnniversaryList = () => {
                             >
                                 {promoSending ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
                                 <span>Enviar Promo a Todos los Inscritos</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para Cuenta Regresiva de Aniversario */}
+            {showCountdownModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 text-white space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-yellow-500/10 rounded-2xl border border-yellow-500/30 text-yellow-400">
+                                    <Send size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black uppercase tracking-tight text-white">Recordatorio (6 Días Faltantes)</h3>
+                                    <p className="text-xs text-neutral-400 font-medium">Envía un correo de cuenta regresiva y detalles a todos los registrados en el Aniversario.</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowCountdownModal(false)}
+                                className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-xl transition-all"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4 text-sm">
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Asunto del Correo</label>
+                                <input
+                                    type="text"
+                                    value={countdownSubject}
+                                    onChange={(e) => setCountdownSubject(e.target.value)}
+                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-500 font-medium"
+                                />
+                            </div>
+
+                            <div className="p-4 bg-neutral-800/60 border border-neutral-700/80 rounded-2xl space-y-2">
+                                <span className="text-xs font-bold uppercase tracking-wider text-yellow-400 block">📢 Contenido e información del correo:</span>
+                                <ul className="text-xs text-neutral-300 space-y-1.5 list-disc pl-4">
+                                    <li><b>Mensaje:</b> ¡Solo faltan 6 días para el 6to Aniversario! (Domingo 16 de Agosto).</li>
+                                    <li><b>Detalles:</b> Ruta espectacular, kits con jersey, hidratación, soporte y fotos.</li>
+                                    <li><b>Código especial:</b> Si ya tienen código PRO-XXX aprobado, se mostrará en su correo para la rifa de la bicicleta Raymond 0 KM.</li>
+                                </ul>
+                            </div>
+
+                            {/* Prueba de Envío */}
+                            <div className="pt-2 border-t border-neutral-800">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Probar Envío a tu Correo</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="email"
+                                        value={testCountdownEmail}
+                                        onChange={(e) => setTestCountdownEmail(e.target.value)}
+                                        placeholder="tu-correo@ejemplo.com"
+                                        className="flex-1 bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-yellow-500 text-sm"
+                                    />
+                                    <button
+                                        onClick={() => handleSendCountdownEmails(true)}
+                                        disabled={countdownSending}
+                                        className="bg-neutral-700 hover:bg-neutral-600 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                                    >
+                                        Enviar Prueba
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+                            <button
+                                onClick={() => setShowCountdownModal(false)}
+                                className="px-5 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-xs uppercase tracking-wider transition-all"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={() => handleSendCountdownEmails(false)}
+                                disabled={countdownSending}
+                                className="px-6 py-3 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-black font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-yellow-400/30 flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {countdownSending ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
+                                <span>Enviar a todos los registrados</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para Entrega de Kits de Aniversario */}
+            {showKitsModal && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-3xl max-w-xl w-full p-6 sm:p-8 text-white space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/30 text-purple-400">
+                                    👕
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black uppercase tracking-tight text-white">Notificar Entrega de Kits</h3>
+                                    <p className="text-xs text-neutral-400 font-medium">Aviso masivo sobre la entrega de kits el Jueves 13 y Viernes 14 de Agosto</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowKitsModal(false)}
+                                className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-xl transition-all"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4 text-sm">
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Asunto del Correo</label>
+                                <input
+                                    type="text"
+                                    value={kitsSubject}
+                                    onChange={(e) => setKitsSubject(e.target.value)}
+                                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 font-medium"
+                                />
+                            </div>
+
+                            <div className="p-4 bg-neutral-800/60 border border-neutral-700/80 rounded-2xl space-y-2">
+                                <span className="text-xs font-bold uppercase tracking-wider text-purple-400 block">📢 Información del Correo:</span>
+                                <ul className="text-xs text-neutral-300 space-y-1.5 list-disc pl-4">
+                                    <li><b>Fechas:</b> Mañana Jueves 13 y Viernes 14 de Agosto.</li>
+                                    <li><b>Dirección:</b> Local ProoMTB, Calle Eliseo Grullón #26, Los Prados, Santo Domingo.</li>
+                                    <li><b>Enlaces directos:</b> Dirección en Google Maps + Soporte por WhatsApp.</li>
+                                </ul>
+                            </div>
+
+                            {/* Prueba de Envío */}
+                            <div className="pt-2 border-t border-neutral-800">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Probar Envío a tu Correo</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="email"
+                                        value={testKitsEmail}
+                                        onChange={(e) => setTestKitsEmail(e.target.value)}
+                                        placeholder="tu-correo@ejemplo.com"
+                                        className="flex-1 bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 text-sm"
+                                    />
+                                    <button
+                                        onClick={() => handleSendKitsEmails(true)}
+                                        disabled={kitsSending}
+                                        className="bg-neutral-700 hover:bg-neutral-600 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50"
+                                    >
+                                        Enviar Prueba
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+                            <button
+                                onClick={() => setShowKitsModal(false)}
+                                className="px-5 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-xs uppercase tracking-wider transition-all"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={() => handleSendKitsEmails(false)}
+                                disabled={kitsSending}
+                                className="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-purple-600/30 flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {kitsSending ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
+                                <span>Enviar Aviso de Kits a Todos</span>
                             </button>
                         </div>
                     </div>

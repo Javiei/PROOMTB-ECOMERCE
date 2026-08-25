@@ -101,7 +101,7 @@ serve(async (req) => {
           'Authorization': `Bearer ${RESEND_API_KEY}`
         },
         body: JSON.stringify({
-          from: 'Raymon ProoMTB <eventos@proomtb.com>',
+          from: 'ProoMTB <eventos@proomtb.com>',
           to: [registration.email],
           subject: subject,
           html: `

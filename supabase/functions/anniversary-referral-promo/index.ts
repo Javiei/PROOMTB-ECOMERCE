@@ -76,7 +76,7 @@ serve(async (req) => {
             'Authorization': `Bearer ${RESEND_API_KEY}`
           },
           body: JSON.stringify({
-            from: 'Raymon Soto <eventos@proomtb.com>',
+            from: 'ProoMTB <eventos@proomtb.com>',
             to: [recipient.email],
             subject: finalSubject,
             html: `
@@ -168,7 +168,7 @@ serve(async (req) => {
                   </div>
 
                   <div class="footer">
-                    <p>Raymon Soto & Equipo ProoMTB & ROAD</p>
+                    <p>Equipo ProoMTB & ROAD</p>
                     <p>© 2026 PROOMTB & ROAD. Todos los derechos reservados.</p>
                   </div>
                 </div>

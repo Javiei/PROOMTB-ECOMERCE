@@ -30,40 +30,22 @@ serve(async (req) => {
     if (testEmail) {
       recipients = [{ first_name: 'Ciclista', email: testEmail }]
     } else {
-      // 1. Obtener correos únicos de tuesday_registrations
-      const { data: tuesdayData, error: tError } = await supabase
-        .from('tuesday_registrations')
-        .select('first_name, email')
+      // Obtener todos los registrados (excluyendo rechazados si existieran)
+      const { data: rawRegistrations, error: fetchError } = await supabase
+        .from('anniversary_registrations')
+        .select('first_name, email, status')
 
-      if (tError) console.error('Error fetching tuesday registrations:', tError)
-
-      // 2. Obtener correos únicos de event_attendance
-      const { data: eventData, error: eError } = await supabase
-        .from('event_attendance')
-        .select('name, email')
-
-      if (eError) console.error('Error fetching event attendance:', eError)
+      if (fetchError) throw fetchError
 
       const uniqueEmails = new Set<string>()
 
-      if (tuesdayData) {
-        for (const item of tuesdayData) {
-          if (item.email && !uniqueEmails.has(item.email.toLowerCase().trim())) {
-            uniqueEmails.add(item.email.toLowerCase().trim())
-            recipients.push({
-              first_name: item.first_name || 'Ciclista',
-              email: item.email.trim()
-            })
-          }
-        }
-      }
-
-      if (eventData) {
-        for (const item of eventData) {
+      if (rawRegistrations) {
+        for (const item of rawRegistrations) {
+          if (item.status === 'rejected') continue
           const emailTrimmed = item.email ? item.email.toLowerCase().trim() : ''
           if (emailTrimmed && !uniqueEmails.has(emailTrimmed)) {
             uniqueEmails.add(emailTrimmed)
-            const firstName = item.name ? item.name.split(' ')[0] : 'Ciclista'
+            const firstName = item.first_name ? item.first_name.split(' ')[0] : 'Ciclista'
             recipients.push({
               first_name: firstName,
               email: item.email.trim()
@@ -74,17 +56,18 @@ serve(async (req) => {
     }
 
     if (recipients.length === 0) {
-      return new Response(JSON.stringify({ message: "No se encontraron destinatarios de paseos." }), {
+      return new Response(JSON.stringify({ message: "No se encontraron inscritos activos en el aniversario." }), {
         status: 200,
         headers: { ...headers, "Content-Type": "application/json" }
       })
     }
 
     const results = []
-    const whatsappRegUrl = 'https://wa.me/message/6SFG6MXJ6HDUK1'
+    const mapsUrl = 'https://maps.app.goo.gl/FjJvKuGUtcvfWRZF9'
+    const whatsappUrl = 'https://wa.me/message/6SFG6MXJ6HDUK1'
 
     for (const recipient of recipients) {
-      const finalSubject = customSubject || `${recipient.first_name}, tu invitación oficial al 6to Aniversario ProoMTB`
+      const finalSubject = customSubject || `${recipient.first_name}, mañana inicia la entrega de Kits del 6to Aniversario ProoMTB 👕🎉`
 
       try {
         const res = await fetch('https://api.resend.com/emails', {
@@ -114,21 +97,21 @@ serve(async (req) => {
                   .badge { background-color: #00e5ff; color: #000000; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; padding: 5px 14px; border-radius: 50px; display: inline-block; }
                   .content { padding: 35px 30px; color: #374151; font-size: 15px; line-height: 1.6; }
                   h1 { color: #111827; font-size: 22px; font-weight: 900; margin-top: 5px; margin-bottom: 15px; }
-                  .card-box { background-color: #f8fafc; border-left: 4px solid #00e5ff; border-radius: 12px; padding: 20px; margin: 22px 0; border: 1px solid #e2e8f0; border-left-width: 4px; border-left-color: #00e5ff; }
-                  .feature-item { margin-bottom: 12px; display: flex; align-items: flex-start; font-size: 14px; color: #1f2937; }
-                  .feature-icon { font-size: 18px; margin-right: 10px; line-height: 1.4; }
-                  .button-whatsapp { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 16px 25px; background-color: #25D366; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; margin-top: 22px; }
+                  .info-box { background-color: #f8fafc; border-left: 4px solid #00e5ff; border-radius: 12px; padding: 22px; margin: 22px 0; border: 1px solid #e2e8f0; border-left-width: 4px; border-left-color: #00e5ff; }
+                  .info-item { margin-bottom: 14px; display: flex; align-items: flex-start; font-size: 14px; color: #1f2937; }
+                  .info-icon { font-size: 18px; margin-right: 12px; line-height: 1.4; }
+                  .button-maps { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 16px 25px; background-color: #000000; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; margin-top: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+                  .button-whatsapp { display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 16px 25px; background-color: #25D366; color: #ffffff !important; text-decoration: none; border-radius: 10px; font-weight: 900; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; margin-top: 12px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25); }
                   .footer { background-color: #f9fafb; padding: 22px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #f3f4f6; }
-                  .prize-badge { background-color: #fef08a; color: #854d0e; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
                   
-                  /* Adaptabilidad estricta a Modo Oscuro en Gmail / iOS Mail */
+                  /* Adaptabilidad a Modo Oscuro */
                   @media (prefers-color-scheme: dark) {
                     body { background-color: #121212 !important; color: #e5e7eb !important; }
                     .container { background-color: #1e1e1e !important; border-color: #2e2e2e !important; }
                     .content { color: #d1d5db !important; }
                     h1 { color: #ffffff !important; }
-                    .card-box { background-color: #262626 !important; border-color: #383838 !important; }
-                    .feature-item { color: #e5e7eb !important; }
+                    .info-box { background-color: #262626 !important; border-color: #383838 !important; }
+                    .info-item { color: #e5e7eb !important; }
                     .footer { background-color: #181818 !important; border-color: #2a2a2a !important; color: #9ca3af !important; }
                   }
                 </style>
@@ -143,39 +126,40 @@ serve(async (req) => {
                   <div class="content">
                     <h1>¡Hola, ${recipient.first_name}! 👋</h1>
                     
-                    <p>Sabemos lo mucho que disfrutas nuestros paseos de los martes y la emoción sobre pedales. Por eso, queremos invitarte personalmente a nuestro <b>6to Aniversario ProoMTB & ROAD</b>.</p>
+                    <p>Esperamos que estés listo para vivir una rodada espectacular en el <b>6to Aniversario ProoMTB & ROAD</b>.</p>
                     
-                    <div class="card-box">
-                      <p style="margin-top:0; font-weight:bold; color:#111827; font-size:14px; text-transform:uppercase;">¿Qué te espera en el Aniversario?</p>
+                    <p>Queremos informarte que <b>mañana jueves 13 y viernes 14 de agosto</b> se estará realizando la entrega oficial de los kits de participación.</p>
+ 
+                    <div class="info-box">
+                      <p style="margin-top:0; font-weight:bold; color:#111827; font-size:14px; text-transform:uppercase;">Detalles de la Entrega de Kits:</p>
                       
-                      <div class="feature-item">
-                        <span class="feature-icon">🚴‍♂️</span>
-                        <div><b>Ruta Especial de Aniversario:</b> Recorrido adaptado con asistencia completa y la mejor compañía.</div>
+                      <div class="info-item">
+                        <span class="info-icon">📆</span>
+                        <div><b>Días:</b> Jueves 13 y Viernes 14 de Agosto, 2026.</div>
                       </div>
                       
-                      <div class="feature-item">
-                        <span class="feature-icon">🏆</span>
-                        <div><b>Gran Rifa Oficial:</b> Participas automáticamente por una <span class="prize-badge">BICICLETA RAYMOND 0 KM</span>, accesorios de alta gama, cascos y sorpresas en vivo.</div>
+                      <div class="info-item">
+                        <span class="info-icon">📍</span>
+                        <div><b>Lugar:</b> Local de ProoMTB. Calle Eliseo Grullón #26, Los Prados, Santo Domingo.</div>
                       </div>
-
-                      <div class="feature-item">
-                        <span class="feature-icon">👕</span>
-                        <div><b>Kit Oficial con Jersey:</b> Edición conmemorativa del 6to Aniversario.</div>
-                      </div>
-
-                      <div class="feature-item">
-                        <span class="feature-icon">🎉</span>
-                        <div><b>Fiesta & Compartir:</b> Comida, música, hidratación y el mejor ambiente ciclista.</div>
+ 
+                      <div class="info-item">
+                        <span class="info-icon">👕</span>
+                        <div><b>Kit Oficial:</b> Recuerda que tu kit incluye tu jersey y accesorios oficiales para el gran evento.</div>
                       </div>
                     </div>
-
-                    <p>Los cupos son limitados. Haz clic a continuación para asegurar tu inscripción directamente por WhatsApp:</p>
-
-                    <a href="${whatsappRegUrl}" class="button-whatsapp">
-                      💬 INSCRIBIRSE POR WHATSAPP AQUÍ
+ 
+                    <p>¡Te esperamos con toda la energía de siempre!</p>
+ 
+                    <a href="${mapsUrl}" class="button-maps">
+                      📍 VER DIRECCIÓN EN GOOGLE MAPS
+                    </a>
+ 
+                    <a href="${whatsappUrl}" class="button-whatsapp">
+                      💬 ¿DUDAS? ESCRÍBENOS POR WHATSAPP
                     </a>
                   </div>
-
+ 
                   <div class="footer">
                     <p>Equipo ProoMTB & ROAD</p>
                     <p>© 2026 PROOMTB & ROAD. Todos los derechos reservados.</p>
@@ -199,7 +183,7 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ 
-      message: "Proceso de envío finalizado", 
+      message: "Proceso de envío de kits finalizado", 
       enviados: results.length,
       totalDestinatarios: recipients.length,
       details: results 
@@ -208,7 +192,7 @@ serve(async (req) => {
     })
 
   } catch (err: any) {
-    console.error("Error global en edge function:", err)
+    console.error("Error global en edge function entrega de kits:", err)
     return new Response(JSON.stringify({ error: err.message }), { 
       status: 500, 
       headers: { ...headers, "Content-Type": "application/json" } 

@@ -1,7 +1,6 @@
 import React from 'react';
 import Hero from '../components/home/Hero';
-import TarokPromo from '../components/home/TarokPromo';
-import AnniversaryPromo from '../components/home/AnniversaryPromo';
+import FeaturedSeriesPromo from '../components/home/FeaturedSeriesPromo';
 import JourneySection from '../components/home/JourneySection';
 import ServiceMarketing from '../components/home/ServiceMarketing';
 
@@ -9,8 +8,7 @@ const Home = () => {
     return (
         <main>
             <Hero />
-            <TarokPromo />
-            <AnniversaryPromo />
+            <FeaturedSeriesPromo />
             <JourneySection />
             <ServiceMarketing />
 

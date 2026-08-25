@@ -390,7 +390,7 @@ const ProductDetail = () => {
                                 {(() => {
                                     const currentVariant = product.sizes?.find(s => s.size === selectedSize);
                                     const displayPrice = currentVariant && currentVariant.price ? currentVariant.price : product.price;
-                                    return formatPrice(displayPrice, product.type);
+                                    return formatPrice(displayPrice, product.type, product.serie_id);
                                 })()}
                             </div>
                             <button
@@ -461,7 +461,7 @@ const ProductDetail = () => {
                                     </div>
                                     <h4 className="text-xl font-black uppercase mb-2">{p.modelo}</h4>
                                     <p className="text-gray-500 font-medium text-lg">
-                                        {formatPrice(p.precio_eur, 'bikes')}
+                                        {formatPrice(p.precio_eur, 'bikes', p.serie_id)}
                                     </p>
                                 </Link>
                             ))}

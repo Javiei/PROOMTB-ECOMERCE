@@ -343,7 +343,7 @@ const TotemCatalog = () => {
                                     
                                     {/* Price Tag */}
                                     <div className="absolute top-8 right-8 bg-white text-black px-8 py-4 rounded-full text-3xl font-black z-10 shadow-2xl italic tracking-tighter">
-                                        {formatPrice(product.precio_eur, 'bikes')}
+                                        {formatPrice(product.precio_eur, 'bikes', product.serie_id)}
                                     </div>
 
                                     {/* Image Container with Dynamic Glow */}

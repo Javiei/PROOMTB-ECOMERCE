@@ -73,7 +73,7 @@ const CartDrawer = () => {
                                             <p className="text-xs text-gray-500 font-medium">Size: {item.selectedSize}</p>
                                         )}
                                         <p className="text-sm font-bold mt-1">
-                                            {formatPrice(item.price, item.type || (item.modelo ? 'bikes' : 'accessories'))}
+                                            {formatPrice(item.price, item.type || (item.modelo ? 'bikes' : 'accessories'), item.serie_id)}
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between mt-2">
@@ -115,7 +115,8 @@ const CartDrawer = () => {
                                 {(() => {
                                     // Heuristic for total: default to RD$ unless everything is a bike
                                     const allBikes = cartItems.every(item => item.type === 'bikes' || item.modelo);
-                                    return formatPrice(cartTotal, allBikes ? 'bikes' : 'accessories');
+                                    const hasDopItems = cartItems.some(item => item.serie_id === 23 || item.serie_id === 24);
+                                    return formatPrice(cartTotal, allBikes ? 'bikes' : 'accessories', hasDopItems ? 24 : null);
                                 })()}
                             </span>
                         </div>
@@ -124,11 +125,12 @@ const CartDrawer = () => {
                                 const phoneNumber = '8297163555';
                                 const itemsList = cartItems.map(item => {
                                     const type = item.type || (item.modelo ? 'bikes' : 'accessories');
-                                    return `- ${item.modelo || item.name} ${item.selectedSize ? `(Talla: ${item.selectedSize})` : ''} x${item.quantity}: ${formatPrice(item.price, type)}`;
+                                    return `- ${item.modelo || item.name} ${item.selectedSize ? `(Talla: ${item.selectedSize})` : ''} x${item.quantity}: ${formatPrice(item.price, type, item.serie_id)}`;
                                 }).join('\n');
 
                                 const allBikes = cartItems.every(item => item.type === 'bikes' || item.modelo);
-                                const totalFormatted = formatPrice(cartTotal, allBikes ? 'bikes' : 'accessories');
+                                const hasDopItems = cartItems.some(item => item.serie_id === 23 || item.serie_id === 24);
+                                const totalFormatted = formatPrice(cartTotal, allBikes ? 'bikes' : 'accessories', hasDopItems ? 24 : null);
 
                                 const message = `Hola! Me gustaría consultar disponibilidad para los siguientes productos:\n\n${itemsList}\n\nTotal estimado: ${totalFormatted}\n\nGracias!`;
 

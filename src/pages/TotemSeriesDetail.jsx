@@ -40,6 +40,7 @@ const seriesHeaderImages = {
     yara: { image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2Fd4%2F0c%2Fc9%2F1747034740%2FYara_hero.png&w=1080&q=75" },
     zayn: { image: "https://www.raymon-bicycles.com/_next/image?url=https%3A%2F%2Fb2b.raymon-bicycles.com%2Fmedia%2F66%2Fc1%2Fcb%2F1747034828%2FZayn_hero.png&w=1080&q=75" },
     tarok: { image: "https://rwbxersfwgmkixulhnxp.supabase.co/storage/v1/object/sign/bicicletas/Tarok/Ultra/Raymon_Tarok_Ultra_front.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iZjU5MzQwZS1mMGM0LTRkM2QtYmNiZi1kZjRlY2MyMWNkNTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJiaWNpY2xldGFzL1Rhcm9rL1VsdHJhL1JheW1vbl9UYXJva19VbHRyYV9mcm9udC5wbmciLCJpYXQiOjE3NzYwMjUxMzQsImV4cCI6ODgxNzU5Mzg3MzR9.xXvnDG3FUyXMxuKLXBS4MHtMswWVIA7Yl6Qt__Mvjm4" },
+    durok: { image: "https://cdn.prod.website-files.com/69fc76a7d3cb32c8cd17bfbb/6a312478dc86ce57f6790e8f_raymon-2027-durok-ultra-anthracite_marble-side.avif" },
     default: { image: "https://www.raymon-bicycles.com/pim/media/592398/1000px/v2" }
 };
 
@@ -353,7 +354,27 @@ const seriesMarketingData = {
                 "Innovation in every detail. The DJI Avinox drive system is a game-changer. Lightweight, powerful, and incredibly smart. With multiple riding modes and seamless integration, it adapts to your style in real-time.",
                 "20.4 KG of pure carbon and aluminum engineering, balanced to perfection for the ultimate trail experience."
             ],
-            image: "https://rwbxersfwgmkixulhnxp.supabase.co/storage/v1/object/sign/bicicletas/Tarok/Ultra/Raymon_Tarok_Ultra_front.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iZjU5MzQwZS1mMGM0LTRkM2QtYmNiZi1kZjRlY2MyMWNkNTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJiaWNpY2xldGFzL1Rhcm9rL1VsdHJhL1JheW1vbl9UYXJva19VbHRyYV9mcm9udC5wbmciLCJpYXQiOjE3NzYwMjUxMzQsImV4cCI6ODgxNzU5Mzg3MzR9.xXvnDG3FUyXMxuKLXBS4MHtMswWVIA7Yl6Qt__Mvjm4",
+            image: "https://rwbxersfwgmkixulhnxp.supabase.co/storage/v1/object/sign/bicicletas/Tarok/Ultra/Raymon_Tarok_Ultra_front.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iZjU5MzQwZS1mMGM0LTRkM2QtYmNiZi1kZjRlY2MyMWNkNTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJiaWNpY2xldGFzL1Rhcm9rL1VsdHJhL1JheW1vbl9UYXJva19VbHRyYV_mcm9udC5wbmciLCJpYXQiOjE3NzYwMjUxMzQsImV4cCI6ODgxNzU5Mzg3MzR9.xXvnDG3FUyXMxuKLXBS4MHtMswWVIA7Yl6Qt__Mvjm4",
+            imageRight: false
+        }
+    ],
+    durok: [
+        {
+            title: "THE NEW DUROK: \nFULL E-MTB POWER.",
+            text: [
+                "The Durok is built to be a reliable real-world e-MTB. Built with a robust hydroformed AL61-T6 aluminum frame and seamless welds, it is designed to conquer demanding trails and long alpine days.",
+                "Equipped with the high-power DJI Avinox M2S system (M2 on Durok Comp), it delivers up to 150 Nm of torque and a smart connectivity ecosystem right to your fingertips."
+            ],
+            image: "https://cdn.prod.website-files.com/69fc76a7d3cb32c8cd17bfbb/6a312478dc86ce57f6790e8f_raymon-2027-durok-ultra-anthracite_marble-side.avif",
+            imageRight: true
+        },
+        {
+            title: "CONVENIENCE MEETS \nPERFORMANCE.",
+            text: [
+                "No more looking for an outlet near your bike storage. The Avinox RS800 battery offers a massive 800 Wh capacity and is fully removable, letting you charge it easily at home, in the office, or in the garage.",
+                "A balanced 150 mm travel suspension coupled with full 29-inch wheels (27.5\" on S size) provides ultimate control, safety, and confidence from your very first ride."
+            ],
+            image: "https://cdn.prod.website-files.com/69fc76a7d3cb32c8cd17bfbb/6a3124778394f3d22e46cf73_raymon-2027-durok-pro-raw-alloy-side.avif",
             imageRight: false
         }
     ]
@@ -618,7 +639,7 @@ const TotemSeriesDetail = () => {
                                     </h2>
                                 </div>
                                 <div className="text-6xl font-black text-white mb-16 inline-block bg-white/5 backdrop-blur-xl px-14 py-8 rounded-full border border-white/10 shadow-2xl italic tracking-tighter">
-                                    {formatPrice(currentBike.precio_eur, 'bikes')}
+                                    {formatPrice(currentBike.precio_eur, 'bikes', currentBike.serie_id)}
                                 </div>
 
                                 {/* Mini Specs Grid */}

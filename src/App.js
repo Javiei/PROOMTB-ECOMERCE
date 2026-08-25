@@ -36,6 +36,7 @@ import SeriesDetailNayta from './pages/series-details/SeriesDetailNayta';
 import SeriesDetailNaytaKids from './pages/series-details/SeriesDetailNaytaKids';
 import SeriesDetailYangaKids from './pages/series-details/SeriesDetailYangaKids';
 import SeriesDetailTarok from './pages/series-details/SeriesDetailTarok';
+import SeriesDetailDurok from './pages/series-details/SeriesDetailDurok';
 import Success from './pages/Success';
 import EventAttendance from './pages/EventAttendance';
 import MaintenanceBooking from './pages/MaintenanceBooking';
@@ -120,6 +121,8 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/series/yanga-kids" element={<SeriesDetailYangaKids />} />
           <Route path="/series/tarok" element={<SeriesDetailTarok />} />
           <Route path="/tarok" element={<SeriesDetailTarok />} />
+          <Route path="/series/durok" element={<SeriesDetailDurok />} />
+          <Route path="/durok" element={<SeriesDetailDurok />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/gracias" element={<Success />} />
           <Route path="/compartir-fotos" element={<PhotoUpload />} />

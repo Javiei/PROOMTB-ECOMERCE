@@ -11,19 +11,19 @@ export const slugify = (text) => {
         .replace(/-+$/, '');      // Trim - from end of text
 };
 
-export const formatPrice = (price, type = 'bikes') => {
+export const formatPrice = (price, type = 'bikes', serieId = null) => {
     // Normalize price: handle arrays (common in DB samples) or strings
     const val = Array.isArray(price) ? price[0] : price;
     const num = parseFloat(val);
 
-    if (isNaN(num)) return type === 'bikes' ? 'USD $0.00' : 'RD$ 0.00';
+    if (isNaN(num)) return (type === 'bikes' && serieId !== 23 && serieId !== 24) ? 'USD $0.00' : 'RD$ 0.00';
 
     const formatter = new Intl.NumberFormat('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
 
-    if (type === 'bikes') {
+    if (type === 'bikes' && serieId !== 23 && serieId !== 24) {
         return `USD $${formatter.format(num)}`;
     } else {
         return `RD$ ${formatter.format(num)}`;

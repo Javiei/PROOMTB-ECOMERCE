@@ -259,7 +259,7 @@ const SeriesDetailTarok = () => {
                                             {bike.modelo}
                                         </h4>
                                         <p className="text-sm md:text-base font-bold text-purple-400 tracking-wider">
-                                            {formatPrice(bike.precio_eur, 'bikes')}
+                                            {formatPrice(bike.precio_eur, 'bikes', 23)}
                                         </p>
                                     </div>
                                 </Link>

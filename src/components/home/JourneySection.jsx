@@ -264,7 +264,8 @@ const JourneySection = () => {
                                                                                                                                                         product.serie_id === 21 ? '/series/nayta-kids' :
                                                                                                                                                             product.serie_id === 22 ? '/series/yanga-kids' :
                                                                                                                                                                 product.serie_id === 23 ? '/tarok' :
-                                                                                                                                                                    `/serie/${product.serie_id}`
+                                                                                                                                                                    product.serie_id === 24 ? '/series/durok' :
+                                                                                                                                                                        `/serie/${product.serie_id}`
                                                                     }
                                                                     className="block group w-full h-full flex flex-col justify-end"
                                                                 >
@@ -287,7 +288,7 @@ const JourneySection = () => {
                                                                             <svg className="w-3 h-3 text-gray-300" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" /></svg>
                                                                         </div>
                                                                         <p className="text-xs text-gray-500 font-medium">
-                                                                            {formatPrice(product.price, 'bikes')}
+                                                                            {formatPrice(product.price, 'bikes', product.serie_id)}
                                                                         </p>
                                                                     </div>
                                                                 </Link>

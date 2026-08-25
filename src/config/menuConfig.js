@@ -21,7 +21,8 @@ export const SERIES_CONFIG = {
     19: { id: 'arid', label: 'Arid', link: '/series/arid', sub: 'MTB', categoryId: 'mtb' },
     20: { id: 'nayta', label: 'Nayta', link: '/series/nayta', sub: 'MTB', categoryId: 'mtb' },
     21: { id: 'nayta-kids', label: 'Nayta Kids', link: '/series/nayta-kids', sub: 'Kids', categoryId: 'kids' },
-    22: { id: 'yanga-kids', label: 'Yanga Kids', link: '/series/yanga-kids', sub: 'Kids', categoryId: 'kids' }
+    22: { id: 'yanga-kids', label: 'Yanga Kids', link: '/series/yanga-kids', sub: 'Kids', categoryId: 'kids' },
+    24: { id: 'durok', label: 'Durok', link: '/series/durok', sub: 'All Mountain', categoryId: 'e-mtb' }
 };
 
 export const menuData = {
