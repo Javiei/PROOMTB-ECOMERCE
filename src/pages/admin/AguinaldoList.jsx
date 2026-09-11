@@ -7,16 +7,12 @@ import {
     Loader2, 
     Plus, 
     Download, 
-    Coffee, 
-    Gift, 
     Bike, 
     Users, 
     Trash2, 
-    Calendar, 
     CheckCircle2, 
     Phone, 
     Mail, 
-    Sparkles,
     Ticket
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -25,7 +21,7 @@ const AguinaldoList = () => {
     const [registrations, setRegistrations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState('all'); // all, checked_in, chocolate_claimed
+    const [filterStatus, setFilterStatus] = useState('all'); // all, checked_in, not_checked_in
     const [processingId, setProcessingId] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [modalLoading, setModalLoading] = useState(false);
@@ -48,7 +44,6 @@ const AguinaldoList = () => {
 
             if (error) {
                 console.error('Error fetching aguinaldo registrations:', error);
-                // If table doesn't exist yet, show friendly toast
                 if (error.code === '42P01') {
                     toast.error('Recuerda ejecutar el script setup_aguinaldo_db.sql en Supabase SQL Editor.', { duration: 6000 });
                 } else {
@@ -98,36 +93,6 @@ const AguinaldoList = () => {
         }
     };
 
-    // Toggle Chocolate Claimed status
-    const handleToggleChocolate = async (id, currentVal) => {
-        setProcessingId(id);
-        const newVal = !currentVal;
-        try {
-            const { error } = await supabase
-                .from('aguinaldo_registrations')
-                .update({ 
-                    chocolate_claimed: newVal,
-                    chocolate_claimed_at: newVal ? new Date().toISOString() : null
-                })
-                .eq('id', id);
-
-            if (error) throw error;
-            
-            setRegistrations(prev => prev.map(item => item.id === id ? { 
-                ...item, 
-                chocolate_claimed: newVal, 
-                chocolate_claimed_at: newVal ? new Date().toISOString() : null 
-            } : item));
-            
-            toast.success(newVal ? '¡Chocolate caliente entregado! ☕' : 'Entrega de chocolate desmarcada');
-        } catch (err) {
-            console.error('Error updating chocolate delivery:', err);
-            toast.error('Error al actualizar entrega de chocolate');
-        } finally {
-            setProcessingId(null);
-        }
-    };
-
     const handleDelete = async (id, name) => {
         if (!window.confirm(`¿Estás seguro de que deseas eliminar el registro de ${name}?`)) return;
 
@@ -172,9 +137,8 @@ const AguinaldoList = () => {
                     phone: newParticipant.phone.trim(),
                     ticket_code: ticket_code,
                     status: 'registered',
-                    checked_in: true, // If added in store, marked as present
+                    checked_in: true, // Si se agrega en tienda, marcado como presente
                     checked_in_at: new Date().toISOString(),
-                    chocolate_claimed: false,
                     waiver_accepted: true,
                     notes: 'Registro Manual en Tienda'
                 }])
@@ -207,7 +171,7 @@ const AguinaldoList = () => {
             return;
         }
 
-        const headers = ['Boleto Rifa', 'Nombre', 'Apellido', 'Cédula', 'Teléfono', 'Email', 'Asistencia', 'Chocolate Entregado', 'Fecha Registro', 'Notas'];
+        const headers = ['Boleto Rifa', 'Nombre', 'Apellido', 'Cédula', 'Teléfono', 'Email', 'Asistencia', 'Fecha Registro', 'Notas'];
         const rows = filteredRegistrations.map(r => [
             `"${r.ticket_code || ''}"`,
             `"${r.first_name || ''}"`,
@@ -216,7 +180,6 @@ const AguinaldoList = () => {
             `"${r.phone || ''}"`,
             `"${r.email || ''}"`,
             r.checked_in ? 'SÍ' : 'NO',
-            r.chocolate_claimed ? 'SÍ' : 'NO',
             `"${new Date(r.created_at).toLocaleString()}"`,
             `"${r.notes || ''}"`
         ]);
@@ -248,15 +211,12 @@ const AguinaldoList = () => {
 
         if (filterStatus === 'checked_in') return reg.checked_in;
         if (filterStatus === 'not_checked_in') return !reg.checked_in;
-        if (filterStatus === 'chocolate_claimed') return reg.chocolate_claimed;
-        if (filterStatus === 'chocolate_pending') return !reg.chocolate_claimed;
 
         return true;
     });
 
     const totalCount = registrations.length;
     const checkedInCount = registrations.filter(r => r.checked_in).length;
-    const chocolateCount = registrations.filter(r => r.chocolate_claimed).length;
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
@@ -270,7 +230,7 @@ const AguinaldoList = () => {
                         </h1>
                     </div>
                     <p className="text-sm text-gray-500 mt-1">
-                        Control de inscritos, asistencias para la ruta ciclista y entrega de chocolate caliente.
+                        Control de inscritos y asistencia para la ruta ciclista del Águinaldo Navideño.
                     </p>
                 </div>
 
@@ -292,41 +252,28 @@ const AguinaldoList = () => {
             </div>
 
             {/* Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-                <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Inscritos</p>
-                        <p className="text-3xl font-black text-gray-900 mt-1">{totalCount}</p>
-                        <p className="text-[11px] text-gray-500 font-medium mt-0.5">Participantes en Rifa</p>
+                        <p className="text-4xl font-black text-gray-900 mt-1">{totalCount}</p>
+                        <p className="text-xs text-gray-500 font-medium mt-1">Participantes con boleto de rifa</p>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-black">
-                        <Users size={24} />
+                    <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-black">
+                        <Users size={28} />
                     </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
                     <div>
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Asistencias Confirmadas</p>
-                        <p className="text-3xl font-black text-emerald-600 mt-1">{checkedInCount}</p>
-                        <p className="text-[11px] text-gray-500 font-medium mt-0.5">
-                            {totalCount > 0 ? `${Math.round((checkedInCount / totalCount) * 100)}% de asistencia` : '0%'}
+                        <p className="text-4xl font-black text-emerald-600 mt-1">{checkedInCount}</p>
+                        <p className="text-xs text-gray-500 font-medium mt-1">
+                            {totalCount > 0 ? `${Math.round((checkedInCount / totalCount) * 100)}% de asistencia en ruta` : '0%'}
                         </p>
                     </div>
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black">
-                        <Bike size={24} />
-                    </div>
-                </div>
-
-                <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Chocolates Entregados</p>
-                        <p className="text-3xl font-black text-amber-600 mt-1">{chocolateCount}</p>
-                        <p className="text-[11px] text-gray-500 font-medium mt-0.5">
-                            {checkedInCount - chocolateCount > 0 ? `${checkedInCount - chocolateCount} pendientes` : 'Al día'}
-                        </p>
-                    </div>
-                    <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black">
-                        <Coffee size={24} />
+                    <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black">
+                        <Bike size={28} />
                     </div>
                 </div>
             </div>
@@ -337,7 +284,7 @@ const AguinaldoList = () => {
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <input
                         type="text"
-                        placeholder="Buscar por nombre, cédula, código (AGU-XXXX)..."
+                        placeholder="Buscar por nombre, cédula, código (AGU-001)..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-all"
@@ -347,27 +294,21 @@ const AguinaldoList = () => {
                 <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
                     <button
                         onClick={() => setFilterStatus('all')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase transition-colors whitespace-nowrap ${filterStatus === 'all' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-colors whitespace-nowrap ${filterStatus === 'all' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                     >
                         Todos ({totalCount})
                     </button>
                     <button
                         onClick={() => setFilterStatus('checked_in')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase transition-colors whitespace-nowrap ${filterStatus === 'checked_in' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-colors whitespace-nowrap ${filterStatus === 'checked_in' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                     >
                         Presentes ({checkedInCount})
                     </button>
                     <button
                         onClick={() => setFilterStatus('not_checked_in')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase transition-colors whitespace-nowrap ${filterStatus === 'not_checked_in' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-colors whitespace-nowrap ${filterStatus === 'not_checked_in' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                     >
                         Por Llegar ({totalCount - checkedInCount})
-                    </button>
-                    <button
-                        onClick={() => setFilterStatus('chocolate_claimed')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase transition-colors whitespace-nowrap ${filterStatus === 'chocolate_claimed' ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                    >
-                        Chocolate Entregado ({chocolateCount})
                     </button>
                 </div>
             </div>
@@ -393,7 +334,6 @@ const AguinaldoList = () => {
                                     <th className="py-4 px-6">Participante</th>
                                     <th className="py-4 px-6">Contacto</th>
                                     <th className="py-4 px-6 text-center">Asistencia Ruta</th>
-                                    <th className="py-4 px-6 text-center">Chocolate ☕</th>
                                     <th className="py-4 px-6 text-right">Acciones</th>
                                 </tr>
                             </thead>
@@ -450,7 +390,7 @@ const AguinaldoList = () => {
                                             <button
                                                 onClick={() => handleToggleCheckIn(reg.id, reg.checked_in)}
                                                 disabled={processingId === reg.id}
-                                                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase inline-flex items-center gap-1.5 transition-all shadow-sm ${
+                                                className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase inline-flex items-center gap-1.5 transition-all shadow-sm ${
                                                     reg.checked_in 
                                                         ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-300' 
                                                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
@@ -466,22 +406,6 @@ const AguinaldoList = () => {
                                                         <span>Check-in</span>
                                                     </>
                                                 )}
-                                            </button>
-                                        </td>
-
-                                        {/* Chocolate Delivery Button */}
-                                        <td className="py-4 px-6 text-center whitespace-nowrap">
-                                            <button
-                                                onClick={() => handleToggleChocolate(reg.id, reg.chocolate_claimed)}
-                                                disabled={processingId === reg.id}
-                                                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase inline-flex items-center gap-1.5 transition-all shadow-sm ${
-                                                    reg.chocolate_claimed 
-                                                        ? 'bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-300' 
-                                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
-                                                }`}
-                                            >
-                                                <Coffee size={14} className={reg.chocolate_claimed ? 'text-amber-700' : 'text-gray-400'} />
-                                                <span>{reg.chocolate_claimed ? 'Entregado' : 'Pendiente'}</span>
                                             </button>
                                         </td>
 
@@ -519,7 +443,7 @@ const AguinaldoList = () => {
                                 🎄 Inscripción Manual
                             </h3>
                             <p className="text-xs text-gray-500 mt-1">
-                                Registra a un ciclista presencialmente en tienda. Se generará su código y se marcará como presente.
+                                Registra a un ciclista presencialmente en tienda. Se generará su código correlativo y se marcará como presente.
                             </p>
                         </div>
 

@@ -17,8 +17,6 @@ CREATE TABLE IF NOT EXISTS public.aguinaldo_registrations (
     status text DEFAULT 'registered'::text NOT NULL,
     checked_in boolean DEFAULT false NOT NULL,
     checked_in_at timestamp with time zone,
-    chocolate_claimed boolean DEFAULT false NOT NULL,
-    chocolate_claimed_at timestamp with time zone,
     waiver_accepted boolean DEFAULT true NOT NULL,
     notes text
 );

@@ -187,7 +187,6 @@ const AguinaldoRegistration = () => {
                     ticket_code: generatedCode,
                     status: 'registered',
                     checked_in: false,
-                    chocolate_claimed: false,
                     waiver_accepted: true
                 }])
                 .select()
