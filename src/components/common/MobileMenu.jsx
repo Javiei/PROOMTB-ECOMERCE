@@ -136,6 +136,15 @@ const MobileMenu = ({ isOpen, onClose, isAdmin }) => {
                     Accesorios
                 </Link>
 
+                <Link
+                    to="/registro-aguinaldo"
+                    onClick={onClose}
+                    className="flex items-center justify-between px-4 py-4 text-base font-black uppercase border-b border-gray-100 bg-red-50 text-red-700"
+                >
+                    <span className="flex items-center gap-2">🎄 Águinaldo Navideño</span>
+                    <span className="text-[10px] bg-red-600 text-white px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider">¡Gratis!</span>
+                </Link>
+
                 {isAdmin && (
                     <Link
                         to="/admin"

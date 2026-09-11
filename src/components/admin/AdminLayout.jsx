@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, Outlet, useLocation, useNavigate, useOutletContext, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Package, LogOut, Menu, X, Users, Wrench, Camera, Bike, Award } from 'lucide-react';
+import { LayoutDashboard, Package, LogOut, Menu, X, Users, Wrench, Camera, Bike, Award, Gift } from 'lucide-react';
 
 import { useAuth } from '../../context/AuthContext';
 
@@ -28,6 +28,7 @@ const AdminLayout = () => {
         { path: '/admin/maintenance', label: 'Mantenimiento', icon: Wrench },
         { path: '/admin/tuesday-attendance', label: 'Martes de Ruta', icon: Bike },
         { path: '/admin/anniversary', label: 'Aniversario', icon: Award },
+        { path: '/admin/aguinaldo', label: 'Águinaldo Navideño', icon: Gift },
         { path: '/admin/fotos', label: 'Fotos Actividad', icon: Camera },
     ];
 
@@ -37,6 +38,7 @@ const AdminLayout = () => {
                 item.path === '/admin/attendance' || 
                 item.path === '/admin/tuesday-attendance' ||
                 item.path === '/admin/anniversary' ||
+                item.path === '/admin/aguinaldo' ||
                 item.path === '/admin/fotos'
             );
         }

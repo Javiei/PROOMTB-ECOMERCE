@@ -129,7 +129,12 @@ const Header = () => {
                             </div>
                         </div>
 
-
+                        <Link
+                            to="/registro-aguinaldo"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:brightness-110 text-white rounded-full text-xs font-black uppercase tracking-wider transition-all shadow-[0_4px_12px_rgba(220,38,38,0.25)]"
+                        >
+                            <span>🎄 Águinaldo</span>
+                        </Link>
                     </nav>
 
                     {/* Utilities */}

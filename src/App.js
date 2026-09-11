@@ -46,6 +46,7 @@ import TotemSeriesDetail from './pages/TotemSeriesDetail';
 import SeriesDetailTarokTotem from './pages/series-details/SeriesDetailTarokTotem';
 import TuesdayRegistration from './pages/TuesdayRegistration';
 import AnniversaryRegistration from './pages/AnniversaryRegistration';
+import AguinaldoRegistration from './pages/AguinaldoRegistration';
 
 
 
@@ -59,6 +60,7 @@ import AttendanceList from './pages/admin/AttendanceList';
 import TuesdayAttendanceList from './pages/admin/TuesdayAttendanceList';
 import MaintenanceList from './pages/admin/MaintenanceList';
 import AnniversaryList from './pages/admin/AnniversaryList';
+import AguinaldoList from './pages/admin/AguinaldoList';
 
 
 // User Components
@@ -135,6 +137,9 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
           <Route path="/registro-martes" element={<TuesdayRegistration />} />
           <Route path="/registro-aniversario" element={<AnniversaryRegistration />} />
           <Route path="/registro-aniversario-invitado" element={<AnniversaryRegistration isGuest={true} />} />
+          <Route path="/registro-aguinaldo" element={<AguinaldoRegistration />} />
+          <Route path="/aguinaldo-navideno" element={<AguinaldoRegistration />} />
+          <Route path="/aguinaldo" element={<AguinaldoRegistration />} />
 
 
 
@@ -154,6 +159,7 @@ const AppContent = ({ loading, isFading, handleLoadingComplete }) => {
               <Route path="tuesday-attendance" element={<TuesdayAttendanceList />} />
               <Route path="maintenance" element={<MaintenanceList />} />
               <Route path="anniversary" element={<AnniversaryList />} />
+              <Route path="aguinaldo" element={<AguinaldoList />} />
               <Route path="fotos" element={<PhotoList />} />
               <Route path="products" element={<ProductList />} />
             </Route>
